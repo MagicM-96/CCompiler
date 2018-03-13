@@ -1,0 +1,4 @@
+/home/vagrant/CCompilerGit/CCompiler/build/CMakeFiles/rebuild_cache.dir
+/home/vagrant/CCompilerGit/CCompiler/build/CMakeFiles/edit_cache.dir
+/home/vagrant/CCompilerGit/CCompiler/build/CMakeFiles/dhbwcc.dir
+/home/vagrant/CCompilerGit/CCompiler/build/CMakeFiles/dhbwdoc.dir

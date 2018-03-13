@@ -34,7 +34,7 @@
  * we want bison to do: SHIFT if the lookahead is 'ELSE' in order to bind the 'ELSE' to
  * the last open if-clause. 
  */
-%expect 0
+%expect 1
 
 %token DO WHILE
 %token IF ELSE
@@ -59,6 +59,14 @@
 %token PLUS MINUS     
 %token MUL DIV MOD
 %token LOGICAL_NOT UNARY_MINUS UNARY_PLUS
+
+%right ASSIGN
+%left LOGICAL_AND LOGICAL_OR
+%left LS GT LSEQ GTEQ EQ NE
+%left SHIFT_LEFT SHIFT_RIGHT
+%left PLUS MINUS
+%left MUL DIV MOD
+%left LOGICAL_NOT UNARY_MINUS UNARY_PLUS
 
 %%
 

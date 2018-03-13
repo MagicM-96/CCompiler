@@ -29,7 +29,6 @@ int { return INT; }
 void {return VOID; }
 return { return RETURN; }
 
-
 0|[1-9]+[0-9]* { return NUM; }
 [_a-zA-Z][-_a-zA-Z0-9]+ { return ID; }
 

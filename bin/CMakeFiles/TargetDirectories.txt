@@ -1,4 +1,0 @@
-/home/vagrant/compiler/bin/CMakeFiles/rebuild_cache.dir
-/home/vagrant/compiler/bin/CMakeFiles/edit_cache.dir
-/home/vagrant/compiler/bin/CMakeFiles/dhbwcc.dir
-/home/vagrant/compiler/bin/CMakeFiles/dhbwdoc.dir

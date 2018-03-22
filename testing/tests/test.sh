@@ -2,7 +2,7 @@
 
 # Script to automate running all test (success/fail) scripts
 
-CC=../../bin/dhbwcc
+CC=../../build/dhbwcc
 CFLAGS=-p
 
 : ${SUCCESS_TEST_DIR:=./success}

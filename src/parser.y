@@ -24,7 +24,7 @@
 // Enable debug output
 %initial-action
 {
-	yydebug = 1;
+	yydebug = 0;
 };
 
 /*
@@ -47,8 +47,8 @@
 %token BRACKET_OPEN BRACKET_CLOSE
 %token PARA_OPEN PARA_CLOSE
 
-%token ID
-%token NUM
+%token <id>ID
+%token <i> NUM
 
 %token ASSIGN 
 %token LOGICAL_OR
@@ -176,8 +176,8 @@ expression
      ;
 
 primary
-     : NUM
-     | ID
+     : NUM {printf("Parsed: %d", $1);}
+     | ID {printf("Parsed: %s", $1);}
      ;
 
 function_call

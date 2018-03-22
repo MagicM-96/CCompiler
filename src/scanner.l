@@ -29,16 +29,16 @@ int { return INT; }
 void {return VOID; }
 return { return RETURN; }
 
-0|[1-9]+[0-9]* { return NUM; }
-[_a-zA-Z][-_a-zA-Z0-9]+ { return ID; }
+0|[1-9]+[0-9]* { yylval.i = atoi(yytext); return NUM; } 
+[_a-zA-Z][-_a-zA-Z0-9]+ { yylval.id = strdup(yytext); return ID; }
 
 [:] { return COLON; }
 [,] { return COMMA; }
 [;] { return SEMICOLON; }
 \{ { return BRACE_OPEN; }
 \} { return BRACE_CLOSE; }
-\< { return BRACKET_OPEN; }
-\> { return BRACKET_CLOSE; }
+\[ { return BRACKET_OPEN; }
+\] { return BRACKET_CLOSE; }
 \( { return PARA_OPEN; }
 \) { return PARA_CLOSE; }
 [=] { return ASSIGN; }
@@ -46,6 +46,8 @@ return { return RETURN; }
 && { return LOGICAL_AND; }
 == { return EQ; }
 != { return NE; }
+\< { return GT; }
+\> { return LS; }
 [<][=] { return LSEQ; }
 [>][=] { return GTEQ; }
 [<][<] { return SHIFT_LEFT; }
@@ -60,8 +62,3 @@ return { return RETURN; }
 
 %%
 
-/* 
-MUL DIV MOD
-LOGICAL_NOT UNARY_MINUS UNARY_PLUS
-
- */

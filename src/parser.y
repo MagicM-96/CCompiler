@@ -5,6 +5,20 @@
 %{	
 	// Project-specific includes
 	#include "diag.h"
+  #include "uthash.h"
+
+  typedef struct varstruct {
+    char* id;
+    char* type;
+    char* size;
+    char* value;
+    UT_hash_handle hh;
+  } STRUCTVAR;
+  void add_var(char *id, char *type, char *value);
+  void log_struct();
+  int numberofentries;
+  numberofentries = 0;
+  STRUCTVAR *variables = NULL;
 %}
 
 %union {
@@ -98,7 +112,7 @@ variable_declaration
 
 identifier_declaration
      : ID BRACKET_OPEN NUM BRACKET_CLOSE
-     | ID
+     | ID {add_var($1,"int","0");log_struct();}
      ;
 
 function_definition
@@ -195,4 +209,36 @@ function_call_parameters
 void yyerror (const char *msg)
 {
 	FATAL_COMPILER_ERROR(INVALID_SYNTAX, 0, "(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, msg);
+}
+
+/*int lookup_ID(char *id){
+  return table.find(id);
+}*/
+
+void add_var(char *id, char *type, char *value){
+  printf("Beginn of add\n");
+  STRUCTVAR *s;
+  s = (STRUCTVAR*)malloc(sizeof(STRUCTVAR));
+  s->id = (char*)malloc(sizeof(id));
+  s->type = (char*)malloc(sizeof(type));
+  s->value = (char*)malloc(sizeof(value));
+  printf("Second in add\n");
+  strcpy(s->id, id);
+  printf("Third in add\n");
+  strcpy(s->type, type);
+  printf("Fourth in add\n");
+  strcpy(s->value, value);
+  printf("middleadd\n");
+  HASH_ADD_INT(variables,id,s);
+  numberofentries++;
+  printf("endadd\n");
+}
+
+void log_struct(){
+  printf("Beginlog");
+  STRUCTVAR *temp;
+  for(temp = variables; temp!=NULL;temp=temp->hh.next){
+    printf("Entry: id: %s, type: %s, value: %s\n",temp->id,temp->type,temp->value);
+  }
+  printf("endlog");
 }

@@ -7,6 +7,9 @@
 	#include "diag.h"
   #include "uthash.h"
 
+  typedef struct paramstruct {
+    char* type;
+  } STRUCTPARAM;
   typedef struct varstruct {
     char* id;
     char* type;
@@ -14,10 +17,17 @@
     char* value;
     UT_hash_handle hh;
   } STRUCTVAR;
+  typedef struct funcstruct {
+    char* id;
+    char* type;
+    STRUCTPARAM* funcparams;//array
+    STRUCTPARAM returnparam;
+    UT_hash_handle hh;
+  } STRUCTFUNC;
+
   void add_var(char *id, char *type, char *value);
   void log_struct();
-  int numberofentries;
-  numberofentries = 0;
+  void message_logger(char* msg);
   STRUCTVAR *variables = NULL;
 %}
 
@@ -38,7 +48,7 @@
 // Enable debug output
 %initial-action
 {
-	yydebug = 0;
+	yydebug = 1;
 };
 
 /*
@@ -107,12 +117,12 @@ type
 
 variable_declaration
      : variable_declaration COMMA identifier_declaration
-     | type identifier_declaration
+     | type identifier_declaration {printf("Params : none");}
      ;
 
 identifier_declaration
      : ID BRACKET_OPEN NUM BRACKET_CLOSE
-     | ID {add_var($1,"int","0");log_struct();}
+     | ID {add_var($1,"int","0");log_struct();yylval.id = $1;find_var("test1");}
      ;
 
 function_definition
@@ -190,8 +200,8 @@ expression
      ;
 
 primary
-     : NUM {printf("Parsed: %d", $1);}
-     | ID {printf("Parsed: %s", $1);}
+     : NUM {printf("Parsed : %d", $1);}
+     | ID {printf("Parsed : %s", $1);}
      ;
 
 function_call
@@ -216,29 +226,32 @@ void yyerror (const char *msg)
 }*/
 
 void add_var(char *id, char *type, char *value){
-  printf("Beginn of add\n");
   STRUCTVAR *s;
   s = (STRUCTVAR*)malloc(sizeof(STRUCTVAR));
   s->id = (char*)malloc(sizeof(id));
   s->type = (char*)malloc(sizeof(type));
   s->value = (char*)malloc(sizeof(value));
-  printf("Second in add\n");
   strcpy(s->id, id);
-  printf("Third in add\n");
   strcpy(s->type, type);
-  printf("Fourth in add\n");
   strcpy(s->value, value);
-  printf("middleadd\n");
   HASH_ADD_INT(variables,id,s);
-  numberofentries++;
-  printf("endadd\n");
+}
+
+void find_var(char* var_id){
+  STRUCTVAR *temp = NULL;
+
+  HASH_FIND_INT(variables,var_id,temp);
+  printf("Test: %s\n",temp->id);
 }
 
 void log_struct(){
-  printf("Beginlog");
   STRUCTVAR *temp;
   for(temp = variables; temp!=NULL;temp=temp->hh.next){
     printf("Entry: id: %s, type: %s, value: %s\n",temp->id,temp->type,temp->value);
+    message_logger("Entry\n");
   }
-  printf("endlog");
+}
+
+void message_logger(char* msg){
+  printf("Following Message is sent:\n(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, msg);
 }

@@ -6,10 +6,15 @@
 	// Project-specific includes
 	#include "diag.h"
   #include "uthash.h"
+  #include <string.h>
 
   typedef struct paramstruct {
     char* type;
   } STRUCTPARAM;
+  typedef struct StackNode {
+    char* data;
+    struct StackNode* next;
+  } STACK;
   typedef struct varstruct {
     char* id;
     char* type;
@@ -24,11 +29,12 @@
     STRUCTPARAM returnparam;
     UT_hash_handle hh;
   } STRUCTFUNC;
-
+  void find_var(char* id);
   void add_var(char *id, char *type, char *value);
   void log_struct();
   void message_logger(char* msg);
   STRUCTVAR *variables = NULL;
+  STACK* programstack;
 %}
 
 %union {
@@ -122,7 +128,7 @@ variable_declaration
 
 identifier_declaration
      : ID BRACKET_OPEN NUM BRACKET_CLOSE
-     | ID {add_var($1,"int","0");log_struct();yylval.id = $1;find_var("test1");}
+     | ID {add_var($1,"int","0");log_struct();yylval.id = $1;find_var("test1");push_something();}
      ;
 
 function_definition
@@ -224,6 +230,22 @@ void yyerror (const char *msg)
 /*int lookup_ID(char *id){
   return table.find(id);
 }*/
+ 
+const char* getString(){
+  return "Hallo!";
+}
+
+void push_something(){
+  printf("Try to push\n");
+  push(&programstack,"test1");
+  printf("Try to peek\n");
+  char* temp = "Hallo Welt!";
+  printf("temp is: %s\n",temp);
+  temp = getString2();//peek(programstack);
+  char* temp2 = &temp;
+  printf("Got peek\n");
+  printf("Stack: %s\n",*temp);
+}
 
 void add_var(char *id, char *type, char *value){
   STRUCTVAR *s;
@@ -238,17 +260,20 @@ void add_var(char *id, char *type, char *value){
 }
 
 void find_var(char* var_id){
-  STRUCTVAR *temp = NULL;
-
-  HASH_FIND_INT(variables,var_id,temp);
-  printf("Test: %s\n",temp->id);
+  STRUCTVAR *temp;
+  for(temp = variables; temp!=NULL;temp=temp->hh.next){
+    if(!strcmp(temp->id,var_id)){
+      break;
+    }
+  }
+  if(temp!=NULL)
+    printf("Test: %s %s\n",temp->id,temp->type);
 }
 
 void log_struct(){
   STRUCTVAR *temp;
   for(temp = variables; temp!=NULL;temp=temp->hh.next){
     printf("Entry: id: %s, type: %s, value: %s\n",temp->id,temp->type,temp->value);
-    message_logger("Entry\n");
   }
 }
 

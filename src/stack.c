@@ -4,64 +4,77 @@
 #include <limits.h>
  
 // A structure to represent a stack
-struct StackNode
+typedef struct StackNode
 {
-    int data;
+    char* data;
     struct StackNode* next;
-};
+} STACK;
+
+STACK* newNode(char* data);
+int isEmpty(STACK *root);
+void push(STACK** root, char* data);
+char* pop(STACK** root);
+const char* peek(STACK* root);
+int main2();
  
-struct StackNode* newNode(int data)
+STACK* newNode(char* data)
 {
-    struct StackNode* stackNode =
-              (struct StackNode*) malloc(sizeof(struct StackNode));
+    STACK* stackNode =
+              (STACK*) malloc(sizeof(STACK));
     stackNode->data = data;
     stackNode->next = NULL;
     return stackNode;
 }
  
-int isEmpty(struct StackNode *root)
+int isEmpty(STACK *root)
 {
     return !root;
 }
  
-void push(struct StackNode** root, int data)
+void push(STACK** root, char* data)
 {
-    struct StackNode* stackNode = newNode(data);
+    STACK* stackNode = newNode(data);
     stackNode->next = *root;
     *root = stackNode;
-    printf("%d pushed to stack\n", data);
+    printf("%s pushed to stack\n", data);
 }
  
-int pop(struct StackNode** root)
+char* pop(STACK** root)
 {
     if (isEmpty(*root))
-        return INT_MIN;
-    struct StackNode* temp = *root;
+        return "-1";
+    STACK* temp = *root;
     *root = (*root)->next;
-    int popped = temp->data;
+    char* popped = temp->data;
     free(temp);
  
     return popped;
 }
  
-int peek(struct StackNode* root)
+const char* getString2(){
+    printf("gets called\n");
+  return "Hallo!";
+}
+
+const char* peek(STACK* root)
 {
     if (isEmpty(root))
-        return INT_MIN;
-    return root->data;
+        return "-1";
+    printf("returns following: %s\n",root->data);
+    return "Hallo!";//*(root->data);
 }
  
-int main()
+int main2()
 {
-    struct StackNode* root = NULL;
+    STACK* root = NULL;
  
-    push(&root, 10);
-    push(&root, 20);
-    push(&root, 30);
+    push(&root, "10");
+    push(&root, "20");
+    push(&root, "30");
  
-    printf("%d popped from stack\n", pop(&root));
+    printf("%s popped from stack\n", pop(&root));
  
-    printf("Top element is %d\n", peek(root));
+   // printf("Top element is %s\n", peek(root));
  
     return 0;
 }

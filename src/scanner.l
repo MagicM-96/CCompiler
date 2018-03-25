@@ -30,7 +30,7 @@ void {return VOID; }
 return { return RETURN; }
 
 0|[1-9]+[0-9]* { yylval.i = atoi(yytext); return NUM; } 
-[_a-zA-Z][-_a-zA-Z0-9]+ { yylval.id = strdup(yytext); return ID; }
+[_a-zA-Z][-_a-zA-Z0-9]* { yylval.id = strdup(yytext); return ID; }
 
 [:] { return COLON; }
 [,] { return COMMA; }

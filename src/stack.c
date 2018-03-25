@@ -13,8 +13,8 @@ typedef struct StackNode
 STACK* newNode(char* data);
 int isEmpty(STACK *root);
 void push(STACK** root, char* data);
-char* pop(STACK** root);
-const char* peek(STACK* root);
+void pop(STACK** root,char** returnval);
+void peek(STACK* root,char** returnval);
 int main2();
  
 STACK* newNode(char* data)
@@ -33,46 +33,44 @@ int isEmpty(STACK *root)
  
 void push(STACK** root, char* data)
 {
+    isEmpty(*root);
     STACK* stackNode = newNode(data);
     stackNode->next = *root;
     *root = stackNode;
     printf("%s pushed to stack\n", data);
 }
  
-char* pop(STACK** root)
+void pop(STACK** root,char** returnval)
 {
-    if (isEmpty(*root))
-        return "-1";
+    if (isEmpty(*root)){
+        (*returnval) = "-1";
+        return;
+    }
     STACK* temp = *root;
     *root = (*root)->next;
     char* popped = temp->data;
     free(temp);
- 
-    return popped;
-}
- 
-const char* getString2(){
-    printf("gets called\n");
-  return "Hallo!";
+    (*returnval) = popped;
 }
 
-const char* peek(STACK* root)
+void peek(STACK* root,char** returnval)
 {
-    if (isEmpty(root))
-        return "-1";
-    printf("returns following: %s\n",root->data);
-    return "Hallo!";//*(root->data);
+    if (isEmpty(root)){
+        (*returnval) = "-1";
+        return;
+    }
+    (*returnval) = root->data;
 }
  
 int main2()
 {
     STACK* root = NULL;
- 
+    char* temp;
     push(&root, "10");
     push(&root, "20");
     push(&root, "30");
- 
-    printf("%s popped from stack\n", pop(&root));
+    pop(&root,&temp);
+    printf("%s popped from stack\n", temp);
  
    // printf("Top element is %s\n", peek(root));
  

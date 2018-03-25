@@ -230,21 +230,13 @@ void yyerror (const char *msg)
 /*int lookup_ID(char *id){
   return table.find(id);
 }*/
- 
-const char* getString(){
-  return "Hallo!";
-}
 
 void push_something(){
-  printf("Try to push\n");
   push(&programstack,"test1");
-  printf("Try to peek\n");
-  char* temp = "Hallo Welt!";
-  printf("temp is: %s\n",temp);
-  temp = getString2();//peek(programstack);
-  char* temp2 = &temp;
-  printf("Got peek\n");
-  printf("Stack: %s\n",*temp);
+  char* temp;
+  peek(programstack,&temp);
+  pop(&programstack,&temp);
+  peek(programstack,&temp);
 }
 
 void add_var(char *id, char *type, char *value){

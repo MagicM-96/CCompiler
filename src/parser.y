@@ -10,6 +10,7 @@
 
   typedef struct paramstruct {
     int paramNr;
+    int size;
     char* type;
     char* name;
     struct paramstruct* next;
@@ -136,42 +137,8 @@ type
      ;
 
 variable_declaration
-     : variable_declaration COMMA identifier_declaration  {
-        char* tempid;
-        char* temptype;
-        pop(&programstack,&tempid);
-        peek(programstack,&temptype);
-        if(strcmp(temptype,"2")){
-          if(!var_exists(tempid)){
-            printf("Now add variable %s\n",tempid);
-            if($3==1)
-              add_var(tempid,"int",0,$3);
-            else
-              add_var(tempid,"int-array",0,$3);
-          }else{
-            printf("Variable %s already exists!",tempid);
-          }
-        }
-      }
-     | type identifier_declaration {
-        if(!strcmp($1,"2"))
-          message_logger("Can't declare variable as void!");
-        else{ 
-          char* id;
-          printf("Pushing type on stack : %s\n",$1);
-          pop(&programstack,&id);
-          push(&programstack,$1);
-          if(!var_exists(id)){
-            printf("Now add variable %s\n",id);
-            if($2==1)
-              add_var(id,"int",0,$2);
-            else
-              add_var(id,"int-array",0,$2);
-          }else{
-            printf("Variable %s already exists!",id);
-          }
-        }
-      }
+     : variable_declaration COMMA identifier_declaration  {identifierdeclaration($3,"0");}
+     | type identifier_declaration {identifierdeclaration($2,$1);}
      ;
 
 identifier_declaration
@@ -195,7 +162,7 @@ function_parameter_list
      ;
 	
 function_parameter
-     : type identifier_declaration {push(&programstack,$1);push(&programstack,$2);}
+     : type identifier_declaration {push(&programstack,$1);char temp[3];sprintf(temp,"%d",$2);push(&programstack,temp);}
      ;
 									
 stmt_list
@@ -275,6 +242,44 @@ void yyerror (const char *msg)
 	FATAL_COMPILER_ERROR(INVALID_SYNTAX, 0, "(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, msg);
 }
 
+void identifierdeclaration(int length,char* type){
+  if(!strcmp(type,"0")){
+    char* tempid;
+    char* temptype;
+    pop(&programstack,&tempid);
+    peek(programstack,&temptype);
+    if(strcmp(temptype,"2")){
+      if(!var_exists(tempid)){
+        printf("Now add variable %s\n",tempid);
+        if(length==1)
+          add_var(tempid,"int",0,length);
+        else
+          add_var(tempid,"int-array",0,length);
+      }else{
+        printf("Variable %s already exists!",tempid);
+      }
+    }
+  }else{
+    if(!strcmp(type,"2"))
+      message_logger("Can't declare variable as void!");
+    else{ 
+      char* id;
+      printf("Pushing type on stack : %s\n",type);
+      pop(&programstack,&id);
+      push(&programstack,type);
+      if(!var_exists(id)){
+        printf("Now add variable %s\n",id);
+        if(length==1)
+          add_var(id,"int",0,length);
+        else
+          add_var(id,"int-array",0,length);
+      }else{
+        printf("Variable %s already exists!",id);
+      }
+    }
+  }
+}
+
 void push_something(){
   push(&programstack,"test1");
   char* temp;
@@ -282,6 +287,18 @@ void push_something(){
   pop(&programstack,&temp);
   printf("Stack is: %s\n",temp);
   peek(programstack,&temp);
+}
+
+void type_replace(char** type){ //Noch nicht implementiert, kommt vlt. noch
+  if(!strcmp(&type,"0")){
+    printf("\nType is undefined!\n\n");
+  }else if(!strcmp(&type,"1")){
+    printf("\nType is INT!\n\n");
+  }else if(!strcmp(&type,"2")){
+    printf("\nType is VOID!\n\n");
+  }else if(!strcmp(&type,"3")){
+    printf("\nType is INT-ARRAY!\n\n");
+  }
 }
 
 void add_var(char *id, char *type, int value, int size){
@@ -306,14 +323,15 @@ void add_func(char* id, char* type, int numberOfParams){
     strcpy(s->id,id);
     strcpy(s->type,type);
     s->paramcount = numberOfParams;
-    //s->funcparams = (STRUCTPARAM*)malloc(sizeof(STRUCTPARAM));
     STRUCTPARAM *p = NULL;
     STRUCTPARAM *tempstruct;
     char* temptype;
     char* tempid;
+    char* templength;
     while(numberOfParams>0){
-      pop(&programstack,&tempid);
+      pop(&programstack,&templength);
       pop(&programstack,&temptype);
+      pop(&programstack,&tempid);
       tempstruct = p;
       p = (STRUCTPARAM*)malloc(sizeof(STRUCTPARAM));
       p->type = (char*)malloc(sizeof(temptype));
@@ -321,6 +339,7 @@ void add_func(char* id, char* type, int numberOfParams){
       strcpy(p->type,temptype);
       strcpy(p->name,tempid);
       p->paramNr = numberOfParams;
+      p->size = atoi(templength);
       p->next = tempstruct;
       numberOfParams--;
     }
@@ -366,14 +385,14 @@ void log_vars(){
 
 void log_funcs(){
   STRUCTFUNC *temp;
-  printf("\n\nFunctiontypes are INT=1 and VOID=2");
+  printf("\n\nFunctiontypes are INT=1 and VOID=2 and INT-ARRAY=3");
   printf("\n\nFunction-Table looks as following:\n\n");
   for(temp = functions; temp!=NULL;temp=temp->hh.next){
     printf("Function-Entry: id: %s, type: %s, paramcount: %d\n",temp->id,temp->type,temp->paramcount);
     if(temp->funcparams!=NULL){
       STRUCTPARAM* tempparam = temp->funcparams;
       while(tempparam!=NULL){
-        printf("\tParameter for this function: paramNr: %d type: %s name: %s\n",tempparam->paramNr,tempparam->type,tempparam->name);
+        printf("\tParameter for this function: paramNr: %d type: %s name: %s length: %d\n",tempparam->paramNr,tempparam->type,tempparam->name,tempparam->size);
         tempparam=tempparam->next;
       }
     }

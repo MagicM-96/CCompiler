@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <string.h>
  
 // A structure to represent a stack
 typedef struct StackNode
@@ -21,7 +22,8 @@ STACK* newNode(char* data)
 {
     STACK* stackNode =
               (STACK*) malloc(sizeof(STACK));
-    stackNode->data = data;
+    stackNode->data = (char*)malloc(sizeof(data));
+    strcpy(stackNode->data,data);
     stackNode->next = NULL;
     return stackNode;
 }

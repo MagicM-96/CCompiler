@@ -9,7 +9,10 @@
   #include <string.h>
 
   typedef struct paramstruct {
+    int paramNr;
     char* type;
+    char* name;
+    struct paramstruct* next;
   } STRUCTPARAM;
   typedef struct StackNode {
     char* data;
@@ -24,17 +27,23 @@
   } STRUCTVAR;
   typedef struct funcstruct {
     char* id;
-    char* type;
+    char* type; //INT="1"; VOID="2"
+    int paramcount;
     STRUCTPARAM* funcparams;//array
-    STRUCTPARAM returnparam;
     UT_hash_handle hh;
   } STRUCTFUNC;
   int var_exists(char* id);
+  int func_exists(char* func_id);
   void add_var(char *id, char *type, int value);
-  void log_struct();
+  void add_func(char* id, char* type, int numberOfParams);
+  void log_vars();
+  void log_funcs();
+  void yyerror (const char *msg);
+  void push_something();
   void message_logger(char* msg);
   STRUCTVAR *variables = NULL;
   STACK* programstack;
+  STRUCTFUNC* functions = NULL;
 %}
 
 %union {
@@ -101,6 +110,7 @@
 %type <id> primary
 %type <id> identifier_declaration
 %type <id> type
+%type <i> function_parameter_list
 
 %%
 
@@ -168,17 +178,17 @@ function_definition
      ;
 
 function_declaration
-     : type ID PARA_OPEN PARA_CLOSE
-     | type ID PARA_OPEN function_parameter_list PARA_CLOSE
+     : type ID PARA_OPEN PARA_CLOSE {add_func($2,$1,0);}
+     | type ID PARA_OPEN function_parameter_list PARA_CLOSE {add_func($2,$1,$4);}
      ;
 
 function_parameter_list
-     : function_parameter
-     | function_parameter_list COMMA function_parameter
+     : function_parameter {$$=1;}
+     | function_parameter_list COMMA function_parameter {$$=$1+1;}
      ;
 	
 function_parameter
-     : type identifier_declaration
+     : type identifier_declaration {push(&programstack,$1);push(&programstack,$2);}
      ;
 									
 stmt_list
@@ -263,6 +273,7 @@ void push_something(){
   char* temp;
   peek(programstack,&temp);
   pop(&programstack,&temp);
+  printf("Stack is: %s\n",temp);
   peek(programstack,&temp);
 }
 
@@ -271,12 +282,46 @@ void add_var(char *id, char *type, int value){
   s = (STRUCTVAR*)malloc(sizeof(STRUCTVAR));
   s->id = (char*)malloc(sizeof(id));
   s->type = (char*)malloc(sizeof(type));
-  s->value = (int*)malloc(sizeof(value));
   strcpy(s->id, id);
   strcpy(s->type, type);
   s->value = value;
   HASH_ADD_INT(variables,id,s);
-  log_struct();
+  log_vars();
+}
+
+void add_func(char* id, char* type, int numberOfParams){
+  if(!func_exists(id)){
+    STRUCTFUNC *s;
+    s = (STRUCTFUNC*)malloc(sizeof(STRUCTFUNC));
+    s->id =(char*)malloc(sizeof(id));
+    s->type = (char*)malloc(sizeof(type));
+    strcpy(s->id,id);
+    strcpy(s->type,type);
+    s->paramcount = numberOfParams;
+    //s->funcparams = (STRUCTPARAM*)malloc(sizeof(STRUCTPARAM));
+    STRUCTPARAM *p = NULL;
+    STRUCTPARAM *tempstruct;
+    char* temptype;
+    char* tempid;
+    while(numberOfParams>0){
+      pop(&programstack,&tempid);
+      pop(&programstack,&temptype);
+      tempstruct = p;
+      p = (STRUCTPARAM*)malloc(sizeof(STRUCTPARAM));
+      p->type = (char*)malloc(sizeof(temptype));
+      p->name = (char*)malloc(sizeof(tempid));
+      strcpy(p->type,temptype);
+      strcpy(p->name,tempid);
+      p->paramNr = numberOfParams;
+      p->next = tempstruct;
+      numberOfParams--;
+    }
+    s->funcparams = p;
+    HASH_ADD_INT(functions,id,s);
+    log_funcs();
+  }else{
+    message_logger("Function already exists!");
+  }
 }
 
 int var_exists(char* var_id){
@@ -291,10 +336,39 @@ int var_exists(char* var_id){
   return 0;
 }
 
-void log_struct(){
+int func_exists(char* func_id){
+  STRUCTFUNC *temp;
+  for(temp = functions; temp!=NULL;temp=temp->hh.next){
+    if(!strcmp(temp->id,func_id)){
+      break;
+    }
+  }
+  if(temp!=NULL)
+    return 1;//printf("Test: %s %s\n",temp->id,temp->type);
+  return 0;
+}
+
+void log_vars(){
   STRUCTVAR *temp;
+  printf("\n\nVariables-Table looks as following:\n\n");
   for(temp = variables; temp!=NULL;temp=temp->hh.next){
-    printf("Entry: id: %s, type: %s, value: %d\n",temp->id,temp->type,temp->value);
+    printf("Variable-Entry: id: %s, type: %s, value: %d\n",temp->id,temp->type,temp->value);
+  }
+}
+
+void log_funcs(){
+  STRUCTFUNC *temp;
+  printf("\n\nFunctiontypes are INT=1 and VOID=2");
+  printf("\n\nFunction-Table looks as following:\n\n");
+  for(temp = functions; temp!=NULL;temp=temp->hh.next){
+    printf("Function-Entry: id: %s, type: %s, paramcount: %d\n",temp->id,temp->type,temp->paramcount);
+    if(temp->funcparams!=NULL){
+      STRUCTPARAM* tempparam = temp->funcparams;
+      while(tempparam!=NULL){
+        printf("\tParameter for this function: paramNr: %d type: %s name: %s\n",tempparam->paramNr,tempparam->type,tempparam->name);
+        tempparam=tempparam->next;
+      }
+    }
   }
 }
 

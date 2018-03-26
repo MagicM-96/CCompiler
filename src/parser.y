@@ -21,7 +21,7 @@
   typedef struct varstruct {
     char* id;
     char* type;
-    char* size;
+    int size;
     int value;
     UT_hash_handle hh;
   } STRUCTVAR;
@@ -34,7 +34,7 @@
   } STRUCTFUNC;
   int var_exists(char* id);
   int func_exists(char* func_id);
-  void add_var(char *id, char *type, int value);
+  void add_var(char *id, char *type, int value, int size);
   void add_func(char* id, char* type, int numberOfParams);
   void log_vars();
   void log_funcs();
@@ -137,14 +137,19 @@ type
 
 variable_declaration
      : variable_declaration COMMA identifier_declaration  {
-        char* temp;
-        peek(programstack,&temp);
-        if(strcmp(temp,"2")){
-          if(!var_exists($3)){
-            printf("Now add variable %s\n",$3);
-            add_var($3,"int",0);
+        char* tempid;
+        char* temptype;
+        pop(&programstack,&tempid);
+        peek(programstack,&temptype);
+        if(strcmp(temptype,"2")){
+          if(!var_exists(tempid)){
+            printf("Now add variable %s\n",tempid);
+            if($3==1)
+              add_var(tempid,"int",0,$3);
+            else
+              add_var(tempid,"int-array",0,$3);
           }else{
-            printf("Variable %s already exists!",$3);
+            printf("Variable %s already exists!",tempid);
           }
         }
       }
@@ -152,24 +157,26 @@ variable_declaration
         if(!strcmp($1,"2"))
           message_logger("Can't declare variable as void!");
         else{ 
+          char* id;
           printf("Pushing type on stack : %s\n",$1);
+          pop(&programstack,&id);
           push(&programstack,$1);
-          if(!var_exists($2)){
-            printf("Now add variable %s\n",$2);
-            add_var($2,"int",0);
+          if(!var_exists(id)){
+            printf("Now add variable %s\n",id);
+            if($2==1)
+              add_var(id,"int",0,$2);
+            else
+              add_var(id,"int-array",0,$2);
           }else{
-            printf("Variable %s already exists!",$2);
+            printf("Variable %s already exists!",id);
           }
         }
       }
      ;
 
 identifier_declaration
-     : ID BRACKET_OPEN NUM BRACKET_CLOSE
-     | ID {
-        //add_var($1,"int","0");log_struct();yylval.id = $1;var_exists("test1");push_something();
-        $$=$1;
-      }
+     : ID BRACKET_OPEN NUM BRACKET_CLOSE {push(&programstack,$1);$$=$3;}
+     | ID {push(&programstack,$1);$$=1;}
      ;
 
 function_definition
@@ -277,7 +284,7 @@ void push_something(){
   peek(programstack,&temp);
 }
 
-void add_var(char *id, char *type, int value){
+void add_var(char *id, char *type, int value, int size){
   STRUCTVAR *s;
   s = (STRUCTVAR*)malloc(sizeof(STRUCTVAR));
   s->id = (char*)malloc(sizeof(id));
@@ -285,6 +292,7 @@ void add_var(char *id, char *type, int value){
   strcpy(s->id, id);
   strcpy(s->type, type);
   s->value = value;
+  s->size = size;
   HASH_ADD_INT(variables,id,s);
   log_vars();
 }
@@ -352,7 +360,7 @@ void log_vars(){
   STRUCTVAR *temp;
   printf("\n\nVariables-Table looks as following:\n\n");
   for(temp = variables; temp!=NULL;temp=temp->hh.next){
-    printf("Variable-Entry: id: %s, type: %s, value: %d\n",temp->id,temp->type,temp->value);
+    printf("Variable-Entry: \n\tid: %s\n\ttype: %s\n\tvalue: %d\n\tsize: %d\n",temp->id,temp->type,temp->value,temp->size);
   }
 }
 

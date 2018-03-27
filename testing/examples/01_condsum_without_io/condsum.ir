@@ -1,0 +1,24 @@
+func:
+	i = 0
+	sum = 0
+  .l0:  IF i < len GOTO .l1
+	.t0 = 0
+	GOTO .l2
+  .l1:  .t0 = 1
+  .l2:  IF .t0 == 0 GOTO .l3
+	.t1 = arr[i]
+	IF .t1 <= threshold GOTO .l4
+	.t2 = 0
+	GOTO .l5
+  .l4:  .t2 = 1
+  .l5:  IF .t2 == 0 GOTO .l6
+	sum = sum + 1
+  .l6:  i = i + 1
+	GOTO .l0
+  .l3:  RETURN sum
+
+main:
+	global = 1
+	.t2 = 5 + 5
+	.t3 = CALL func,(a,.t2,5)
+	RETURN .t3

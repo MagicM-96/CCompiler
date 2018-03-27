@@ -145,7 +145,7 @@ function_parameter_list
      ;
 	
 function_parameter
-     : type identifier_declaration {push(&programstack,$1);char temp[3];sprintf(temp,"%d",$2);push(&programstack,temp);}
+     : type identifier_declaration {push(&programstack,$1);char temp[3];printf("Number is : %d\n",$2);sprintf(temp,"%d",$2);printf("Now pushing : %s\n",temp);push(&programstack,temp);}
      ;
 									
 stmt_list
@@ -320,7 +320,8 @@ void add_func(char* id, char* type, int numberOfParams){
       pop(&programstack,&templength);
       pop(&programstack,&temptype);
       pop(&programstack,&tempid);
-      if(templength>1){
+      printf("length: %s\ntype: %s\nid: %s\n",templength,temptype,tempid);
+      if(atoi(templength)>1){
         strcat(temptype,"-ARR");
       }
       tempstruct = p;
@@ -350,7 +351,7 @@ int var_exists(char* var_id){
     }
   }
   if(temp!=NULL)
-    return 1;//printf("Test: %s %s\n",temp->id,temp->type);
+    return 1;
   return 0;
 }
 

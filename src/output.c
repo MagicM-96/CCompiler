@@ -14,7 +14,7 @@ void printSymTable() {
     printf("Variables:\n");
     printf("\tid\t\ttype\t\tvalue\n");
     for(tempVars = variables; tempVars != NULL; tempVars = tempVars->hh.next){
-        printf("\t%s\t%s\t%d\n", tempVars->id,tempVars->type,tempVars->value);
+        printf("\t%s\t\t%s\t\t%d\n", tempVars->id,tempVars->type,tempVars->value);
     }
     // print functions-subtable
     printf("\nFunctions:");

@@ -26,7 +26,7 @@ void push(STACK** root, char* data)
     STACK* stackNode = newNode(data);
     stackNode->next = *root;
     *root = stackNode;
-    printf("%s pushed to stack\n", data);
+    //printf("%s pushed to stack\n", data);
 }
  
 void pop(STACK** root,char** returnval)

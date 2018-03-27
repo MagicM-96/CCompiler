@@ -1,9 +1,6 @@
 //Author: Patrick
 
-#include "structs.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "output.h"
 
 extern STRUCTVAR *variables;
 extern STRUCTFUNC *functions;

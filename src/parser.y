@@ -8,7 +8,7 @@
   #include "uthash.h"
   #include "stack.h"
   #include <string.h>
-
+  extern int yylex();
   typedef struct paramstruct {
     int paramNr;
     int size;

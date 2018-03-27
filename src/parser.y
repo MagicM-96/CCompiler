@@ -146,7 +146,7 @@ function_parameter_list
      ;
 	
 function_parameter
-     : type identifier_declaration {push(&programstack,$1);char temp[3];printf("Number is : %d\n",$2);sprintf(temp,"%d",$2);printf("Now pushing : %s\n",temp);push(&programstack,temp);}
+     : type identifier_declaration {push(&programstack,$1);char temp[3];sprintf(temp,"%d",$2);push(&programstack,temp);}
      ;
 									
 stmt_list
@@ -321,7 +321,6 @@ void add_func(char* id, char* type, int numberOfParams){
       pop(&programstack,&templength);
       pop(&programstack,&temptype);
       pop(&programstack,&tempid);
-      printf("length: %s\ntype: %s\nid: %s\n",templength,temptype,tempid);
       if(atoi(templength)>1){
         strcat(temptype,"-ARR");
       }

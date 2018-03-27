@@ -1,0 +1,4 @@
+/home/benedikt/Desktop/Compiler/CCompiler/bulds/CMakeFiles/rebuild_cache.dir
+/home/benedikt/Desktop/Compiler/CCompiler/bulds/CMakeFiles/dhbwdoc.dir
+/home/benedikt/Desktop/Compiler/CCompiler/bulds/CMakeFiles/edit_cache.dir
+/home/benedikt/Desktop/Compiler/CCompiler/bulds/CMakeFiles/dhbwcc.dir

@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "main.h"
+extern int yyparse();
 
 /* Constants */
 static const char *C_EXT = ".c";

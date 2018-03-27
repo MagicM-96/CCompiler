@@ -6,6 +6,7 @@
 	// Project-specific includes
 	#include "diag.h"
   #include "uthash.h"
+  #include "stack.h"
   #include <string.h>
 
   typedef struct paramstruct {
@@ -15,10 +16,6 @@
     char* name;
     struct paramstruct* next;
   } STRUCTPARAM;
-  typedef struct StackNode {
-    char* data;
-    struct StackNode* next;
-  } STACK;
   typedef struct varstruct {
     char* id;
     char* type;
@@ -35,6 +32,11 @@
   } STRUCTFUNC;
   int var_exists(char* id);
   int func_exists(char* func_id);
+
+  void yyerror (const char *msg);
+  void identifierdeclaration(int length, char* type);
+  void push_something();
+  void type_replace(char** type);
   void add_var(char *id, char *type, int value, int size);
   void add_func(char* id, char* type, int numberOfParams);
   void log_vars();
@@ -109,7 +111,7 @@
 %left LOGICAL_NOT UNARY_MINUS UNARY_PLUS
 
 %type <id> primary
-%type <id> identifier_declaration
+%type <i> identifier_declaration
 %type <id> type
 %type <i> function_parameter_list
 
@@ -242,7 +244,7 @@ void yyerror (const char *msg)
 	FATAL_COMPILER_ERROR(INVALID_SYNTAX, 0, "(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, msg);
 }
 
-void identifierdeclaration(int length,char* type){
+void identifierdeclaration(int length, char* type){
   if(!strcmp(type,"0")){
     char* tempid;
     char* temptype;
@@ -290,13 +292,13 @@ void push_something(){
 }
 
 void type_replace(char** type){ //Noch nicht implementiert, kommt vlt. noch
-  if(!strcmp(&type,"0")){
+  if(!strcmp((*type),"0")){
     printf("\nType is undefined!\n\n");
-  }else if(!strcmp(&type,"1")){
+  }else if(!strcmp((*type),"1")){
     printf("\nType is INT!\n\n");
-  }else if(!strcmp(&type,"2")){
+  }else if(!strcmp((*type),"2")){
     printf("\nType is VOID!\n\n");
-  }else if(!strcmp(&type,"3")){
+  }else if(!strcmp((*type),"3")){
     printf("\nType is INT-ARRAY!\n\n");
   }
 }

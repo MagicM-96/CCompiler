@@ -204,8 +204,8 @@ expression
      ;
 
 primary
-     : NUM {printf("Parsed : %d\n", $1);$$=$1;}
-     | ID {printf("Parsed : %s\n", $1);$$=$1;}
+     : NUM {$$=$1;}
+     | ID {$$=$1;}
      ;
 
 function_call
@@ -233,7 +233,6 @@ void identifierdeclaration(int length, char* type){
     peek(programstack,&temptype);
     if(strcmp(temptype,"VOID")){
       if(!var_exists(tempid)){
-        printf("Now add variable %s\n",tempid);
         if(length==1)
           add_var(tempid,"INT",0,length);
         else
@@ -247,11 +246,9 @@ void identifierdeclaration(int length, char* type){
       message_logger("Can't declare variable as void!");
     else{ 
       char* id;
-      printf("Pushing type on stack : %s\n",type);
       pop(&programstack,&id);
       push(&programstack,type);
       if(!var_exists(id)){
-        printf("Now add variable %s\n",id);
         if(length==1)
           add_var(id,"INT",0,length);
         else

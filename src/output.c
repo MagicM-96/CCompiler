@@ -1,9 +1,6 @@
 //Author: Patrick
 
-#include "structs.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "output.h"
 
 extern STRUCTVAR *variables;
 extern STRUCTFUNC *functions;
@@ -12,28 +9,29 @@ STRUCTVAR *tempVars;
 STRUCTFUNC *tempFuncs;
 
 void printSymTable() {
-    printf("\n\nLegend: INT = 1; VOID = 2; INT-ARRAY = 3\n\n");
     // print variables-subtable
+    printf("-----Symboltable---------------------------------------------------\n");
     printf("Variables:\n");
-    printf("\tid\ttype\tvalue\n");
+    printf("\tid\t\ttype\t\tvalue\n");
     for(tempVars = variables; tempVars != NULL; tempVars = tempVars->hh.next){
-        printf("\t%s\t%s\t%d\n", tempVars->id,tempVars->type,tempVars->value);
+        printf("\t%s\t\t%s\t\t%d\n", tempVars->id,tempVars->type,tempVars->value);
     }
     // print functions-subtable
-    printf("\nFunctions:\n");
+    printf("\nFunctions:");
     for(tempFuncs = functions; tempFuncs != NULL;tempFuncs = tempFuncs->hh.next){
-    printf("Function: id: %s, type: %s, paramcount: %d\n",tempFuncs->id,tempFuncs->type,tempFuncs->paramcount);
-    // print parameter-subsubtable
-    if(tempFuncs->funcparams!=NULL){
-      STRUCTPARAM *tempParam = tempFuncs->funcparams;
-      printf("\tParameters:\n");
-      printf("\tnumber\ttype\tname\n");
-      while(tempParam!=NULL){
-        printf("\t%d\t%s\t%s\n",tempParam->paramNr,tempParam->type,tempParam->name);
-        tempParam = tempParam->next;
-      }
+        printf("\nFunction: id: %s, type: %s, paramcount: %d\n",tempFuncs->id,tempFuncs->type,tempFuncs->paramcount);
+        // print parameter-subsubtable
+        if(tempFuncs->funcparams!=NULL){
+            STRUCTPARAM *tempParam = tempFuncs->funcparams;
+            printf("\tParameters:\n");
+            printf("\tnumber\t\ttype\t\tname\n");
+            while(tempParam!=NULL){
+                printf("\t%d\t\t%s\t\t%s\n",tempParam->paramNr,tempParam->type,tempParam->name);
+                tempParam = tempParam->next;
+            }
+        }
     }
-  }
+    printf("-------------------------------------------------------------------\n");
 }
 
 /*  

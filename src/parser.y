@@ -35,6 +35,7 @@
   } STRUCTFUNC;
   int var_exists(char* id);
   int func_exists(char* func_id);
+  void define_func(char* id, char* type, int numberOfParams);
   void add_var(char *id, char *type, int value, int size);
   void add_func(char* id, char* type, int numberOfParams);
   void log_vars();
@@ -147,8 +148,8 @@ identifier_declaration
      ;
 
 function_definition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN stmt_list BRACE_CLOSE
-     | type ID PARA_OPEN function_parameter_list PARA_CLOSE BRACE_OPEN stmt_list BRACE_CLOSE
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN stmt_list BRACE_CLOSE {define_func($2,$1,0);}
+     | type ID PARA_OPEN function_parameter_list PARA_CLOSE BRACE_OPEN stmt_list BRACE_CLOSE{define_func($2,$1,$4);}
      ;
 
 function_declaration
@@ -217,7 +218,7 @@ expression
      | ID BRACKET_OPEN primary BRACKET_CLOSE
      | PARA_OPEN expression PARA_CLOSE
      | function_call
-     | primary  {printf("test\ntest\ntest\ntest\ntest\ntest\ntest\ntest\ntest\n");printf("From primary I got : %s\n",$1);}
+     | primary 
      ;
 
 primary
@@ -314,6 +315,14 @@ void add_var(char *id, char *type, int value, int size){
   log_vars();
 }
 
+void define_func(char* id, char* type, int numberOfParams){
+  if(func_exists(id)){//Here implementation of parameter checking
+
+  }else{
+    add_func(id,type,numberOfParams);
+  }
+}
+
 void add_func(char* id, char* type, int numberOfParams){
   if(!func_exists(id)){
     STRUCTFUNC *s;
@@ -371,7 +380,7 @@ int func_exists(char* func_id){
     }
   }
   if(temp!=NULL)
-    return 1;//printf("Test: %s %s\n",temp->id,temp->type);
+    return 1;
   return 0;
 }
 

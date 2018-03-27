@@ -11,6 +11,7 @@
 static const char *C_EXT = ".c";
 static const char *IR_EXT = ".ir";
 static const char *OUTPUT_EXT = ".s";
+extern FILE* yyin;
 
 cc_options_t cc_options = {
   .print_ir = 0,
@@ -265,9 +266,21 @@ int main (int argc, char *argv[]) {
   printf("Output: %s\n", cc_options.output_file);
   printf("IR: %s\n", cc_options.ir_file);
 
-  yyparse();
+  FILE * pt = fopen(cc_options.input_file, "r" );
+  if(!pt)
+  {
+  printf("\n\n\x1B[91merror:\x1B[0m file '%s' not found\n",cc_options.input_file);
+  return -1;
+  }
+  yyin = pt;
+  do
+  {
+      yyparse();
+  }while (!feof(yyin));
 
   rm_cleanup_resources(&resource_mgr);
+
+  printf("Compilation successfull!\n");
   return 0;
 }
 

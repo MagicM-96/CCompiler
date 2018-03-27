@@ -9,7 +9,7 @@
   #include "structs.h"
   #include "stack.h"
   #include <string.h>
-
+  extern int yylex();
   int var_exists(char* id);
   int func_exists(char* func_id);
 

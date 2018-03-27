@@ -6,30 +6,10 @@
 	// Project-specific includes
 	#include "diag.h"
   #include "uthash.h"
+  #include "structs.h"
   #include "stack.h"
   #include <string.h>
   extern int yylex();
-  typedef struct paramstruct {
-    int paramNr;
-    int size;
-    char* type;
-    char* name;
-    struct paramstruct* next;
-  } STRUCTPARAM;
-  typedef struct varstruct {
-    char* id;
-    char* type;
-    int size;
-    int value;
-    UT_hash_handle hh;
-  } STRUCTVAR;
-  typedef struct funcstruct {
-    char* id;
-    char* type; //INT="1"; VOID="2"
-    int paramcount;
-    STRUCTPARAM* funcparams;//array
-    UT_hash_handle hh;
-  } STRUCTFUNC;
   int var_exists(char* id);
   int func_exists(char* func_id);
 
@@ -119,7 +99,7 @@
 %%
 
 program
-     : program_element_list
+     : program_element_list {printSymTable();}
      ;
 
 program_element_list
@@ -314,7 +294,7 @@ void add_var(char *id, char *type, int value, int size){
   s->value = value;
   s->size = size;
   HASH_ADD_INT(variables,id,s);
-  log_vars();
+  //log_vars();
 }
 
 void define_func(char* id, char* type, int numberOfParams){
@@ -356,7 +336,7 @@ void add_func(char* id, char* type, int numberOfParams){
     }
     s->funcparams = p;
     HASH_ADD_INT(functions,id,s);
-    log_funcs();
+    //log_funcs();
   }else{
     message_logger("Function already exists!");
   }
@@ -386,29 +366,6 @@ int func_exists(char* func_id){
   return 0;
 }
 
-void log_vars(){
-  STRUCTVAR *temp;
-  printf("\n\nVariables-Table looks as following:\n\n");
-  for(temp = variables; temp!=NULL;temp=temp->hh.next){
-    printf("Variable-Entry: \n\tid: %s\n\ttype: %s\n\tvalue: %d\n\tsize: %d\n",temp->id,temp->type,temp->value,temp->size);
-  }
-}
-
-void log_funcs(){
-  STRUCTFUNC *temp;
-  printf("\n\nFunctiontypes are INT=1 and VOID=2 and INT-ARRAY=3");
-  printf("\n\nFunction-Table looks as following:\n\n");
-  for(temp = functions; temp!=NULL;temp=temp->hh.next){
-    printf("Function-Entry: id: %s, type: %s, paramcount: %d\n",temp->id,temp->type,temp->paramcount);
-    if(temp->funcparams!=NULL){
-      STRUCTPARAM* tempparam = temp->funcparams;
-      while(tempparam!=NULL){
-        printf("\tParameter for this function: paramNr: %d type: %s name: %s length: %d\n",tempparam->paramNr,tempparam->type,tempparam->name,tempparam->size);
-        tempparam=tempparam->next;
-      }
-    }
-  }
-}
 
 void message_logger(char* msg){
   printf("Following Message is sent:\n(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, msg);

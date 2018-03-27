@@ -116,8 +116,8 @@ program_element
      ;
 									
 type
-     : INT {$$="1";}
-     | VOID {$$="2";}
+     : INT {$$="INT";}
+     | VOID {$$="VOID";}
      ;
 
 variable_declaration
@@ -205,8 +205,8 @@ expression
      ;
 
 primary
-     : NUM {printf("Parsed : %d\n", $1);$$=$1;}
-     | ID {printf("Parsed : %s\n", $1);$$=$1;}
+     : NUM {$$=$1;}
+     | ID {$$=$1;}
      ;
 
 function_call
@@ -232,31 +232,28 @@ void identifierdeclaration(int length, char* type){
     char* temptype;
     pop(&programstack,&tempid);
     peek(programstack,&temptype);
-    if(strcmp(temptype,"2")){
+    if(strcmp(temptype,"VOID")){
       if(!var_exists(tempid)){
-        printf("Now add variable %s\n",tempid);
         if(length==1)
-          add_var(tempid,"int",0,length);
+          add_var(tempid,"INT",0,length);
         else
-          add_var(tempid,"int-array",0,length);
+          add_var(tempid,"INT-ARR",0,length);
       }else{
         printf("Variable %s already exists!",tempid);
       }
     }
   }else{
-    if(!strcmp(type,"2"))
+    if(!strcmp(type,"VOID"))
       message_logger("Can't declare variable as void!");
     else{ 
       char* id;
-      printf("Pushing type on stack : %s\n",type);
       pop(&programstack,&id);
       push(&programstack,type);
       if(!var_exists(id)){
-        printf("Now add variable %s\n",id);
         if(length==1)
-          add_var(id,"int",0,length);
+          add_var(id,"INT",0,length);
         else
-          add_var(id,"int-array",0,length);
+          add_var(id,"INT-ARR",0,length);
       }else{
         printf("Variable %s already exists!",id);
       }
@@ -281,7 +278,7 @@ void type_replace(char** type){ //Noch nicht implementiert, kommt vlt. noch
   }else if(!strcmp((*type),"2")){
     printf("\nType is VOID!\n\n");
   }else if(!strcmp((*type),"3")){
-    printf("\nType is INT-ARRAY!\n\n");
+    printf("\nType is INT-ARR!\n\n");
   }
 }
 
@@ -324,6 +321,9 @@ void add_func(char* id, char* type, int numberOfParams){
       pop(&programstack,&templength);
       pop(&programstack,&temptype);
       pop(&programstack,&tempid);
+      if(templength>1){
+        strcat(temptype,"-ARR");
+      }
       tempstruct = p;
       p = (STRUCTPARAM*)malloc(sizeof(STRUCTPARAM));
       p->type = (char*)malloc(sizeof(temptype));

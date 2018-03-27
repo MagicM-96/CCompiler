@@ -1,3 +1,4 @@
+#pragma once
 #include "uthash.h"
 
 typedef struct paramstruct {

@@ -9,6 +9,7 @@
   #include "structs.h"
   #include "stack.h"
   #include "output.h"
+  #include "symboltable/funcSymboltable.h"
   #include <string.h>
   int yylex();
   int var_exists(char* id);
@@ -23,7 +24,6 @@
   void end_scope();
   void start_scope();
   void add_var(char *id, char *type, int value, int size);
-  void add_func(char* id, char* type, int numberOfParams);
   void log_vars();
   void log_funcs();
   void yyerror (const char *msg);
@@ -337,45 +337,6 @@ void add_variables_to_function(char* id){
   temp->funcvars = variables;
 }
 
-void add_func(char* id, char* type, int numberOfParams){
-  if(!func_exists(id)){
-    STRUCTFUNC *s;
-    s = (STRUCTFUNC*)malloc(sizeof(STRUCTFUNC));
-    s->id =(char*)malloc(sizeof(id));
-    s->type = (char*)malloc(sizeof(type));
-    strcpy(s->id,id);
-    strcpy(s->type,type);
-    s->paramcount = numberOfParams;
-    STRUCTPARAM *p = NULL;
-    STRUCTPARAM *tempstruct;
-    char* temptype;
-    char* tempid;
-    char* templength;
-    while(numberOfParams>0){
-      pop(&programstack,&templength);
-      pop(&programstack,&temptype);
-      pop(&programstack,&tempid);
-      if(atoi(templength)>1){
-        strcat(temptype,"-ARR");
-      }
-      tempstruct = p;
-      p = (STRUCTPARAM*)malloc(sizeof(STRUCTPARAM));
-      p->type = (char*)malloc(sizeof(temptype));
-      p->name = (char*)malloc(sizeof(tempid));
-      strcpy(p->type,temptype);
-      strcpy(p->name,tempid);
-      p->paramNr = numberOfParams;
-      p->size = atoi(templength);
-      p->next = tempstruct;
-      numberOfParams--;
-    }
-    s->funcparams = p;
-    HASH_ADD_INT(functions,id,s);
-    //log_funcs();
-  }else{
-    message_logger("Function already exists!");
-  }
-}
 
 int var_exists(char* var_id){
   STRUCTVAR *temp;

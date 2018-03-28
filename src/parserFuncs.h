@@ -20,3 +20,4 @@ void messageLogger(char* msg);
   extern void yyerror (const char *msg);
   void pushSomething();
 
+void addFunc(char* id, char* type, int numberOfParams);

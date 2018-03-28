@@ -1,3 +1,5 @@
 #pragma once
 
-void add_func(char* id, char* type, int numberOfParams);
+void addFunc(char* id, char* type, int numberOfParams);
+extern void messageLogger(char* msg);
+extern int funcExists(char* funcId);

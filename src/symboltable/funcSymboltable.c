@@ -1,15 +1,15 @@
 #include "funcSymboltable.h"
 
-  #include "../diag.h"
-  #include "../uthash.h"
-  #include "../structs.h"
-  #include "../stack.h"
-  #include "../output.h"
-  #include <string.h>
+#include "../structs.h"
+#include "../stack.h"
+#include "../parserFuncs.h"
+#include <string.h>
+extern STACK* programstack;
+extern STRUCTFUNC* functions;
 
 
-void add_func(char* id, char* type, int numberOfParams){
-  if(!func_exists(id)){
+void addFunc(char* id, char* type, int numberOfParams){
+  if(!funcExists(id)){
     STRUCTFUNC *s;
     s = (STRUCTFUNC*)malloc(sizeof(STRUCTFUNC));
     s->id =(char*)malloc(sizeof(id));
@@ -44,6 +44,9 @@ void add_func(char* id, char* type, int numberOfParams){
     HASH_ADD_INT(functions,id,s);
     //log_funcs();
   }else{
-    message_logger("Function already exists!");
+    messageLogger("Function already exists!");
   }
 }
+
+
+

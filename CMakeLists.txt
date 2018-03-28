@@ -32,15 +32,15 @@ flex_target(scanner ${INPUT_DIR}/scanner.l ${OUTPUT_DIR}/scanner.y.c)
 add_flex_bison_dependency(scanner parser)
 
 # Target to build dhbwcc from source, generated files (bison and flex) and uthash library
-file(GLOB_RECURSE DHBWCC_SRC "${INPUT_DIR}*.c")
+file(GLOB_RECURSE DHBWCC_SRC "${INPUT_DIR}/*.c")
 
-set (SYMBOLTABLE_PATH "${INPUT_DIR}symboltable/")
+set (SYMBOLTABLE_PATH "${INPUT_DIR}/symboltable")
 
 set (ADDITIONAL_FILES
-	${SYMBOLTABLE_PATH}varSymboltable.c
-	${SYMBOLTABLE_PATH}varSymboltable.h
-	${SYMBOLTABLE_PATH}funcSymboltable.c
-	${SYMBOLTABLE_PATH}funcSymboltable.h
+	${SYMBOLTABLE_PATH}/varSymboltable.c
+	${SYMBOLTABLE_PATH}/varSymboltable.h
+	${SYMBOLTABLE_PATH}/funcSymboltable.c
+	${SYMBOLTABLE_PATH}/funcSymboltable.h
 )
 
 add_executable(dhbwcc

@@ -70,14 +70,14 @@ void printSymTable() {
     For debug purposes only!
 */
 
-void log_vars(){
+void logVars(){
     printf("\n\nVariables-Table looks as following:\n\n");
     for(tempVars = variables; tempVars != NULL; tempVars = tempVars->hh.next){
         printf("Variable-Entry: \n\tid: %s\n\ttype: %s\n\tvalue: %d\n\tsize: %d\n",tempVars->id,tempVars->type,tempVars->value,tempVars->size);
     }
 }
 
-void log_funcs(){
+void logFuncs(){
   printf("\n\nFunctiontypes are INT=1 and VOID=2 and INT-ARRAY=3");
   printf("\n\nFunction-Table looks as following:\n\n");
   for(tempFuncs = functions; tempFuncs != NULL; tempFuncs = tempFuncs->hh.next){

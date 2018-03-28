@@ -3,36 +3,37 @@
  */
  
 %{	
-	// Project-specific includes
-	#include "diag.h"
-  #include "uthash.h"
-  #include "structs.h"
-  #include "stack.h"
-  #include "output.h"
-  #include "symboltable/funcSymboltable.h"
+#include "diag.h"
+#include "uthash.h"
+#include "structs.h"
+#include "stack.h"
+#include "output.h"
+#include "symboltable/funcSymboltable.h"
+  #include "globalVar.h"
   #include <string.h>
-  int yylex();
-  int var_exists(char* id);
-  int func_exists(char* func_id);
 
+  // Project-specific includes
+int yylex();
+  int varExists(char* id);
+  int funcExists(char* funcId);
+void messageLogger(char* msg);
+  void defineFunc(char* id, char* type, int numberOfParams);
   void yyerror (const char *msg);
-  void identifierdeclaration(int length, char* type);
-  void push_something();
-  void type_replace(char** type);
-  void define_func(char* id, char* type, int numberOfParams);
-  void add_variables_to_function(char* id);
-  void end_scope();
-  void start_scope();
-  void add_var(char *id, char *type, int value, int size);
-  void log_vars();
-  void log_funcs();
-  void yyerror (const char *msg);
-  void push_something();
-  void message_logger(char* msg);
+  void identifierDeclaration(int length, char* type);
+  void pushSomething();
+  void typeReplace(char** type);
+  void addVariablesToFunction(char* id);
+  void endScope();
+  void startScope();
+  void addVar(char *id, char *type, int value, int size);
+  void logVars();
+  void logFuncs();
+  extern void yyerror (const char *msg);
+  void pushSomething();
   STRUCTVAR *variables = NULL;
   SCOPESTACK* scopes = NULL;
-  STACK* programstack;
-  STRUCTFUNC* functions = NULL;
+  extern STACK* programstack;
+  extern STRUCTFUNC* functions;
 %}
 
 %union {
@@ -97,25 +98,25 @@
 %left LOGICAL_NOT UNARY_MINUS UNARY_PLUS
 
 %type <id> primary
-%type <i> identifier_declaration
+%type <i> identifierDeclaration
 %type <id> type
-%type <i> function_parameter_list
+%type <i> functionParameterList
 
 %%
 
 program
-     : { start_scope(); } program_element_list {end_scope(); printSymTable();}
+     : { startScope(); } programElementList {endScope(); printSymTable();}
      ;
 
-program_element_list
-     : program_element_list program_element 
-     | program_element 
+programElementList
+     : programElementList programElement 
+     | programElement 
      ;
 
-program_element
-     : variable_declaration SEMICOLON
-     | function_declaration SEMICOLON
-     | function_definition
+programElement
+     : variableDeclaration SEMICOLON
+     | functionDeclaration SEMICOLON
+     | functionDefinition
      | SEMICOLON
      ;
 									
@@ -124,61 +125,61 @@ type
      | VOID {$$="VOID";}
      ;
 
-variable_declaration
-     : variable_declaration COMMA identifier_declaration  {identifierdeclaration($3,"0");}
-     | type identifier_declaration {identifierdeclaration($2,$1);}
+variableDeclaration
+     : variableDeclaration COMMA identifierDeclaration  {identifierDeclaration($3,"0");}
+     | type identifierDeclaration {identifierDeclaration($2,$1);}
      ;
 
-identifier_declaration
+identifierDeclaration
      : ID BRACKET_OPEN NUM BRACKET_CLOSE {push(&programstack,$1);$$=$3;}
      | ID {push(&programstack,$1);$$=1;}
      ;
 
-function_definition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN { start_scope(); } stmt_list BRACE_CLOSE {define_func($2,$1,0);end_scope();}
-     | type ID PARA_OPEN function_parameter_list PARA_CLOSE BRACE_OPEN { start_scope(); } stmt_list BRACE_CLOSE{define_func($2,$1,$4);end_scope();}
+functionDefinition
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN { startScope(); } stmtList BRACE_CLOSE {defineFunc($2,$1,0);endScope();}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN { startScope(); } stmtList BRACE_CLOSE{defineFunc($2,$1,$4);endScope();}
      ;
 
-function_declaration
-     : type ID PARA_OPEN PARA_CLOSE {add_func($2,$1,0);}
-     | type ID PARA_OPEN function_parameter_list PARA_CLOSE {add_func($2,$1,$4);}
+functionDeclaration
+     : type ID PARA_OPEN PARA_CLOSE {addFunc($2,$1,0);}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE {addFunc($2,$1,$4);}
      ;
 
-function_parameter_list
-     : function_parameter {$$=1;}
-     | function_parameter_list COMMA function_parameter {$$=$1+1;}
+functionParameterList
+     : functionParameter {$$=1;}
+     | functionParameterList COMMA functionParameter {$$=$1+1;}
      ;
 	
-function_parameter
-     : type identifier_declaration {push(&programstack,$1);char temp[3];sprintf(temp,"%d",$2);push(&programstack,temp);}
+functionParameter
+     : type identifierDeclaration {push(&programstack,$1);char temp[3];sprintf(temp,"%d",$2);push(&programstack,temp);}
      ;
 									
-stmt_list
+stmtList
      : /* empty: epsilon */
-     | stmt_list stmt
+     | stmtList stmt
      ;
 
 stmt
-     : stmt_block
-     | variable_declaration SEMICOLON
+     : stmtBlock
+     | variableDeclaration SEMICOLON
      | expression SEMICOLON
-     | stmt_conditional
-     | stmt_loop
+     | stmtConditional
+     | stmtLoop
      | RETURN expression SEMICOLON
      | RETURN SEMICOLON
      | SEMICOLON /* empty statement */
      ;
 
-stmt_block
-     : BRACE_OPEN stmt_list BRACE_CLOSE
+stmtBlock
+     : BRACE_OPEN stmtList BRACE_CLOSE
      ;
 	
-stmt_conditional
+stmtConditional
      : IF PARA_OPEN expression PARA_CLOSE stmt
      | IF PARA_OPEN expression PARA_CLOSE stmt ELSE stmt
      ;
 									
-stmt_loop
+stmtLoop
      : WHILE PARA_OPEN expression PARA_CLOSE stmt
      | DO stmt WHILE PARA_OPEN expression PARA_CLOSE SEMICOLON
      ;
@@ -204,7 +205,7 @@ expression
      | PLUS expression %prec UNARY_PLUS
      | ID BRACKET_OPEN primary BRACKET_CLOSE
      | PARA_OPEN expression PARA_CLOSE
-     | function_call
+     | functionCall
      | primary 
      ;
 
@@ -213,13 +214,13 @@ primary
      | ID {$$=$1;}
      ;
 
-function_call
+functionCall
       : ID PARA_OPEN PARA_CLOSE
-      | ID PARA_OPEN function_call_parameters PARA_CLOSE
+      | ID PARA_OPEN functionCallParameters PARA_CLOSE
       ;
 
-function_call_parameters
-     : function_call_parameters COMMA expression
+functionCallParameters
+     : functionCallParameters COMMA expression
      | expression
      ;
 
@@ -230,34 +231,36 @@ void yyerror (const char *msg)
 	FATAL_COMPILER_ERROR(INVALID_SYNTAX, 0, "(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, msg);
 }
 
-void identifierdeclaration(int length, char* type){
+
+  
+void identifierDeclaration(int length, char* type){
   if(!strcmp(type,"0")){
     char* tempid;
     char* temptype;
     pop(&programstack,&tempid);
     peek(programstack,&temptype);
     if(strcmp(temptype,"VOID")){
-      if(!var_exists(tempid)){
+      if(!varExists(tempid)){
         if(length==1)
-          add_var(tempid,"INT",0,length);
+          addVar(tempid,"INT",0,length);
         else
-          add_var(tempid,"INT-ARR",0,length);
+          addVar(tempid,"INT-ARR",0,length);
       }else{
         printf("Variable %s already exists!",tempid);
       }
     }
   }else{
     if(!strcmp(type,"VOID"))
-      message_logger("Can't declare variable as void!");
+      messageLogger("Can't declare variable as void!");
     else{ 
       char* id;
       pop(&programstack,&id);
       push(&programstack,type);
-      if(!var_exists(id)){
+      if(!varExists(id)){
         if(length==1)
-          add_var(id,"INT",0,length);
+          addVar(id,"INT",0,length);
         else
-          add_var(id,"INT-ARR",0,length);
+          addVar(id,"INT-ARR",0,length);
       }else{
         printf("Variable %s already exists!",id);
       }
@@ -265,7 +268,7 @@ void identifierdeclaration(int length, char* type){
   }
 }
 
-void push_something(){
+void pushSomething(){
   push(&programstack,"test1");
   char* temp;
   peek(programstack,&temp);
@@ -274,7 +277,7 @@ void push_something(){
   peek(programstack,&temp);
 }
 
-void type_replace(char** type){ //Noch nicht implementiert, kommt vlt. noch
+void typeReplace(char** type){ //Noch nicht implementiert, kommt vlt. noch
   if(!strcmp((*type),"0")){
     printf("\nType is undefined!\n\n");
   }else if(!strcmp((*type),"1")){
@@ -286,7 +289,16 @@ void type_replace(char** type){ //Noch nicht implementiert, kommt vlt. noch
   }
 }
 
-void add_var(char *id, char *type, int value, int size){
+void defineFunc(char* id, char* type, int numberOfParams){
+  if(funcExists(id)){//Here implementation of parameter checking
+    addVariablesToFunction(id);
+  }else{
+    addFunc(id,type,numberOfParams);
+    functions->funcvars = variables;
+  }
+}
+
+void addVar(char *id, char *type, int value, int size){
   STRUCTVAR *s;
   s = (STRUCTVAR*)malloc(sizeof(STRUCTVAR));
   s->id = (char*)malloc(sizeof(id));
@@ -296,10 +308,10 @@ void add_var(char *id, char *type, int value, int size){
   s->value = value;
   s->size = size;
   HASH_ADD_INT(variables,id,s);
-  //log_vars();
+  //logVars();
 }
 
-void start_scope(){
+void startScope(){
   if (variables != NULL){
     //push variables on scopestack
     SCOPESTACK* temp;
@@ -311,7 +323,7 @@ void start_scope(){
   }
 }
 
-void end_scope(){
+void endScope(){
   if(scopes!=NULL){
     variables = scopes->scope;
     SCOPESTACK* temp;
@@ -320,16 +332,9 @@ void end_scope(){
   }
 }
 
-void define_func(char* id, char* type, int numberOfParams){
-  if(func_exists(id)){//Here implementation of parameter checking
-    add_variables_to_function(id);
-  }else{
-    add_func(id,type,numberOfParams);
-    functions->funcvars = variables;
-  }
-}
 
-void add_variables_to_function(char* id){
+
+void addVariablesToFunction(char* id){
   STRUCTFUNC* temp = functions;
   while(strcmp(temp->id,id)){
     temp = temp->hh.next;
@@ -337,11 +342,10 @@ void add_variables_to_function(char* id){
   temp->funcvars = variables;
 }
 
-
-int var_exists(char* var_id){
+int varExists(char* varId){
   STRUCTVAR *temp;
   for(temp = variables; temp!=NULL;temp=temp->hh.next){
-    if(!strcmp(temp->id,var_id)){
+    if(!strcmp(temp->id,varId)){
       break;
     }
   }
@@ -350,10 +354,10 @@ int var_exists(char* var_id){
   return 0;
 }
 
-int func_exists(char* func_id){
+int funcExists(char* funcId){
   STRUCTFUNC *temp;
   for(temp = functions; temp!=NULL;temp=temp->hh.next){
-    if(!strcmp(temp->id,func_id)){
+    if(!strcmp(temp->id,funcId)){
       break;
     }
   }
@@ -361,8 +365,6 @@ int func_exists(char* func_id){
     return 1;
   return 0;
 }
-
-
-void message_logger(char* msg){
+void messageLogger(char* msg){
   printf("Following Message is sent:\n(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, msg);
 }

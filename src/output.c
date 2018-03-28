@@ -9,25 +9,46 @@ STRUCTVAR *tempVars;
 STRUCTFUNC *tempFuncs;
 
 void printSymTable() {
-    // print variables-subtable
     printf("-----Symboltable---------------------------------------------------\n");
+    // print variables-subtable
     printf("Variables:\n");
-    printf("\tid\t\ttype\t\tvalue\n");
-    for(tempVars = variables; tempVars != NULL; tempVars = tempVars->hh.next){
-        printf("\t%s\t\t%s\t\t%d\n", tempVars->id,tempVars->type,tempVars->value);
+    if (variables == NULL) {
+        printf("\tNo global variables were found.\n");
+    } else {        
+        printf("\tid\t\ttype\t\tvalue\n");
+        for(tempVars = variables; tempVars != NULL; tempVars = tempVars->hh.next){
+            printf("\t%s\t\t%s\t\t%d", tempVars->id,tempVars->type,tempVars->value);
+            if (tempVars->size > 1) {
+                prinf("\t\tarray-size: %d", tempVars->size);
+            }
+            printf("\n");
+        }
     }
+    
     // print functions-subtable
     printf("\nFunctions:");
-    for(tempFuncs = functions; tempFuncs != NULL;tempFuncs = tempFuncs->hh.next){
-        printf("\nFunction: id: %s, type: %s, paramcount: %d\n",tempFuncs->id,tempFuncs->type,tempFuncs->paramcount);
-        // print parameter-subsubtable
-        if(tempFuncs->funcparams!=NULL){
-            STRUCTPARAM *tempParam = tempFuncs->funcparams;
-            printf("\tParameters:\n");
-            printf("\tnumber\t\ttype\t\tname\n");
-            while(tempParam!=NULL){
-                printf("\t%d\t\t%s\t\t%s\n",tempParam->paramNr,tempParam->type,tempParam->name);
-                tempParam = tempParam->next;
+    if (functions == NULL) {
+        printf("\tNo functions were found.\n");
+    } else {
+        for(tempFuncs = functions; tempFuncs != NULL;tempFuncs = tempFuncs->hh.next){
+            printf("\n- Function: id: %s, type: %s, paramcount: %d\n",tempFuncs->id,tempFuncs->type,tempFuncs->paramcount);
+            // print parameter-subsubtable
+            if(tempFuncs->funcparams!=NULL){
+                STRUCTPARAM *tempParam = tempFuncs->funcparams;
+                printf("\tParameters:\n");
+                printf("\tnumber\t\ttype\t\tname\n");
+                while(tempParam!=NULL){
+                    printf("\t%d\t\t%s\t\t%s\n",tempParam->paramNr,tempParam->type,tempParam->name);
+                    tempParam = tempParam->next;
+                }
+            }
+            if (tempFuncs->funcvars != NULL) {
+                STRUCTVAR *tempInnerVars = tempFuncs->funcvars;
+                printf("\t\tInner variables:\n");
+                printf("\t\tid\t\ttype\t\tvalue\n");
+                for(tempInnerVars; tempInnerVars != NULL; tempInnerVars = tempInnerVars->hh.next){
+                    printf("\t\t%s\t\t%s\t\t%d\n", tempInnerVars->id,tempInnerVars->type,tempInnerVars->value);
+                }
             }
         }
     }

@@ -22,5 +22,11 @@ typedef struct funcstruct {
     char* type; //INT="1"; VOID="2"
     int paramcount;
     STRUCTPARAM* funcparams;//array
+    STRUCTVAR* funcvars;
     UT_hash_handle hh;
   } STRUCTFUNC;
+  
+typedef struct scopestack {
+    STRUCTVAR* scope;
+    struct scopestack* next;
+} SCOPESTACK;

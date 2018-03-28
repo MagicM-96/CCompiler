@@ -27,6 +27,7 @@
   void push_something();
   void message_logger(char* msg);
   STRUCTVAR *variables = NULL;
+  SCOPESTACK* scopes = NULL;
   STACK* programstack;
   STRUCTFUNC* functions = NULL;
 %}
@@ -293,6 +294,19 @@ void add_var(char *id, char *type, int value, int size){
   s->size = size;
   HASH_ADD_INT(variables,id,s);
   //log_vars();
+}
+
+void start_scope(){
+  if (variables == NULL){
+
+  }else{
+    //push variables on scopestack
+    SCOPESTACK* temp;
+    temp = (SCOPESTACK*)malloc(sizeof(SCOPESTACK));
+    temp->scope = variables;
+    temp->next = scopes;
+    variables = NULL;
+  }
 }
 
 void define_func(char* id, char* type, int numberOfParams){

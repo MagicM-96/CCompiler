@@ -19,7 +19,7 @@ void printSymTable() {
         for(tempVars = variables; tempVars != NULL; tempVars = tempVars->hh.next){
             printf("\t%s\t\t%s\t\t%d", tempVars->id,tempVars->type,tempVars->value);
             if (tempVars->size > 1) {
-                prinf("\t\tarray-size: %d", tempVars->size);
+                printf("\tarray-size: %d", tempVars->size);
             }
             printf("\n");
         }
@@ -46,7 +46,7 @@ void printSymTable() {
                 STRUCTVAR *tempInnerVars = tempFuncs->funcvars;
                 printf("\t\tInner variables:\n");
                 printf("\t\tid\t\ttype\t\tvalue\n");
-                for(tempInnerVars; tempInnerVars != NULL; tempInnerVars = tempInnerVars->hh.next){
+                for(; tempInnerVars != NULL; tempInnerVars = tempInnerVars->hh.next){
                     printf("\t\t%s\t\t%s\t\t%d\n", tempInnerVars->id,tempInnerVars->type,tempInnerVars->value);
                 }
             }

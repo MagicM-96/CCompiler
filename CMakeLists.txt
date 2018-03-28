@@ -41,6 +41,7 @@ set (ADDITIONAL_FILES
 	${SYMBOLTABLE_PATH}/varSymboltable.h
 	${SYMBOLTABLE_PATH}/funcSymboltable.c
 	${SYMBOLTABLE_PATH}/funcSymboltable.h
+	${INPUT_DIR}/globalVar.h
 )
 
 add_executable(dhbwcc

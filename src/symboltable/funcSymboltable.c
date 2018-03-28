@@ -2,11 +2,12 @@
 
 #include "../structs.h"
 #include "../stack.h"
-#include "../parserFuncs.h"
+//#include "../parserFuncs.h"
 #include <string.h>
+void messageLogger(char* msg);
+int funcExists(char* funcId);
 extern STACK* programstack;
 extern STRUCTFUNC* functions;
-
 
 void addFunc(char* id, char* type, int numberOfParams){
   if(!funcExists(id)){

@@ -19,6 +19,7 @@
   void push_something();
   void type_replace(char** type);
   void define_func(char* id, char* type, int numberOfParams);
+  void add_variables_to_function(char* id);
   void end_scope();
   void start_scope();
   void add_var(char *id, char *type, int value, int size);
@@ -321,10 +322,19 @@ void end_scope(){
 
 void define_func(char* id, char* type, int numberOfParams){
   if(func_exists(id)){//Here implementation of parameter checking
-
+    add_variables_to_function(id);
   }else{
     add_func(id,type,numberOfParams);
+    functions->funcvars = variables;
   }
+}
+
+void add_variables_to_function(char* id){
+  STRUCTFUNC* temp = functions;
+  while(strcmp(temp->id,id)){
+    temp = temp->hh.next;
+  }
+  temp->funcvars = variables;
 }
 
 void add_func(char* id, char* type, int numberOfParams){
@@ -360,7 +370,6 @@ void add_func(char* id, char* type, int numberOfParams){
       numberOfParams--;
     }
     s->funcparams = p;
-    s->funcvars = variables;
     HASH_ADD_INT(functions,id,s);
     //log_funcs();
   }else{

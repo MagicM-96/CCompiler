@@ -31,23 +31,33 @@ void printSymTable() {
         printf("\tNo functions were found.\n");
     } else {
         for(tempFuncs = functions; tempFuncs != NULL;tempFuncs = tempFuncs->hh.next){
-            printf("\n- Function: id: %s, type: %s, paramcount: %d\n",tempFuncs->id,tempFuncs->type,tempFuncs->paramcount);
+            printf("\n");
+            printf("- Function: id: %s, type: %s, paramcount: %d\n",tempFuncs->id,tempFuncs->type,tempFuncs->paramcount);
             // print parameter-subsubtable
             if(tempFuncs->funcparams!=NULL){
                 STRUCTPARAM *tempParam = tempFuncs->funcparams;
                 printf("\tParameters:\n");
-                printf("\tnumber\t\ttype\t\tname\n");
+                printf("\t|number\t\ttype\t\tname\n");
                 while(tempParam!=NULL){
-                    printf("\t%d\t\t%s\t\t%s\n",tempParam->paramNr,tempParam->type,tempParam->name);
+                    printf("\t|%d\t\t%s\t\t%s",tempParam->paramNr,tempParam->type,tempParam->name);
+                    if(tempParam->size > 1) {
+                        printf("\tarray-size: %d", tempParam->size);
+                    }
+                    printf("\n");
                     tempParam = tempParam->next;
                 }
             }
+            printf("\n");
             if (tempFuncs->funcvars != NULL) {
                 STRUCTVAR *tempInnerVars = tempFuncs->funcvars;
-                printf("\t\tInner variables:\n");
-                printf("\t\tid\t\ttype\t\tvalue\n");
+                printf("\tInner variables:\n");
+                printf("\t|id\t\ttype\t\tvalue\n");
                 for(; tempInnerVars != NULL; tempInnerVars = tempInnerVars->hh.next){
-                    printf("\t\t%s\t\t%s\t\t%d\n", tempInnerVars->id,tempInnerVars->type,tempInnerVars->value);
+                    printf("\t|%s\t\t%s\t\t%d", tempInnerVars->id,tempInnerVars->type,tempInnerVars->value);
+                    if (tempInnerVars->size > 1) {
+                        printf("\tarray-size: %d", tempInnerVars->size);
+                    }
+                    printf("\n");
                 }
             }
         }

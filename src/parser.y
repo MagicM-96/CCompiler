@@ -19,6 +19,8 @@
   void push_something();
   void type_replace(char** type);
   void define_func(char* id, char* type, int numberOfParams);
+  void end_scope();
+  void start_scope();
   void add_var(char *id, char *type, int value, int size);
   void add_func(char* id, char* type, int numberOfParams);
   void log_vars();
@@ -101,7 +103,7 @@
 %%
 
 program
-     : program_element_list {printSymTable();}
+     : { start_scope(); } program_element_list {end_scope(); printSymTable();}
      ;
 
 program_element_list
@@ -132,8 +134,8 @@ identifier_declaration
      ;
 
 function_definition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN stmt_list BRACE_CLOSE {define_func($2,$1,0);}
-     | type ID PARA_OPEN function_parameter_list PARA_CLOSE BRACE_OPEN stmt_list BRACE_CLOSE{define_func($2,$1,$4);}
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN { start_scope(); } stmt_list BRACE_CLOSE {define_func($2,$1,0);end_scope();}
+     | type ID PARA_OPEN function_parameter_list PARA_CLOSE BRACE_OPEN { start_scope(); } stmt_list BRACE_CLOSE{define_func($2,$1,$4);end_scope();}
      ;
 
 function_declaration
@@ -297,15 +299,23 @@ void add_var(char *id, char *type, int value, int size){
 }
 
 void start_scope(){
-  if (variables == NULL){
-
-  }else{
+  if (variables != NULL){
     //push variables on scopestack
     SCOPESTACK* temp;
     temp = (SCOPESTACK*)malloc(sizeof(SCOPESTACK));
     temp->scope = variables;
     temp->next = scopes;
+    scopes = temp;
     variables = NULL;
+  }
+}
+
+void end_scope(){
+  if(scopes!=NULL){
+    variables = scopes->scope;
+    SCOPESTACK* temp;
+    temp = scopes->next;
+    scopes = temp;
   }
 }
 
@@ -350,6 +360,7 @@ void add_func(char* id, char* type, int numberOfParams){
       numberOfParams--;
     }
     s->funcparams = p;
+    s->funcvars = variables;
     HASH_ADD_INT(functions,id,s);
     //log_funcs();
   }else{

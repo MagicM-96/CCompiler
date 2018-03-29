@@ -5,7 +5,7 @@
 #include "structs.h"
 #include "stack.h"
 #include "output.h"
-#include "symboltable/funcSymboltable.h"
+#include "symboltable.h"
 #include <string.h>
 //THIS FILE IS ONLY TEMPORARILY AND SHOULD BE DELETED AS SOON AS POSSIBLE
 STACK* programstack;
@@ -13,46 +13,6 @@ STRUCTFUNC* functions = NULL;
 STRUCTVAR *variables = NULL;
 SCOPESTACK* scopes = NULL;
 
-
-void addFunc(char* id, char* type, int numberOfParams){
-  if(!funcExists(id)){
-    STRUCTFUNC *s;
-    s = (STRUCTFUNC*)malloc(sizeof(STRUCTFUNC));
-    s->id =(char*)malloc(sizeof(id));
-    s->type = (char*)malloc(sizeof(type));
-    strcpy(s->id,id);
-    strcpy(s->type,type);
-    s->paramcount = numberOfParams;
-    STRUCTPARAM *p = NULL;
-    STRUCTPARAM *tempstruct;
-    char* temptype;
-    char* tempid;
-    char* templength;
-    while(numberOfParams>0){
-      pop(&programstack,&templength);
-      pop(&programstack,&temptype);
-      pop(&programstack,&tempid);
-      if(atoi(templength)>1){
-        strcat(temptype,"-ARR");
-      }
-      tempstruct = p;
-      p = (STRUCTPARAM*)malloc(sizeof(STRUCTPARAM));
-      p->type = (char*)malloc(sizeof(temptype));
-      p->name = (char*)malloc(sizeof(tempid));
-      strcpy(p->type,temptype);
-      strcpy(p->name,tempid);
-      p->paramNr = numberOfParams;
-      p->size = atoi(templength);
-      p->next = tempstruct;
-      numberOfParams--;
-    }
-    s->funcparams = p;
-    HASH_ADD_INT(functions,id,s);
-    //log_funcs();
-  }else{
-    messageLogger("Function already exists!");
-  }
-}
 
 void identifierDeclaration(int length, char* type){
   if(!strcmp(type,"0")){
@@ -186,6 +146,8 @@ int funcExists(char* funcId){
     return 1;
   return 0;
 }
+
+
 void messageLogger(char* msg){
   //TODO @Benedikt please fix this
   printf("there is something not implemented jet, please ask your Developer to do so");

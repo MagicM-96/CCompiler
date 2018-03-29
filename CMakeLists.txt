@@ -34,25 +34,33 @@ add_flex_bison_dependency(scanner parser)
 # Target to build dhbwcc from source, generated files (bison and flex) and uthash library
 file(GLOB_RECURSE DHBWCC_SRC "${INPUT_DIR}/*.c")
 
-set (SYMBOLTABLE_PATH "${INPUT_DIR}/symboltable")
+# set (SYMBOLTABLE_PATH "${INPUT_DIR}/symboltable")
 
-set (ADDITIONAL_FILES
-	${SYMBOLTABLE_PATH}/varSymboltable.c
-	${SYMBOLTABLE_PATH}/varSymboltable.h
-	${SYMBOLTABLE_PATH}/funcSymboltable.c
-	${SYMBOLTABLE_PATH}/funcSymboltable.h
-	${INPUT_DIR}/globalVar.h
-)
+# set (ADDITIONAL_FILES
+# 	${SYMBOLTABLE_PATH}/symboltable.c
+# 	${SYMBOLTABLE_PATH}/symboltable.h
+# 	${INPUT_DIR}/globalVar.h
+# )
+#set(HEADER_FILES ${SYMBOLTABLE_PATH}/symboltable.h)
+
+#add_library(mylib  ${HEADER_FILES})
+#target_include_directories(mylib PUBLIC ${INPUT_DIR})
+#add_executable(myexec execfile.cpp ${HEADER_FILES})
+#target_include_directories(dhbwcc PRIVATE ${YOUR_DIRECTORY})
 
 add_executable(dhbwcc
 	${DHBWCC_SRC}
 	${UTHASH_INCLUDE_DIR}
 	${BISON_parser_OUTPUTS}
 	${FLEX_scanner_OUTPUTS}
-	${ADDITIONAL_FILES})
+	#${ADDITIONAL_FILES}
+	#${HEADER_FILES}
+	)
 target_include_directories(dhbwcc
-	PUBLIC "${INPUT_DIR}" "${INPUT_DIR}/include" "${OUTPUT_DIR}"
+	PUBLIC "${INPUT_DIR}" "${INPUT_DIR}/include" "${OUTPUT_DIR}" 
 )
+
+#target_include_directories(dhbwcc PUBLIC ${INPUT_DIR})
 
 # New target to build doxygen from source
 find_package(Doxygen)

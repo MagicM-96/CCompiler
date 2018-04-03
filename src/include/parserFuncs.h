@@ -1,5 +1,5 @@
 #pragma once
-#include "structs.h"
 #include "stack.h"
+#include "structs.h"
 
 void messageLogger(char* msg);

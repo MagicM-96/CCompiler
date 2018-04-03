@@ -1,0 +1,7 @@
+BasedOnStyle: WebKit
+BreakBeforeBraces: Allman
+AlignTrailingComments: 'true'
+ColumnLimit: '120'
+SpacesBeforeTrailingComments: '7'
+TabWidth: '4'
+UseTab: Always

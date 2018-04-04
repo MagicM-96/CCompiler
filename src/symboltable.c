@@ -91,7 +91,7 @@ void identifierDeclaration(int length, char* type)
 			}
 			else
 			{
-				printf("Variable %s already exists!", tempid);
+				errorLogger("Variable \"" , tempid, "\" already exists!");
 			}
 		}
 	}
@@ -130,7 +130,7 @@ void identifierDeclaration(int length, char* type)
 			}
 			else
 			{
-				printf("Variable %s already exists!", id);
+				errorLogger("Variable \"",id,"\" already exists!");
 			}
 		}
 	}
@@ -175,7 +175,12 @@ void defineFunc(char* id, char* type, int numberOfParams)
 	else
 	{
 		addFunc(id, type, numberOfParams);
-		functions->funcvars = variables;
+		STRUCTFUNC* tempFunc = functions;
+		while (strcmp(tempFunc->id,id))
+		{
+			tempFunc = tempFunc->hh.next;
+		}
+		tempFunc->funcvars = variables;
 	}
 }
 
@@ -195,16 +200,13 @@ void addVar(char* id, char* type, int value, int size)
 
 void startScope()
 {
-	if (variables != NULL)
-	{
-		// push variables on scopestack
-		SCOPESTACK* temp;
-		temp = (SCOPESTACK*)malloc(sizeof(SCOPESTACK));
-		temp->scope = variables;
-		temp->next = scopes;
-		scopes = temp;
-		variables = NULL;
-	}
+	// push variables on scopestack
+	SCOPESTACK* temp;
+	temp = (SCOPESTACK*)malloc(sizeof(SCOPESTACK));
+	temp->scope = variables;
+	temp->next = scopes;
+	scopes = temp;
+	variables = NULL;
 }
 
 void endScope()

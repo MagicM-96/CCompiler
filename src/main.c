@@ -13,7 +13,8 @@ static const char* C_EXT = ".c";
 static const char* IR_EXT = ".ir";
 static const char* OUTPUT_EXT = ".s";
 extern FILE* yyin;
-
+int warnings = 0;
+int errors = 0;
 cc_options_t cc_options = { .print_ir = 0, .ir_file = NULL, .input_file = NULL, .output_file = NULL };
 
 /**
@@ -310,6 +311,17 @@ int main(int argc, char* argv[])
 	} while (!feof(yyin));
 
 	rm_cleanup_resources(&resource_mgr);
+
+	if (warnings)
+	{
+		printf("There are %d warnings", warnings);
+	}
+
+	if (errors)
+	{
+		printf("There are %d errors", errors);
+		return 1;
+	}
 
 	printf("Compilation successfull!\n");
 	return 0;

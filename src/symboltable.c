@@ -1,6 +1,6 @@
 #include "symboltable.h"
 
-#include "parserFuncs.h"
+#include "logger.h"
 #include "stack.h"
 #include "structs.h"
 #include <string.h>
@@ -96,7 +96,8 @@ void identifierDeclaration(int length, char* type)
 			}
 			else
 			{
-				printf("Variable %s already exists!", id);
+				errorLogger("var blubb", id, "blubbs");
+			//	printf("Variable %s already exists!", id);
 			}
 		}
 	}

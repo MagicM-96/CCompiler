@@ -1,7 +1,4 @@
-#include "parserFuncs.h"
-
-#include <string.h>
-// THIS FILE IS ONLY TEMPORARILY AND SHOULD BE DELETED AS SOON AS POSSIBLE
+#include "logger.h"
 extern int errors;
 
 void messageLogger(char* msg)
@@ -13,7 +10,8 @@ void messageLogger(char* msg)
 	// yylloc.last_line, yylloc.last_column, msg);
 }
 
-void errorLogger(char* msg0,char* msg1,char* msg2) //This is a bad way to handle this, but the other ways inside c are even more crappy
+void errorLogger(char* msg0, char* msg1, char* msg2)
+// This is a bad way to handle this, but the other ways inside c are even more crappy
 {
 	// TODO @Benedikt please fix this
 	errors++;

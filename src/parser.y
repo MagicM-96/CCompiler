@@ -6,7 +6,7 @@
 #include "diag.h"
 #include "output.h"
 #include "symboltable.h"
-#include "parserFuncs.h"
+#include "stack.h"
 
 // Project-specific includes
 void yyerror (const char *msg);
@@ -209,4 +209,3 @@ void yyerror (const char *msg)
 {
 	FATAL_COMPILER_ERROR(INVALID_SYNTAX, 0, "(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, msg);
 }
-

@@ -1,4 +1,5 @@
 #include "logger.h"
+#include <stdio.h>
 extern int errors;
 
 void messageLogger(char* msg)

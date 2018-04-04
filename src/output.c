@@ -12,7 +12,7 @@ void printSymTable()
 {
 	printf("-----Symboltable---------------------------------------------------\n");
 	// print variables-subtable
-	printf("Variables:\n");
+	printf("Global variables:\n");
 	if (variables == NULL)
 	{
 		printf("\tNo global variables were found.\n");
@@ -20,6 +20,7 @@ void printSymTable()
 	else
 	{
 		printf("\tid\t\ttype\t\tvalue\n");
+		printf("\t--\t\t----\t\t-----\n");
 		for (tempVars = variables; tempVars != NULL; tempVars = tempVars->hh.next)
 		{
 			printf("\t%s\t\t%s\t\t%d", tempVars->id, tempVars->type, tempVars->value);
@@ -42,7 +43,7 @@ void printSymTable()
 		for (tempFuncs = functions; tempFuncs != NULL; tempFuncs = tempFuncs->hh.next)
 		{
 			printf("\n");
-			printf("- Function: id: %s, type: %s, paramcount: %d\n", tempFuncs->id, tempFuncs->type,
+			printf("- id: %s, type: %s, paramcount: %d\n", tempFuncs->id, tempFuncs->type,
 				tempFuncs->paramcount);
 			// print parameter-subsubtable
 			if (tempFuncs->funcparams != NULL)
@@ -50,6 +51,7 @@ void printSymTable()
 				STRUCTPARAM* tempParam = tempFuncs->funcparams;
 				printf("\tParameters:\n");
 				printf("\t|number\t\ttype\t\tname\n");
+				printf("\t+------\t\t----\t\t----\n");
 				while (tempParam != NULL)
 				{
 					printf("\t|%d\t\t%s\t\t%s", tempParam->paramNr, tempParam->type, tempParam->name);
@@ -67,6 +69,7 @@ void printSymTable()
 				STRUCTVAR* tempInnerVars = tempFuncs->funcvars;
 				printf("\tInner variables:\n");
 				printf("\t|id\t\ttype\t\tvalue\n");
+				printf("\t+--\t\t----\t\t-----\n");
 				for (; tempInnerVars != NULL; tempInnerVars = tempInnerVars->hh.next)
 				{
 					printf("\t|%s\t\t%s\t\t%d", tempInnerVars->id, tempInnerVars->type, tempInnerVars->value);

@@ -68,9 +68,26 @@ void identifierDeclaration(int length, char* type)
 			if (!varExists(tempid))
 			{
 				if (length == 1)
+				{
 					addVar(tempid, "INT", 0, length);
+				}
 				else
+				{
 					addVar(tempid, "INT-ARR", 0, length);
+					char* tempId;
+					char* tempI;
+					tempId = (char*)malloc(sizeof(tempid)+2*sizeof(char)+sizeof(int));
+					tempI = (char*)malloc(sizeof(int));
+					for(int i = 0;i<length;i++)
+					{
+						strcpy(tempId,tempid);
+						strcat(tempId,"[");
+						sprintf(tempI,"%d",i);
+						strcat(tempId,tempI);
+						strcat(tempId,"]");
+						addVar(tempId,"ARRAY-ELEMENT",0,1);
+					}
+				}
 			}
 			else
 			{
@@ -90,9 +107,26 @@ void identifierDeclaration(int length, char* type)
 			if (!varExists(id))
 			{
 				if (length == 1)
+				{
 					addVar(id, "INT", 0, length);
+				}
 				else
+				{
 					addVar(id, "INT-ARR", 0, length);
+					char* tempId;
+					char* tempI;
+					tempId = (char*)malloc(sizeof(id)+2*sizeof(char)+sizeof(int));
+					tempI = (char*)malloc(sizeof(int));
+					for(int i = 0;i<length;i++)
+					{
+						strcpy(tempId,id);
+						strcat(tempId,"[");
+						sprintf(tempI,"%d",i);
+						strcat(tempId,tempI);
+						strcat(tempId,"]");
+						addVar(tempId,"ARRAY-ELEMENT",0,1);
+					}
+				}
 			}
 			else
 			{

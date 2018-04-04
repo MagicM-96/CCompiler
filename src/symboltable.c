@@ -68,13 +68,30 @@ void identifierDeclaration(int length, char* type)
 			if (!varExists(tempid))
 			{
 				if (length == 1)
+				{
 					addVar(tempid, "INT", 0, length);
+				}
 				else
+				{
 					addVar(tempid, "INT-ARR", 0, length);
+					char* tempId;
+					char* tempI;
+					tempId = (char*)malloc(sizeof(tempid)+2*sizeof(char)+sizeof(int));
+					tempI = (char*)malloc(sizeof(int));
+					for(int i = 0;i<length;i++)
+					{
+						strcpy(tempId,tempid);
+						strcat(tempId,"[");
+						sprintf(tempI,"%d",i);
+						strcat(tempId,tempI);
+						strcat(tempId,"]");
+						addVar(tempId,"ARRAY-ELEMENT",0,1);
+					}
+				}
 			}
 			else
 			{
-				printf("Variable %s already exists!", tempid);
+				errorLogger("Variable \"" , tempid, "\" already exists!");
 			}
 		}
 	}
@@ -90,14 +107,30 @@ void identifierDeclaration(int length, char* type)
 			if (!varExists(id))
 			{
 				if (length == 1)
+				{
 					addVar(id, "INT", 0, length);
+				}
 				else
+				{
 					addVar(id, "INT-ARR", 0, length);
+					char* tempId;
+					char* tempI;
+					tempId = (char*)malloc(sizeof(id)+2*sizeof(char)+sizeof(int));
+					tempI = (char*)malloc(sizeof(int));
+					for(int i = 0;i<length;i++)
+					{
+						strcpy(tempId,id);
+						strcat(tempId,"[");
+						sprintf(tempI,"%d",i);
+						strcat(tempId,tempI);
+						strcat(tempId,"]");
+						addVar(tempId,"ARRAY-ELEMENT",0,1);
+					}
+				}
 			}
 			else
 			{
-				errorLogger("var blubb", id, "blubbs");
-			//	printf("Variable %s already exists!", id);
+				errorLogger("Variable \"",id,"\" already exists!");
 			}
 		}
 	}
@@ -142,7 +175,12 @@ void defineFunc(char* id, char* type, int numberOfParams)
 	else
 	{
 		addFunc(id, type, numberOfParams);
-		functions->funcvars = variables;
+		STRUCTFUNC* tempFunc = functions;
+		while (strcmp(tempFunc->id,id))
+		{
+			tempFunc = tempFunc->hh.next;
+		}
+		tempFunc->funcvars = variables;
 	}
 }
 
@@ -162,16 +200,13 @@ void addVar(char* id, char* type, int value, int size)
 
 void startScope()
 {
-	if (variables != NULL)
-	{
-		// push variables on scopestack
-		SCOPESTACK* temp;
-		temp = (SCOPESTACK*)malloc(sizeof(SCOPESTACK));
-		temp->scope = variables;
-		temp->next = scopes;
-		scopes = temp;
-		variables = NULL;
-	}
+	// push variables on scopestack
+	SCOPESTACK* temp;
+	temp = (SCOPESTACK*)malloc(sizeof(SCOPESTACK));
+	temp->scope = variables;
+	temp->next = scopes;
+	scopes = temp;
+	variables = NULL;
 }
 
 void endScope()

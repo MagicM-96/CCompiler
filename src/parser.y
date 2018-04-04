@@ -84,7 +84,7 @@ extern STRUCTFUNC* functions;
 %%
 
 program
-     : { startScope(); } programElementList {endScope(); printSymTable();}
+     : programElementList { printSymTable();}
      ;
 
 programElementList

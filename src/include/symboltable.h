@@ -18,3 +18,4 @@ void logVars();
 void logFuncs();
 extern void yyerror(const char* msg);
 void pushSomething();
+int funcIsDefined(char* funcId);

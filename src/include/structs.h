@@ -24,6 +24,7 @@ typedef struct funcstruct
 	char* id;
 	char* type;		  // INT="1"; VOID="2"
 	int paramcount;
+	int isDefined;
 	STRUCTPARAM* funcparams;	   // array
 	STRUCTVAR* funcvars;
 	UT_hash_handle hh;

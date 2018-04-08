@@ -21,6 +21,7 @@ void addFunc(char* id, char* type, int numberOfParams)
 		strcpy(s->id, id);
 		strcpy(s->type, type);
 		s->paramcount = numberOfParams;
+		s->isDefined = 0;
 		STRUCTPARAM* p = NULL;
 		STRUCTPARAM* tempstruct;
 		char* temptype;
@@ -31,20 +32,28 @@ void addFunc(char* id, char* type, int numberOfParams)
 			pop(&programstack, &templength);
 			pop(&programstack, &temptype);
 			pop(&programstack, &tempid);
-			if (atoi(templength) > 1)
+			if (strcmp(temptype,"VOID"))
 			{
-				strcat(temptype, "-ARR");
+				errorLogger("Type-Error: Parameter ",tempid," can't be declared as VOID!\n");
 			}
-			tempstruct = p;
-			p = (STRUCTPARAM*)malloc(sizeof(STRUCTPARAM));
-			p->type = (char*)malloc(sizeof(temptype));
-			p->name = (char*)malloc(sizeof(tempid));
-			strcpy(p->type, temptype);
-			strcpy(p->name, tempid);
-			p->paramNr = numberOfParams;
-			p->size = atoi(templength);
-			p->next = tempstruct;
-			numberOfParams--;
+			else 
+			{
+				if (atoi(templength) > 1)
+				{
+					strcat(temptype, "-ARR");
+				}
+				tempstruct = p;
+				p = (STRUCTPARAM*)malloc(sizeof(STRUCTPARAM));
+				p->type = (char*)malloc(sizeof(temptype));
+				p->name = (char*)malloc(sizeof(tempid));
+				strcpy(p->type, temptype);
+				strcpy(p->name, tempid);
+				p->paramNr = numberOfParams;
+				p->size = atoi(templength);
+				p->next = tempstruct;
+				numberOfParams--;
+			}
+			
 		}
 		s->funcparams = p;
 		HASH_ADD_INT(functions, id, s);
@@ -98,7 +107,11 @@ void identifierDeclaration(int length, char* type)
 	else
 	{
 		if (!strcmp(type, "VOID"))
-			messageLogger("Can't declare variable as void!");
+		{
+			char* id;
+			pop(&programstack, &id);
+			errorLogger("Type-Error: Can't declare variable ",id," as VOID!\n");
+		}
 		else
 		{
 			char* id;
@@ -169,7 +182,12 @@ void typeReplace(char** type)
 void defineFunc(char* id, char* type, int numberOfParams)
 {
 	if (funcExists(id))
-	{		// Here implementation of parameter checking
+	{	
+		if(funcIsDefined(id))
+		{
+			errorLogger("Multiple function-Definition: Function ",id," is already defined!\n");
+		}	
+		// Here implementation of parameter and type checking
 		addVariablesToFunction(id);
 	}
 	else
@@ -181,6 +199,7 @@ void defineFunc(char* id, char* type, int numberOfParams)
 			tempFunc = tempFunc->hh.next;
 		}
 		tempFunc->funcvars = variables;
+		tempFunc->isDefined = 1;
 	}
 }
 
@@ -256,6 +275,20 @@ int funcExists(char* funcId)
 		}
 	}
 	if (temp != NULL)
+		return 1;
+	return 0;
+}
+
+int funcIsDefined(char* funcId){
+	STRUCTFUNC* temp;
+	for (temp = functions; temp != NULL; temp = temp->hh.next)
+	{
+		if (!strcmp(temp->id, funcId))
+		{
+			break;
+		}
+	}
+	if (temp->isDefined == 1)
 		return 1;
 	return 0;
 }

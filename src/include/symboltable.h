@@ -3,7 +3,7 @@
 void addFunc(char* id, char* type, int numberOfParams);
 int yylex();	   // TODO is this necessary?
 
-int varExists(char* id);
+int varExists(char* id, int allScopes);
 int funcExists(char* funcId);
 void defineFunc(char* id, char* type, int numberOfParams);
 

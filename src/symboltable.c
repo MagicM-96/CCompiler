@@ -12,7 +12,7 @@ SCOPESTACK* scopes = NULL;
 
 void addFunc(char* id, char* type, int numberOfParams)
 {
-	if (!funcExists(id))
+	if (!funcExists(id)&&!varExists(id,1))
 	{
 		STRUCTFUNC* s;
 		s = (STRUCTFUNC*)malloc(sizeof(STRUCTFUNC));
@@ -34,7 +34,7 @@ void addFunc(char* id, char* type, int numberOfParams)
 			pop(&programstack, &tempid);
 			if (!strcmp(temptype,"VOID"))
 			{
-				errorLogger("Type-Error: Parameter ",tempid," can't be declared as VOID!\n");
+				errorLogger("Type-Error: Parameter \"",tempid,"\" can't be declared as VOID!\n");
 			}
 			else 
 			{
@@ -61,7 +61,7 @@ void addFunc(char* id, char* type, int numberOfParams)
 	}
 	else
 	{
-		messageLogger("Function already exists!");
+		errorLogger("Name-Error: Identifier \"",id,"\" is already in use!\n");
 	}
 }
 void identifierDeclaration(int length, char* type)
@@ -74,7 +74,7 @@ void identifierDeclaration(int length, char* type)
 		peek(programstack, &temptype);
 		if (strcmp(temptype, "VOID"))
 		{
-			if (!varExists(tempid))
+			if (!varExists(tempid,0)&&!funcExists(tempid))
 			{
 				if (length == 1)
 				{
@@ -100,7 +100,7 @@ void identifierDeclaration(int length, char* type)
 			}
 			else
 			{
-				errorLogger("Variable \"" , tempid, "\" already exists!");
+				errorLogger("Name-Error: Identifier \"" , tempid, "\" already exists!");
 			}
 		}
 	}
@@ -110,14 +110,14 @@ void identifierDeclaration(int length, char* type)
 		{
 			char* id;
 			pop(&programstack, &id);
-			errorLogger("Type-Error: Can't declare variable ",id," as VOID!\n");
+			errorLogger("Type-Error: Can't declare variable \"",id,"\" as VOID!\n");
 		}
 		else
 		{
 			char* id;
 			pop(&programstack, &id);
 			push(&programstack, type);
-			if (!varExists(id))
+			if (!varExists(id,0)&&!funcExists(id))
 			{
 				if (length == 1)
 				{
@@ -143,7 +143,7 @@ void identifierDeclaration(int length, char* type)
 			}
 			else
 			{
-				errorLogger("Variable \"",id,"\" already exists!");
+				errorLogger("Name-Error: Identifier \"",id,"\" is already in use!\n");
 			}
 		}
 	}
@@ -186,18 +186,19 @@ void defineFunc(char* id, char* type, int numberOfParams)
 		if(checkFuncType(id,type)){
 			if(funcIsDefined(id))
 			{
-				errorLogger("Multiple function-Definition: Function ",id," is already defined!\n");
+				errorLogger("Multiple function-Definition: Function \"",id,"\" is already defined!\n");
 			}	
 			// Here implementation of parameter and type checking
 			addVariablesToFunction(id);
 		}
 		else
 		{
-			errorLogger("Type-Error: Function ",id," is defined in different Types!");
+			errorLogger("Type-Error: Function \"",id,"\" is defined in different Types!");
 		}		
 	}
-	else
+	else if(!varExists(id,1))
 	{
+		printf("Add function %s\n",id);
 		addFunc(id, type, numberOfParams);
 		STRUCTFUNC* tempFunc = functions;
 		while (strcmp(tempFunc->id,id))
@@ -206,6 +207,10 @@ void defineFunc(char* id, char* type, int numberOfParams)
 		}
 		tempFunc->funcvars = variables;
 		tempFunc->isDefined = 1;
+	}
+	else
+	{
+		errorLogger("Name-Error: Identifier \"",id,"\" is already in use!\n");
 	}
 }
 
@@ -255,9 +260,11 @@ void addVariablesToFunction(char* id)
 	temp->funcvars = variables;
 }
 
-int varExists(char* varId)
+int varExists(char* varId,int allScopes)
 {
+	SCOPESTACK* tempscope;
 	STRUCTVAR* temp;
+	tempscope = scopes;
 	for (temp = variables; temp != NULL; temp = temp->hh.next)
 	{
 		if (!strcmp(temp->id, varId))
@@ -267,6 +274,21 @@ int varExists(char* varId)
 	}
 	if (temp != NULL)
 		return 1;
+	if(!allScopes)
+		return 0;
+	while(tempscope!=NULL)
+	{
+		for (temp = tempscope->scope; temp != NULL; temp = temp->hh.next)
+		{
+			if (!strcmp(temp->id, varId))
+			{
+				break;
+			}
+		}
+		if (temp != NULL)
+			return 1;
+		tempscope = tempscope->next;
+	}
 	return 0;
 }
 

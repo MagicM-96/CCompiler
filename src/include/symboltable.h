@@ -19,3 +19,4 @@ void logFuncs();
 extern void yyerror(const char* msg);
 void pushSomething();
 int funcIsDefined(char* funcId);
+int checkFuncType(char* id, char* type);

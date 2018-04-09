@@ -32,7 +32,7 @@ void addFunc(char* id, char* type, int numberOfParams)
 			pop(&programstack, &templength);
 			pop(&programstack, &temptype);
 			pop(&programstack, &tempid);
-			if (strcmp(temptype,"VOID"))
+			if (!strcmp(temptype,"VOID"))
 			{
 				errorLogger("Type-Error: Parameter ",tempid," can't be declared as VOID!\n");
 			}
@@ -183,12 +183,18 @@ void defineFunc(char* id, char* type, int numberOfParams)
 {
 	if (funcExists(id))
 	{	
-		if(funcIsDefined(id))
+		if(checkFuncType(id,type)){
+			if(funcIsDefined(id))
+			{
+				errorLogger("Multiple function-Definition: Function ",id," is already defined!\n");
+			}	
+			// Here implementation of parameter and type checking
+			addVariablesToFunction(id);
+		}
+		else
 		{
-			errorLogger("Multiple function-Definition: Function ",id," is already defined!\n");
-		}	
-		// Here implementation of parameter and type checking
-		addVariablesToFunction(id);
+			errorLogger("Type-Error: Function ",id," is defined in different Types!");
+		}		
 	}
 	else
 	{
@@ -279,7 +285,8 @@ int funcExists(char* funcId)
 	return 0;
 }
 
-int funcIsDefined(char* funcId){
+int funcIsDefined(char* funcId)
+{
 	STRUCTFUNC* temp;
 	for (temp = functions; temp != NULL; temp = temp->hh.next)
 	{
@@ -289,6 +296,21 @@ int funcIsDefined(char* funcId){
 		}
 	}
 	if (temp->isDefined == 1)
+		return 1;
+	return 0;
+}
+
+int checkFuncType(char* funcId, char* type)
+{
+	STRUCTFUNC* temp;
+	for (temp = functions; temp != NULL; temp = temp->hh.next)
+	{
+		if (!strcmp(temp->id, funcId))
+		{
+			break;
+		}
+	}
+	if (!strcmp(temp->type,type))
 		return 1;
 	return 0;
 }

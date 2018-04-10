@@ -9,6 +9,7 @@ STACK* programstack;
 STRUCTFUNC* functions = NULL;
 STRUCTVAR* variables = NULL;
 SCOPESTACK* scopes = NULL;
+STRUCTPARAM* parameters = NULL;
 
 void addFunc(char* id, char* type, int numberOfParams)
 {
@@ -55,6 +56,7 @@ void addFunc(char* id, char* type, int numberOfParams)
 			}
 			
 		}
+		parameters = p;
 		s->funcparams = p;
 		HASH_ADD_INT(functions, id, s);
 		// log_funcs();
@@ -71,6 +73,9 @@ void identifierDeclaration(int length, char* type)
 		char* tempid;
 		char* temptype;
 		pop(&programstack, &tempid);
+		if(!strcmp(tempid,"functionsReturnParameter")){
+			errorLogger("Name-Error: Variable can't be called \"",tempid,"\" because this name is reserved for the compiler!\n");
+		}
 		peek(programstack, &temptype);
 		if (strcmp(temptype, "VOID"))
 		{
@@ -116,6 +121,9 @@ void identifierDeclaration(int length, char* type)
 		{
 			char* id;
 			pop(&programstack, &id);
+			if(!strcmp(id,"functionsReturnParameter")){
+				errorLogger("Name-Error: Variable can't be called \"",id,"\" because this name is reserved for the compiler!\n");
+			}
 			push(&programstack, type);
 			if (!varExists(id,0)&&!funcExists(id))
 			{
@@ -188,7 +196,6 @@ void defineFunc(char* id, char* type, int numberOfParams)
 			{
 				errorLogger("Multiple function-Definition: Function \"",id,"\" is already defined!\n");
 			}	
-			// Here implementation of parameter and type checking
 			checkFuncParams(id,numberOfParams);
 			addVariablesToFunction(id);
 		}
@@ -199,7 +206,6 @@ void defineFunc(char* id, char* type, int numberOfParams)
 	}
 	else if(!varExists(id,1))
 	{
-		printf("Add function %s\n",id);
 		addFunc(id, type, numberOfParams);
 		STRUCTFUNC* tempFunc = functions;
 		while (strcmp(tempFunc->id,id))
@@ -213,6 +219,7 @@ void defineFunc(char* id, char* type, int numberOfParams)
 	{
 		errorLogger("Name-Error: Identifier \"",id,"\" is already in use!\n");
 	}
+	checkReturnParam(id,type);
 }
 
 void addVar(char* id, char* type, int value, int size)
@@ -249,6 +256,7 @@ void endScope()
 		temp = scopes->next;
 		scopes = temp;
 	}
+	parameters = NULL;
 }
 
 void addVariablesToFunction(char* id)
@@ -258,6 +266,7 @@ void addVariablesToFunction(char* id)
 	{
 		temp = temp->hh.next;
 	}
+	temp->isDefined = 1;
 	temp->funcvars = variables;
 }
 
@@ -278,6 +287,7 @@ void lookupFunctionType(char* funcId, char** ret)
 void lookupVariableType(char* varId, char** ret)
 {
 	SCOPESTACK* tempscope;
+	STRUCTPARAM* tempParam;
 	STRUCTVAR* temp;
 	tempscope = scopes;
 	for (temp = variables; temp != NULL; temp = temp->hh.next)
@@ -308,12 +318,42 @@ void lookupVariableType(char* varId, char** ret)
 		}
 		tempscope = tempscope->next;
 	}
+	
+	for (tempParam = parameters; tempParam != NULL; tempParam = tempParam->next)
+	{
+		if (!strcmp(tempParam->name, varId))
+		{
+			break;
+		}
+	}
+	if (tempParam != NULL)
+	{
+		(*ret) = tempParam->type;
+		return;
+	}
+}
+
+void checkReturnParam(char* id, char* type)
+{
+	STRUCTVAR* tempvars;
+	tempvars = variables;
+	while(tempvars!=NULL)
+	{
+		if(!strcmp(tempvars->id,"functionsReturnParameter"))
+		{
+			if(strcmp(tempvars->type,type))
+			{
+				errorLogger("Type-Error: Return-Type in Function \"",id,"\" has the wrong type!\n");
+			}
+		}
+		tempvars = tempvars->hh.next;
+	}
 }
 
 int checkFuncParams(char* funcId,int numberOfParams)
 {
 	STRUCTFUNC* temp;
-	STRUCTPARAM* tempParam;
+	STRUCTPARAM* tempParam,*tempParam2;
 	for (temp = functions; temp != NULL; temp = temp->hh.next)
 	{
 		if (!strcmp(temp->id, funcId))
@@ -323,40 +363,28 @@ int checkFuncParams(char* funcId,int numberOfParams)
 	}
 	if (temp == NULL)
 		return 0;
+	
 	//Parameter checking from here
 	if(numberOfParams==temp->paramcount)
 	{
+		tempParam = temp->funcparams;
+		tempParam2 = parameters;
 		while(numberOfParams>0)
 		{
-			char* tempType;
-			tempParam = temp->funcparams;
-			for(int i = 1; i<numberOfParams;i++)
+			if(strcmp(tempParam2->type,tempParam->type))
 			{
-				tempParam = tempParam->next;
+				errorLogger("Type-Error: Parameter Nr. \"",tempParam->name,"\" in Function Call has the wrong Type!\n");
 			}
-			//Go On here
-			pop(&programstack,&tempType);
-			if(strcmp(tempType,tempParam->type))
-			{
-				errorLogger("Type-Error: Parameter Nr. \"",tempParam->paramNr,"\" in Function Call has the wrong Type!\n");
-			}
-
 			numberOfParams--;
+			tempParam2 = tempParam2->next;
+			tempParam = tempParam->next;
 		}
 	}
 	else
 	{
-		char* tempChar;
-		while(numberOfParams>0)
-		{
-			for(int i = 0;i<3;i++)
-			{
-				pop(&programstack,&tempChar);
-			}
-			numberOfParams--;
-		}
 		errorLogger("Parameter-Error: Function \"",funcId,"\" is called with the wrong ammount of Parameters!\n");
 	}
+	return 0;
 }
 
 int varExists(char* varId, int allScopes)
@@ -454,6 +482,7 @@ int checkVarType(char* varId,char* type,int allScopes)
 {
 	SCOPESTACK* tempscope;
 	STRUCTVAR* temp;
+	STRUCTPARAM* tempParam;
 	tempscope = scopes;
 	for (temp = variables; temp != NULL; temp = temp->hh.next)
 	{
@@ -478,6 +507,17 @@ int checkVarType(char* varId,char* type,int allScopes)
 		if (temp != NULL&& !strcmp(temp->type,type))
 			return 1;
 		tempscope = tempscope->next;
+	}
+	for (tempParam = parameters; tempParam != NULL; tempParam = tempParam->next)
+	{
+		if (!strcmp(tempParam->name, varId))
+		{
+			break;
+		}
+	}
+	if (tempParam != NULL)
+	{
+		return 1;
 	}
 	return 0;
 }

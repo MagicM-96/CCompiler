@@ -102,7 +102,7 @@ programElement
      | functionDefinition
      | SEMICOLON
      ;
-									
+
 type
      : INT {$$="INT";}
      | VOID {$$="VOID";}
@@ -119,8 +119,8 @@ identifierDeclaration
      ;
 
 functionDefinition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN { startScope(); } stmtList BRACE_CLOSE {defineFunc($2,$1,0);endScope();}
-     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN { startScope(); } stmtList BRACE_CLOSE{defineFunc($2,$1,$4);endScope();}
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN { if(!funcExists($2)) addFunc($2,$1,0); startScope(); } stmtList BRACE_CLOSE {defineFunc($2,$1,0);endScope();}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN { if(!funcExists($2)) addFunc($2,$1,$4); startScope(); } stmtList BRACE_CLOSE{defineFunc($2,$1,$4);endScope();}
      ;
 
 functionDeclaration
@@ -148,8 +148,8 @@ stmt
      | expression SEMICOLON
      | stmtConditional
      | stmtLoop
-     | RETURN expression SEMICOLON
-     | RETURN SEMICOLON
+     | RETURN expression SEMICOLON  {addVar("functionsReturnParameter",$2,0,1);}
+     | RETURN SEMICOLON {addVar("functionsReturnParameter","VOID",0,1);}
      | SEMICOLON /* empty statement */
      ;
 
@@ -186,15 +186,15 @@ expression
      | expression SHIFT_RIGHT expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Shift Operation", ":", "Incompatible variable type!");};}
      | MINUS expression %prec UNARY_MINUS
      | PLUS expression %prec UNARY_PLUS
-     | ID BRACKET_OPEN primary BRACKET_CLOSE  {if(checkVarType($1,"INT-ARRAY",1)){$$="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n");}}
-     | PARA_OPEN expression PARA_CLOSE
+     | ID BRACKET_OPEN primary BRACKET_CLOSE  {if(checkVarType($1,"INT-ARR",1)){$$="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n");}}
+     | PARA_OPEN expression PARA_CLOSE  {$$=$2;}
      | functionCall {$$=$1;}
-     | primary  {char* temp; lookupVariableType($1,&temp);if(temp==NULL){$$="INT";}else{$$=temp;}}
+     | primary  {$$=$1;}
      ;
 
 primary
-     : NUM {$$=$1;}
-     | ID {$$=$1;}
+     : NUM {$$="INT";}
+     | ID {char* temp; lookupVariableType($1,&temp);$$=temp;}
      ;
 
 functionCall

@@ -260,7 +260,7 @@ void addVariablesToFunction(char* id)
 	temp->funcvars = variables;
 }
 
-int varExists(char* varId,int allScopes)
+int varExists(char* varId, int allScopes)
 {
 	SCOPESTACK* tempscope;
 	STRUCTVAR* temp;
@@ -334,5 +334,37 @@ int checkFuncType(char* funcId, char* type)
 	}
 	if (!strcmp(temp->type,type))
 		return 1;
+	return 0;
+}
+
+int checkVarType(char* varId,char* type,int allScopes)
+{
+	SCOPESTACK* tempscope;
+	STRUCTVAR* temp;
+	tempscope = scopes;
+	for (temp = variables; temp != NULL; temp = temp->hh.next)
+	{
+		if (!strcmp(temp->id, varId))
+		{
+			break;
+		}
+	}
+	if (temp != NULL&& !strcmp(temp->type,type))
+		return 1;
+	if(!allScopes)
+		return 0;
+	while(tempscope!=NULL)
+	{
+		for (temp = tempscope->scope; temp != NULL; temp = temp->hh.next)
+		{
+			if (!strcmp(temp->id, varId))
+			{
+				break;
+			}
+		}
+		if (temp != NULL&& !strcmp(temp->type,type))
+			return 1;
+		tempscope = tempscope->next;
+	}
 	return 0;
 }

@@ -20,3 +20,4 @@ extern void yyerror(const char* msg);
 void pushSomething();
 int funcIsDefined(char* funcId);
 int checkFuncType(char* id, char* type);
+int checkVarType(char* id, char* type, int allScopes);

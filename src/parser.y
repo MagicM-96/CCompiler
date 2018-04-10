@@ -80,6 +80,8 @@ extern STRUCTFUNC* functions;
 %type <i> identifierDeclaration
 %type <id> type
 %type <i> functionParameterList
+%type <id> expression
+%type <id> functionCall
 
 %%
 
@@ -182,10 +184,10 @@ expression
      | expression DIV expression
      | MINUS expression %prec UNARY_MINUS
      | PLUS expression %prec UNARY_PLUS
-     | ID BRACKET_OPEN primary BRACKET_CLOSE
+     | ID BRACKET_OPEN primary BRACKET_CLOSE  {if(checkVarType($1,"INT-ARRAY",1)){$$="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n");}}
      | PARA_OPEN expression PARA_CLOSE
-     | functionCall
-     | primary 
+     | functionCall {$$=$1;}
+     | primary  {char* temp; lookupVariableType($1,&temp);if(temp==NULL){$$="INT";}else{$$=temp;}}
      ;
 
 primary
@@ -194,13 +196,13 @@ primary
      ;
 
 functionCall
-      : ID PARA_OPEN PARA_CLOSE
-      | ID PARA_OPEN functionCallParameters PARA_CLOSE
+      : ID PARA_OPEN PARA_CLOSE {char* temp; lookupFunctionType($1,&temp);$$=temp;}
+      | ID PARA_OPEN functionCallParameters PARA_CLOSE {char* temp; lookupFunctionType($1,&temp);$$=temp;}
       ;
 
 functionCallParameters
-     : functionCallParameters COMMA expression
-     | expression
+     : functionCallParameters COMMA expression  {push(&programstack, $3);}
+     | expression {push(&programstack,$1);}
      ;
 
 %%

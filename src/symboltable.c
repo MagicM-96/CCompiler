@@ -189,6 +189,7 @@ void defineFunc(char* id, char* type, int numberOfParams)
 				errorLogger("Multiple function-Definition: Function \"",id,"\" is already defined!\n");
 			}	
 			// Here implementation of parameter and type checking
+			checkFuncParams(id,numberOfParams);
 			addVariablesToFunction(id);
 		}
 		else
@@ -258,6 +259,104 @@ void addVariablesToFunction(char* id)
 		temp = temp->hh.next;
 	}
 	temp->funcvars = variables;
+}
+
+void lookupFunctionType(char* funcId, char** ret)
+{
+	STRUCTFUNC* temp;
+	for (temp = functions; temp != NULL; temp = temp->hh.next)
+	{
+		if (!strcmp(temp->id, funcId))
+		{
+			break;
+		}
+	}
+	if (temp != NULL)
+		(*ret) = temp->type;
+}
+
+void lookupVariableType(char* varId, char** ret)
+{
+	SCOPESTACK* tempscope;
+	STRUCTVAR* temp;
+	tempscope = scopes;
+	for (temp = variables; temp != NULL; temp = temp->hh.next)
+	{
+		if (!strcmp(temp->id, varId))
+		{
+			break;
+		}
+	}
+	if (temp != NULL)
+	{
+		(*ret) = temp->type;
+		return;
+	}
+	while(tempscope!=NULL)
+	{
+		for (temp = tempscope->scope; temp != NULL; temp = temp->hh.next)
+		{
+			if (!strcmp(temp->id, varId))
+			{
+				break;
+			}
+		}
+		if (temp != NULL)
+		{
+			(*ret) = temp->type;
+			return;
+		}
+		tempscope = tempscope->next;
+	}
+}
+
+int checkFuncParams(char* funcId,int numberOfParams)
+{
+	STRUCTFUNC* temp;
+	STRUCTPARAM* tempParam;
+	for (temp = functions; temp != NULL; temp = temp->hh.next)
+	{
+		if (!strcmp(temp->id, funcId))
+		{
+			break;
+		}
+	}
+	if (temp == NULL)
+		return 0;
+	//Parameter checking from here
+	if(numberOfParams==temp->paramcount)
+	{
+		while(numberOfParams>0)
+		{
+			char* tempType;
+			tempParam = temp->funcparams;
+			for(int i = 1; i<numberOfParams;i++)
+			{
+				tempParam = tempParam->next;
+			}
+			//Go On here
+			pop(&programstack,&tempType);
+			if(strcmp(tempType,tempParam->type))
+			{
+				errorLogger("Type-Error: Parameter Nr. \"",tempParam->paramNr,"\" in Function Call has the wrong Type!\n");
+			}
+
+			numberOfParams--;
+		}
+	}
+	else
+	{
+		char* tempChar;
+		while(numberOfParams>0)
+		{
+			for(int i = 0;i<3;i++)
+			{
+				pop(&programstack,&tempChar);
+			}
+			numberOfParams--;
+		}
+		errorLogger("Parameter-Error: Function \"",funcId,"\" is called with the wrong ammount of Parameters!\n");
+	}
 }
 
 int varExists(char* varId, int allScopes)

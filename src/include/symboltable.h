@@ -21,3 +21,6 @@ void pushSomething();
 int funcIsDefined(char* funcId);
 int checkFuncType(char* id, char* type);
 int checkVarType(char* id, char* type, int allScopes);
+int checkFuncParams(char* id, int numberOfParams);
+void lookupFunctionType(char* funcId, char** ret);
+void lookupVariableType(char* varId, char** ret);

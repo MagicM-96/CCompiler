@@ -436,6 +436,20 @@ int checkFuncType(char* funcId, char* type)
 	return 0;
 }
 
+
+/*
+	Checks if the given variable has the requested type.
+
+	Parameters:
+	- varId :		Name of the variable to be checked
+	- type :		Type the variable should have
+	- allScopes :	"1" = the variable has to be searched in every scope
+					"0" = the variable has to be searched in the current scope only
+	Return:
+	1 :	Variable has the wanted type
+	0 : else
+
+*/
 int checkVarType(char* varId,char* type,int allScopes)
 {
 	SCOPESTACK* tempscope;

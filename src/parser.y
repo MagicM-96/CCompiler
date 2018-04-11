@@ -158,13 +158,13 @@ stmtBlock
      ;
 	
 stmtConditional
-     : IF PARA_OPEN expression PARA_CLOSE stmt
-     | IF PARA_OPEN expression PARA_CLOSE stmt ELSE stmt
+     : IF PARA_OPEN expression PARA_CLOSE stmt            {if(isInt($3)){} else {errorLogger("Assignment", ":", "Incompatible variable type!");};}
+     | IF PARA_OPEN expression PARA_CLOSE stmt ELSE stmt  {if(isInt($3)){} else {errorLogger("Assignment", ":", "Incompatible variable type!");};}
      ;
 									
 stmtLoop
-     : WHILE PARA_OPEN expression PARA_CLOSE stmt
-     | DO stmt WHILE PARA_OPEN expression PARA_CLOSE SEMICOLON
+     : WHILE PARA_OPEN expression PARA_CLOSE stmt         {if(isInt($3)){} else {errorLogger("Assignment", ":", "Incompatible variable type!");};}
+     | DO stmt WHILE PARA_OPEN expression PARA_CLOSE SEMICOLON  {if(isInt($5)){} else {errorLogger("Assignment", ":", "Incompatible variable type!");};}
      ;
 									
 expression

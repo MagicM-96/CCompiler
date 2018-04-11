@@ -158,32 +158,32 @@ stmtBlock
      ;
 	
 stmtConditional
-     : IF PARA_OPEN expression PARA_CLOSE stmt            {if(isInt($3)){} else {errorLogger("Assignment", ":", "Incompatible variable type!");};}
-     | IF PARA_OPEN expression PARA_CLOSE stmt ELSE stmt  {if(isInt($3)){} else {errorLogger("Assignment", ":", "Incompatible variable type!");};}
+     : IF PARA_OPEN expression PARA_CLOSE stmt            {if(!isInt($3)) {errorLogger("Assignment", ": ", "Incompatible variable type!");};}
+     | IF PARA_OPEN expression PARA_CLOSE stmt ELSE stmt  {if(!isInt($3)) {errorLogger("Assignment", ": ", "Incompatible variable type!");};}
      ;
 									
 stmtLoop
-     : WHILE PARA_OPEN expression PARA_CLOSE stmt         {if(isInt($3)){} else {errorLogger("Assignment", ":", "Incompatible variable type!");};}
-     | DO stmt WHILE PARA_OPEN expression PARA_CLOSE SEMICOLON  {if(isInt($5)){} else {errorLogger("Assignment", ":", "Incompatible variable type!");};}
+     : WHILE PARA_OPEN expression PARA_CLOSE stmt         {if(!isInt($3)) {errorLogger("Assignment", ": ", "Incompatible variable type!");};}
+     | DO stmt WHILE PARA_OPEN expression PARA_CLOSE SEMICOLON  {if(!isInt($5)) {errorLogger("Assignment", ": ", "Incompatible variable type!");};}
      ;
 									
 expression
-     : expression ASSIGN expression       {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Assignment", ":", "Incompatible variable type!");};}
-     | expression LOGICAL_OR expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ":", "Incompatible variable type!");};}
-     | expression LOGICAL_AND expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ":", "Incompatible variable type!");};}
-     | LOGICAL_NOT expression {if(isTypeCompatible($2, "INT")){$$="INT";} else {errorLogger("Logical Not", ":", "Incompatible variable type!");};}
-     | expression EQ expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ":", "Incompatible variable type!");};}
-     | expression NE expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ":", "Incompatible variable type!");};}
-     | expression LS expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ":", "Incompatible variable type!");};}
-     | expression LSEQ expression {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Comparison", ":", "Incompatible variable type!");};}
-     | expression GTEQ expression {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Comparison", ":", "Incompatible variable type!");};}
-     | expression GT expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Comparison", ":", "Incompatible variable type!");};}
-     | expression PLUS expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ":", "Incompatible variable type!");};}
-     | expression MINUS expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ":", "Incompatible variable type!");};}
-     | expression MUL expression    {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ":", "Incompatible variable type!");};}
-     | expression DIV expression    {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ":", "Incompatible variable type!");};}
-     | expression SHIFT_LEFT expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Shift Operation", ":", "Incompatible variable type!");};}
-     | expression SHIFT_RIGHT expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Shift Operation", ":", "Incompatible variable type!");};}
+     : expression ASSIGN expression       {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Assignment", ": ", "Incompatible variable type!");};}
+     | expression LOGICAL_OR expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ": ", "Incompatible variable type!");};}
+     | expression LOGICAL_AND expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ": ", "Incompatible variable type!");};}
+     | LOGICAL_NOT expression {if(isTypeCompatible($2, "INT")){$$="INT";} else {errorLogger("Logical Not", ": ", "Incompatible variable type!");};}
+     | expression EQ expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ": ", "Incompatible variable type!");};}
+     | expression NE expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ": ", "Incompatible variable type!");};}
+     | expression LS expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ": ", "Incompatible variable type!");};}
+     | expression LSEQ expression {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Comparison", ": ", "Incompatible variable type!");};}
+     | expression GTEQ expression {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Comparison", ": ", "Incompatible variable type!");};}
+     | expression GT expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Comparison", ": ", "Incompatible variable type!");};}
+     | expression PLUS expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ": ", "Incompatible variable type!");};}
+     | expression MINUS expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ": ", "Incompatible variable type!");};}
+     | expression MUL expression    {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ": ", "Incompatible variable type!");};}
+     | expression DIV expression    {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ": ", "Incompatible variable type!");};}
+     | expression SHIFT_LEFT expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Shift Operation", ": ", "Incompatible variable type!");};}
+     | expression SHIFT_RIGHT expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Shift Operation", ": ", "Incompatible variable type!");};}
      | MINUS expression %prec UNARY_MINUS
      | PLUS expression %prec UNARY_PLUS
      | ID BRACKET_OPEN primary BRACKET_CLOSE  {if(checkVarType($1,"INT-ARR",1)){$$="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n");}}

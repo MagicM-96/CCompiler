@@ -76,7 +76,6 @@ void checkFuncCallParams(char* funcId, int numberOfParams)
 		errorLogger("Unknown function error: Function \"",funcId,"\" doesn't exist!\n");
 		return;
 	}
-	printf("Passed first\n");
 	if(numberOfParams==temp->paramcount)
 	{
 		while(numberOfParams>0)
@@ -93,7 +92,6 @@ void checkFuncCallParams(char* funcId, int numberOfParams)
 			}
 			numberOfParams--;
 		}
-		printf("Passed second\n");
 	}
 	else
 	{

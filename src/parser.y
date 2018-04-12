@@ -84,6 +84,7 @@ extern STRUCTFUNC* functions;
 %type <i>   functionParameterList
 %type <id>  expression
 %type <id>  functionCall
+%type <i>   functionCallParameters
 
 %%
 
@@ -198,13 +199,13 @@ primary
      ;
 
 functionCall
-      : ID PARA_OPEN PARA_CLOSE {char* temp; lookupFunctionType($1,&temp);$$=temp;}
-      | ID PARA_OPEN functionCallParameters PARA_CLOSE {char* temp; lookupFunctionType($1,&temp);$$=temp;}
+      : ID PARA_OPEN PARA_CLOSE {checkFuncCallParams($1,0); char* temp; lookupFunctionType($1,&temp);$$=temp;}
+      | ID PARA_OPEN functionCallParameters PARA_CLOSE {checkFuncCallParams($1,$3); char* temp; lookupFunctionType($1,&temp);$$=temp;}
       ;
 
 functionCallParameters
-     : functionCallParameters COMMA expression  {push(&programstack, $3);}
-     | expression {push(&programstack,$1);}
+     : functionCallParameters COMMA expression  {push(&programstack, $3);$$=$1+1;}
+     | expression {push(&programstack,$1);$$=1;}
      ;
 
 %%

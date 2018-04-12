@@ -20,6 +20,7 @@ void push(STACK** root, char* data)
 	STACK* stackNode = newNode(data);
 	stackNode->next = *root;
 	*root = stackNode;
+	printf("Element ist pushed: %s\n",data);
 }
 
 void pop(STACK** root, char** returnval)
@@ -33,6 +34,7 @@ void pop(STACK** root, char** returnval)
 	*root = (*root)->next;
 	char* popped = temp->data;
 	free(temp);
+	printf("Element ist popped: %s\n",popped);
 	(*returnval) = popped;
 }
 

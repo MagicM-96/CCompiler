@@ -7,6 +7,7 @@ extern STRUCTFUNC* functions;
 extern STRUCTVAR* variables;
 extern SCOPESTACK* scopes;
 extern STRUCTPARAM* parameters;
+extern STACK* programstack;
 
 int isTypeCompatible(char* leftVarType, char* rightVarType)
 {
@@ -58,6 +59,53 @@ void checkReturnParam(char* id, char* type)
 	}
 }
 
+void checkFuncCallParams(char* funcId, int numberOfParams)
+{
+	STRUCTFUNC* temp;
+	STRUCTPARAM* tempParam;
+	char *tempParam2;
+	for (temp = functions; temp != NULL; temp = temp->hh.next)
+	{
+		if (!strcmp(temp->id, funcId))
+		{
+			break;
+		}
+	}
+	if	(temp==NULL)
+	{
+		errorLogger("Unknown function error: Function \"",funcId,"\" doesn't exist!\n");
+		return;
+	}
+	printf("Passed first\n");
+	if(numberOfParams==temp->paramcount)
+	{
+		while(numberOfParams>0)
+		{
+			tempParam = temp->funcparams;
+			for(int i = 1;i<numberOfParams;i++)
+			{
+				tempParam = tempParam->next;
+			}
+			pop(&programstack,&tempParam2);
+			if(strcmp(tempParam2,tempParam->type))
+			{
+				errorLogger("Type-Error: Parameter \"",tempParam->name,"\" in Function Call has the wrong Type!\n");
+			}
+			numberOfParams--;
+		}
+		printf("Passed second\n");
+	}
+	else
+	{
+		errorLogger("Parameter-Error: Function \"",funcId,"\" is called with the wrong ammount of Parameters!\n");
+		while(numberOfParams>0)
+		{
+			pop(&programstack,&tempParam2);
+			numberOfParams--;
+		}
+	}
+}
+
 int checkFuncParams(char* funcId,int numberOfParams)
 {
 	STRUCTFUNC* temp;
@@ -81,16 +129,17 @@ int checkFuncParams(char* funcId,int numberOfParams)
 		{
 			if(strcmp(tempParam2->type,tempParam->type))
 			{
-				errorLogger("Type-Error: Parameter Nr. \"",tempParam->name,"\" in Function Call has the wrong Type!\n");
+				errorLogger("Type-Error: Parameter \"",tempParam->name,"\" in Function Definition has the wrong Type!\n");
 			}
 			numberOfParams--;
 			tempParam2 = tempParam2->next;
 			tempParam = tempParam->next;
 		}
+		return 1;
 	}
 	else
 	{
-		errorLogger("Parameter-Error: Function \"",funcId,"\" is called with the wrong ammount of Parameters!\n");
+		errorLogger("Parameter-Error: Function \"",funcId,"\" is defined with the wrong ammount of Parameters!\n");
 	}
 	return 0;
 }

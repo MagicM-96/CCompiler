@@ -185,8 +185,8 @@ expression
      | expression DIV expression    {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ": ", "Incompatible variable type!");};}
      | expression SHIFT_LEFT expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Shift Operation", ": ", "Incompatible variable type!");};}
      | expression SHIFT_RIGHT expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Shift Operation", ": ", "Incompatible variable type!");};}
-     | MINUS expression %prec UNARY_MINUS
-     | PLUS expression %prec UNARY_PLUS
+     | MINUS expression %prec UNARY_MINUS {$$=$2;}
+     | PLUS expression %prec UNARY_PLUS {$$=$2;}
      | ID BRACKET_OPEN primary BRACKET_CLOSE  {if(checkVarType($1,"INT-ARR",1)){$$="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n");}}
      | PARA_OPEN expression PARA_CLOSE  {$$=$2;}
      | functionCall {$$=$1;}

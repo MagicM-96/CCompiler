@@ -5,6 +5,7 @@
 #include "structs.h"
 #include "checker.h"
 #include <string.h>
+#include "tempcode.h"
 
 STACK* programstack;
 STRUCTFUNC* functions = NULL;
@@ -14,6 +15,7 @@ STRUCTPARAM* parameters = NULL;
 
 void addFunc(char* id, char* type, int numberOfParams)
 {
+	addCode()
 	if (!funcExists(id)&&!varExists(id,1))
 	{
 		STRUCTFUNC* s;

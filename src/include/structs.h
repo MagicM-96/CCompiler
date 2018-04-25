@@ -35,3 +35,9 @@ typedef struct scopestack
 	STRUCTVAR* scope;
 	struct scopestack* next;
 } SCOPESTACK;
+
+typedef struct vartype 
+{
+	char* type;
+	char* var;
+} TYPEVAR;

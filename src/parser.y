@@ -2,24 +2,26 @@
  * parser.y - Parser utility for the DHBW compiler
  */
  
-%{	
-#include "checker.h"
-#include "logger.h"
-#include "diag.h"
-#include "output.h"
-#include "symboltable.h"
-#include "stack.h"
+%code requires {	
+  #include "checker.h"
+  #include "logger.h"
+  #include "diag.h"
+  #include "output.h"
+  #include "symboltable.h"
+  #include "stack.h"
+  #include "structs.h"
 
-// Project-specific includes
-void yyerror (const char *msg);
-
-extern STACK* programstack;
-extern STRUCTFUNC* functions;
-%}
+  // Project-specific includes
+  void yyerror (const char *msg);
+  extern STACK* programstack;
+  extern STRUCTFUNC* functions;
+}
 
 %union {
   int i;
   char *id;
+  TYPEVAR tv;
+  
 }
  
 // Verbose error messages
@@ -83,7 +85,7 @@ extern STRUCTFUNC* functions;
 %type <id>  type
 %type <i>   functionParameterList
 %type <id>  expression
-%type <id>  functionCall
+%type <tv>  functionCall
 %type <i>   functionCallParameters
 
 %%
@@ -189,7 +191,7 @@ expression
      | PLUS expression %prec UNARY_PLUS {$$=$2;}
      | ID BRACKET_OPEN primary BRACKET_CLOSE  {if(checkVarType($1,"INT-ARR",1)){$$="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n");}}
      | PARA_OPEN expression PARA_CLOSE  {$$=$2;}
-     | functionCall {$$=$1;}
+     | functionCall {$$=$1.type;}
      | primary  {$$=$1;}
      ;
 
@@ -199,8 +201,8 @@ primary
      ;
 
 functionCall
-      : ID PARA_OPEN PARA_CLOSE {checkFuncCallParams($1,0); char* temp; lookupFunctionType($1,&temp);$$=temp;}
-      | ID PARA_OPEN functionCallParameters PARA_CLOSE {checkFuncCallParams($1,$3); char* temp; lookupFunctionType($1,&temp);$$=temp;}
+      : ID PARA_OPEN PARA_CLOSE {checkFuncCallParams($1,0); char* temp; lookupFunctionType($1,&temp);$$.type=temp;}
+      | ID PARA_OPEN functionCallParameters PARA_CLOSE {checkFuncCallParams($1,$3); char* temp; lookupFunctionType($1,&temp);$$.type=temp;}
       ;
 
 functionCallParameters

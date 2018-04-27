@@ -10,6 +10,7 @@
   #include "symboltable.h"
   #include "stack.h"
   #include "structs.h"
+  #include "tempcode.h"
 
   // Project-specific includes
   void yyerror (const char *msg);
@@ -91,7 +92,7 @@
 %%
 
 program
-     : programElementList { printSymTable();}
+     : programElementList { printSymTable();char temp[4]; addCode(OPADD,&temp,"A","B","C");}
      ;
 
 programElementList

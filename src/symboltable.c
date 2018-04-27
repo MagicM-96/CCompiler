@@ -15,7 +15,6 @@ STRUCTPARAM* parameters = NULL;
 
 void addFunc(char* id, char* type, int numberOfParams)
 {
-	addCode()
 	if (!funcExists(id)&&!varExists(id,1))
 	{
 		STRUCTFUNC* s;

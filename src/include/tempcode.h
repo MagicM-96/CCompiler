@@ -1,25 +1,32 @@
 #pragma once
 
 enum {
-	ASSIGN,
-	ADD,
-	SUB,
-	MUL,
-	DIV,
-	MINUS,
-	IFEQ,
-	IFNE,
-	IFGT,
-	IFGE,
-	IFLT,
-	IFLE,
-	GOTO,
-	RETURNR,
-	RETURN,
-	CALLR,
-	CALL,
-	ARRAY_LD,
-	ARRAY_ST
+	OPASSIGN,
+	OPADD,
+	OPSUB,
+	OPMUL,
+	OPDIV,
+	OPMINUS,
+	OPIFEQ,
+	OPIFNE,
+	OPIFGT,
+	OPIFGE,
+	OPIFLT,
+	OPIFLE,
+	OPGOTO,
+	OPRETURNR,
+	OPRETURN,
+	OPCALLR,
+	OPCALL,
+	OPARRAY_LD,
+	OPARRAY_ST
 };
 
+typedef struct tempCodeString {
+	char* line;
+	struct tempCodeString* next;
+} TEMPCODESTRING;
+
 void addCode();
+void addStr(char* str);
+void printStr();

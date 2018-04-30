@@ -198,7 +198,7 @@ expression
 
 primary
      : NUM {$$="INT";}
-     | ID {char* temp; lookupVariableType($1,&temp);$$=temp;}
+     | ID {char* temp; lookupVariableType($1,&temp);$$=temp;createVar($1,NULL,&temp);}
      ;
 
 functionCall

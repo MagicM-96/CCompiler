@@ -3,12 +3,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+typedef struct Vars{
+    char* tempVar[4];
+    char* varName;
+    struct Vars* next;
+}TEMPVARS;
+
 int tempVars = 0;
 int endif = 0;
 int endelse = 0;
 int endwhile = 0;
 int funcs = 0;
 TEMPCODESTRING* tempCode, *firstTempCode;
+TEMPVARS *firstVar,*lastVar, *foundVar;
 
 
 /**
@@ -23,11 +31,18 @@ TEMPCODESTRING* tempCode, *firstTempCode;
 void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
 	char temp[100];
     char returnVal[4];
-    switch(opcode){
+    switch(opcode)
+    {
         case OPASSIGN:
-            sprintf(temp,"%s = %s;",op1,op2);
-            strcpy(returnVal,"1");
-            tempVars++;
+            if(isVariable(op1,&returnVal))
+            {
+                sprintf(temp,"%s = %s;",foundVar->varName,op2);
+                tempVars++;
+            }
+            else
+            {
+                errorLogger("Type-Error: Expression ist not a variable!","","");
+            }
             break;
         case OPADD:
             sprintf(temp,"V%d = %s + %s",tempVars,op1,op2);
@@ -39,6 +54,10 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             sprintf(returnVal,"V%d",tempVars);
             tempVars++;
             break;
+        case CREATEVAR:
+            sprintf(temp,"%s = %s",op1,op2);
+            strcpy(returnVal,op1);
+            break;
         default:
             strcpy(temp,"Unknown OPCODE!\n");
             strcpy(returnVal,"-1");
@@ -49,6 +68,23 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
     addStr(temp);
     printStr();
     printf("Returns: %s\n",returnVal);
+}
+
+void createVar(char* id, char* type,char** ret)
+{
+    if(firstVar==NULL)
+    {
+        firstVar = (TEMPVARS*)malloc(sizeof(TEMPVARS));
+        lastVar = firstVar;
+    }
+    lastVar->varName = (char*)malloc(sizeof(id));
+    strcpy(lastVar->varName,id);
+    sprintf(lastVar->tempVar,"V%d",tempVars);
+    tempVars++;
+    addCode(CREATEVAR,ret,lastVar->tempVar,lastVar->varName,NULL);
+    lastVar->next = (TEMPVARS*)malloc(sizeof(TEMPVARS));
+    lastVar = lastVar->next;
+    //logTempVars();
 }
 
 void addStr(char* str)
@@ -67,9 +103,38 @@ void addStr(char* str)
 void printStr()
 {
     TEMPCODESTRING *temp = firstTempCode;
-    while(temp->line!=NULL){
+    while(temp->line!=NULL)
+    {
         printf("%s\n",temp->line);
         temp = temp->next;
     }
     tempCode = NULL;
+}
+
+int isVariable(char* var, char** ret)
+{
+    TEMPVARS* temp;
+    temp = firstVar;
+    while(temp != NULL && temp->tempVar != NULL)
+    {
+        if(!strcmp(var, temp->tempVar))
+        {
+            (*ret) = "1";
+            foundVar = temp;
+            return 1;
+        }
+        temp = temp->next;
+    }
+    return 0;
+}
+
+void logTempVars()
+{
+    TEMPVARS* temp;
+    temp = firstVar;
+    while(temp != NULL && temp->tempVar != NULL)
+    {
+        printf("Variable: ID: %s, TEMP: %s\n",temp->varName,temp->tempVar);
+        temp = temp->next;
+    }
 }

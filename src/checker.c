@@ -1,7 +1,6 @@
 #include "checker.h"
-#include "stack.h"
-#include "structs.h"
 #include "logger.h"
+#include "stack.h"
 
 extern STRUCTFUNC* functions;
 extern STRUCTVAR* variables;
@@ -40,30 +39,28 @@ int isInt(char* varType)
 	}
 }
 
-
-
-void checkReturnParam(char* id, char* type)
+void checkReturnParam(char* id, char* type, ERRORLINEINFO* errorLineInfo)
 {
 	STRUCTVAR* tempvars;
 	tempvars = variables;
-	while(tempvars!=NULL)
+	while (tempvars != NULL)
 	{
-		if(!strcmp(tempvars->id,"functionsReturnParameter"))
+		if (!strcmp(tempvars->id, "functionsReturnParameter"))
 		{
-			if(strcmp(tempvars->type,type))
+			if (strcmp(tempvars->type, type))
 			{
-				errorLogger("Type-Error: Return-Type in Function \"",id,"\" has the wrong type!\n");
+				errorLogger("Type-Error: Return-Type in Function \"", id, "\" has the wrong type!\n", errorLineInfo);
 			}
 		}
 		tempvars = tempvars->hh.next;
 	}
 }
 
-void checkFuncCallParams(char* funcId, int numberOfParams)
+void checkFuncCallParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorLineInfo)
 {
 	STRUCTFUNC* temp;
 	STRUCTPARAM* tempParam;
-	char *tempParam2;
+	char* tempParam2;
 	for (temp = functions; temp != NULL; temp = temp->hh.next)
 	{
 		if (!strcmp(temp->id, funcId))
@@ -71,43 +68,43 @@ void checkFuncCallParams(char* funcId, int numberOfParams)
 			break;
 		}
 	}
-	if	(temp==NULL)
+	if (temp == NULL)
 	{
-		errorLogger("Unknown function error: Function \"",funcId,"\" doesn't exist!\n");
+		errorLogger("Unknown function error: Function \"", funcId, "\" doesn't exist!\n", errorLineInfo);
 		return;
 	}
-	if(numberOfParams==temp->paramcount)
+	if (numberOfParams == temp->paramcount)
 	{
-		while(numberOfParams>0)
+		while (numberOfParams > 0)
 		{
 			tempParam = temp->funcparams;
-			for(int i = 1;i<numberOfParams;i++)
+			for (int i = 1; i < numberOfParams; i++)
 			{
 				tempParam = tempParam->next;
 			}
-			pop(&programstack,&tempParam2);
-			if(strcmp(tempParam2,tempParam->type))
+			pop(&programstack, &tempParam2);
+			if (strcmp(tempParam2, tempParam->type))
 			{
-				errorLogger("Type-Error: Parameter \"",tempParam->name,"\" in Function Call has the wrong Type!\n");
+				errorLogger("Type-Error: Parameter \"", tempParam->name, "\" in Function Call has the wrong Type!\n", errorLineInfo);
 			}
 			numberOfParams--;
 		}
 	}
 	else
 	{
-		errorLogger("Parameter-Error: Function \"",funcId,"\" is called with the wrong ammount of Parameters!\n");
-		while(numberOfParams>0)
+		errorLogger("Parameter-Error: Function \"", funcId, "\" is called with the wrong ammount of Parameters!\n", errorLineInfo);
+		while (numberOfParams > 0)
 		{
-			pop(&programstack,&tempParam2);
+			pop(&programstack, &tempParam2);
 			numberOfParams--;
 		}
 	}
 }
 
-int checkFuncParams(char* funcId,int numberOfParams)
+int checkFuncParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorLineInfo)
 {
 	STRUCTFUNC* temp;
-	STRUCTPARAM* tempParam,*tempParam2;
+	STRUCTPARAM *tempParam, *tempParam2;
 	for (temp = functions; temp != NULL; temp = temp->hh.next)
 	{
 		if (!strcmp(temp->id, funcId))
@@ -117,17 +114,18 @@ int checkFuncParams(char* funcId,int numberOfParams)
 	}
 	if (temp == NULL)
 		return 0;
-	
-	//Parameter checking from here
-	if(numberOfParams==temp->paramcount)
+
+	// Parameter checking from here
+	if (numberOfParams == temp->paramcount)
 	{
 		tempParam = temp->funcparams;
 		tempParam2 = parameters;
-		while(numberOfParams>0)
+		while (numberOfParams > 0)
 		{
-			if(strcmp(tempParam2->type,tempParam->type))
+			if (strcmp(tempParam2->type, tempParam->type))
 			{
-				errorLogger("Type-Error: Parameter \"",tempParam->name,"\" in Function Definition has the wrong Type!\n");
+				errorLogger("Type-Error: Parameter \"", tempParam->name,
+					"\" in Function Definition has the wrong Type!\n", errorLineInfo);
 			}
 			numberOfParams--;
 			tempParam2 = tempParam2->next;
@@ -137,7 +135,8 @@ int checkFuncParams(char* funcId,int numberOfParams)
 	}
 	else
 	{
-		errorLogger("Parameter-Error: Function \"",funcId,"\" is defined with the wrong ammount of Parameters!\n");
+		errorLogger("Parameter-Error: Function \"", funcId, "\" is defined with the wrong ammount of Parameters!\n",
+			errorLineInfo);
 	}
 	return 0;
 }
@@ -156,9 +155,9 @@ int varExists(char* varId, int allScopes)
 	}
 	if (temp != NULL)
 		return 1;
-	if(!allScopes)
+	if (!allScopes)
 		return 0;
-	while(tempscope!=NULL)
+	while (tempscope != NULL)
 	{
 		for (temp = tempscope->scope; temp != NULL; temp = temp->hh.next)
 		{
@@ -214,11 +213,10 @@ int checkFuncType(char* funcId, char* type)
 			break;
 		}
 	}
-	if (!strcmp(temp->type,type))
+	if (!strcmp(temp->type, type))
 		return 1;
 	return 0;
 }
-
 
 /*
 	Checks if the given variable has the requested type.
@@ -233,7 +231,7 @@ int checkFuncType(char* funcId, char* type)
 	0 : else
 
 */
-int checkVarType(char* varId,char* type,int allScopes)
+int checkVarType(char* varId, char* type, int allScopes)
 {
 	SCOPESTACK* tempscope;
 	STRUCTVAR* temp;
@@ -246,11 +244,11 @@ int checkVarType(char* varId,char* type,int allScopes)
 			break;
 		}
 	}
-	if (temp != NULL&& !strcmp(temp->type,type))
+	if (temp != NULL && !strcmp(temp->type, type))
 		return 1;
-	if(!allScopes)
+	if (!allScopes)
 		return 0;
-	while(tempscope!=NULL)
+	while (tempscope != NULL)
 	{
 		for (temp = tempscope->scope; temp != NULL; temp = temp->hh.next)
 		{
@@ -259,7 +257,7 @@ int checkVarType(char* varId,char* type,int allScopes)
 				break;
 			}
 		}
-		if (temp != NULL&& !strcmp(temp->type,type))
+		if (temp != NULL && !strcmp(temp->type, type))
 			return 1;
 		tempscope = tempscope->next;
 	}

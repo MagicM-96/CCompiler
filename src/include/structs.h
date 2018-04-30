@@ -36,6 +36,14 @@ typedef struct scopestack
 	struct scopestack* next;
 } SCOPESTACK;
 
+typedef struct errorLineInfo
+{	
+	int firstLine;
+	int firstColumn;
+	int lastLine;
+	int lastColumn;
+} ERRORLINEINFO;
+
 typedef struct vartype 
 {
 	char* type;

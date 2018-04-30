@@ -2,21 +2,24 @@
  * parser.y - Parser utility for the DHBW compiler
  */
  
-%code requires {	
-  #include "checker.h"
-  #include "logger.h"
-  #include "diag.h"
-  #include "output.h"
-  #include "symboltable.h"
-  #include "stack.h"
-  #include "structs.h"
-  #include "tempcode.h"
+%code requires{	
+#include "checker.h"
+#include "logger.h"
+#include "diag.h"
+#include "output.h"
+#include "symboltable.h"
+#include "stack.h"
+#include "tempcode.h"
 
-  // Project-specific includes
-  void yyerror (const char *msg);
-  extern STACK* programstack;
-  extern STRUCTFUNC* functions;
-}
+// Project-specific includes
+void yyerror (const char *msg);
+void getScannedLines();
+
+extern STACK* programstack;
+extern STRUCTFUNC* functions;
+ERRORLINEINFO* errorLineInfo;
+
+%}
 
 %union {
   int i;
@@ -113,8 +116,8 @@ type
      ;
 
 variableDeclaration
-     : variableDeclaration COMMA identifierDeclaration  {identifierDeclaration($3,"0");}
-     | type identifierDeclaration {identifierDeclaration($2,$1);}
+     : variableDeclaration COMMA identifierDeclaration  {getScannedLines(); identifierDeclaration($3,"0", errorLineInfo);}
+     | type identifierDeclaration {getScannedLines(); identifierDeclaration($2,$1, errorLineInfo);}
      ;
 
 identifierDeclaration
@@ -123,13 +126,13 @@ identifierDeclaration
      ;
 
 functionDefinition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN { if(!funcExists($2)) addFunc($2,$1,0); startScope(); } stmtList BRACE_CLOSE {defineFunc($2,$1,0);endScope();}
-     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN { if(!funcExists($2)) addFunc($2,$1,$4); startScope(); } stmtList BRACE_CLOSE{defineFunc($2,$1,$4);endScope();}
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1,0, errorLineInfo); startScope(); } stmtList BRACE_CLOSE {getScannedLines(); defineFunc($2,$1,0, errorLineInfo);endScope();}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1,$4, errorLineInfo); startScope(); } stmtList BRACE_CLOSE{getScannedLines(); defineFunc($2,$1,$4, errorLineInfo);endScope();}
      ;
 
 functionDeclaration
-     : type ID PARA_OPEN PARA_CLOSE {addFunc($2,$1,0);}
-     | type ID PARA_OPEN functionParameterList PARA_CLOSE {addFunc($2,$1,$4);}
+     : type ID PARA_OPEN PARA_CLOSE {getScannedLines(); addFunc($2,$1,0, errorLineInfo);}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE {getScannedLines(); addFunc($2,$1,$4, errorLineInfo);}
      ;
 
 functionParameterList
@@ -162,35 +165,43 @@ stmtBlock
      ;
 	
 stmtConditional
-     : IF PARA_OPEN expression PARA_CLOSE stmt            {if(!isInt($3)) {errorLogger("If-Statement",":","Incompatible variable type!");};}
-     | IF PARA_OPEN expression PARA_CLOSE stmt ELSE stmt  {if(!isInt($3)) {errorLogger("If-Statement", ": ", "Incompatible variable type!");};}
+     : IF PARA_OPEN expression PARA_CLOSE stmt            
+     {getScannedLines();
+      if(!isInt($3)) {throwIfStatementError(errorLineInfo);};}
+     | IF PARA_OPEN expression PARA_CLOSE stmt ELSE stmt  
+     {getScannedLines();
+      if(!isInt($3)) {throwIfStatementError(errorLineInfo);};}
      ;
 									
 stmtLoop
-     : WHILE PARA_OPEN expression PARA_CLOSE stmt         {if(!isInt($3)) {errorLogger("While-loop", ": ", "Incompatible variable type!");};}
-     | DO stmt WHILE PARA_OPEN expression PARA_CLOSE SEMICOLON  {if(!isInt($5)) {errorLogger("While-loop", ": ", "Incompatible variable type!");};}
+     : WHILE PARA_OPEN expression PARA_CLOSE stmt   
+     {getScannedLines();
+      if(!isInt($3)) {throwWhileLoopError(errorLineInfo);};}
+     | DO stmt WHILE PARA_OPEN expression PARA_CLOSE SEMICOLON
+     {getScannedLines();
+      if(!isInt($5)) {throwWhileLoopError(errorLineInfo);};}
      ;
 									
 expression
-     : expression ASSIGN expression       {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Assignment", ": ", "Incompatible variable type!");};}
-     | expression LOGICAL_OR expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ": ", "Incompatible variable type!");};}
-     | expression LOGICAL_AND expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ": ", "Incompatible variable type!");};}
-     | LOGICAL_NOT expression {if(isTypeCompatible($2, "INT")){$$="INT";} else {errorLogger("Logical Not", ": ", "Incompatible variable type!");};}
-     | expression EQ expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ": ", "Incompatible variable type!");};}
-     | expression NE expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ": ", "Incompatible variable type!");};}
-     | expression LS expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Logical comparison", ": ", "Incompatible variable type!");};}
-     | expression LSEQ expression {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Comparison", ": ", "Incompatible variable type!");};}
-     | expression GTEQ expression {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Comparison", ": ", "Incompatible variable type!");};}
-     | expression GT expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Comparison", ": ", "Incompatible variable type!");};}
-     | expression PLUS expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ": ", "Incompatible variable type!");};}
-     | expression MINUS expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ": ", "Incompatible variable type!");};}
-     | expression MUL expression    {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ": ", "Incompatible variable type!");};}
-     | expression DIV expression    {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Math Operation", ": ", "Incompatible variable type!");};}
-     | expression SHIFT_LEFT expression   {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Shift Operation", ": ", "Incompatible variable type!");};}
-     | expression SHIFT_RIGHT expression  {if(isTypeCompatible($1, $3)){$$="INT";} else {errorLogger("Shift Operation", ": ", "Incompatible variable type!");};}
+     : expression ASSIGN expression       {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwAssignmentError(errorLineInfo);};}
+     | expression LOGICAL_OR expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression LOGICAL_AND expression  {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
+     | LOGICAL_NOT expression {getScannedLines(); if(isTypeCompatible($2, "INT")){$$="INT";} else {errorLogger("Logical Not", ": ", "Incompatible variable type!", errorLineInfo);};}
+     | expression EQ expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression NE expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression LS expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression LSEQ expression {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression GTEQ expression {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression GT expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression PLUS expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwMatchOpError(errorLineInfo);};}
+     | expression MINUS expression  {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwMatchOpError(errorLineInfo);};}
+     | expression MUL expression    {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwMatchOpError(errorLineInfo);};}
+     | expression DIV expression    {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwMatchOpError(errorLineInfo);};}
+     | expression SHIFT_LEFT expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwShiftOpError(errorLineInfo);};}
+     | expression SHIFT_RIGHT expression  {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwShiftOpError(errorLineInfo);};}
      | MINUS expression %prec UNARY_MINUS {$$=$2;}
      | PLUS expression %prec UNARY_PLUS {$$=$2;}
-     | ID BRACKET_OPEN primary BRACKET_CLOSE  {if(checkVarType($1,"INT-ARR",1)){$$="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n");}}
+     | ID BRACKET_OPEN primary BRACKET_CLOSE  {getScannedLines(); if(checkVarType($1,"INT-ARR",1)){$$="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n", errorLineInfo);}}
      | PARA_OPEN expression PARA_CLOSE  {$$=$2;}
      | functionCall {$$=$1.type;}
      | primary  {$$=$1;}
@@ -202,8 +213,8 @@ primary
      ;
 
 functionCall
-      : ID PARA_OPEN PARA_CLOSE {checkFuncCallParams($1,0); char* temp; lookupFunctionType($1,&temp);$$.type=temp;}
-      | ID PARA_OPEN functionCallParameters PARA_CLOSE {checkFuncCallParams($1,$3); char* temp; lookupFunctionType($1,&temp);$$.type=temp;}
+      : ID PARA_OPEN PARA_CLOSE {checkFuncCallParams($1,0, errorLineInfo); char* temp; lookupFunctionType($1,&temp);$$.type=temp;}
+      | ID PARA_OPEN functionCallParameters PARA_CLOSE {checkFuncCallParams($1,$3, errorLineInfo); char* temp; lookupFunctionType($1,&temp);$$.type=temp;}
       ;
 
 functionCallParameters
@@ -216,4 +227,14 @@ functionCallParameters
 void yyerror (const char *msg)
 {
 	FATAL_COMPILER_ERROR(INVALID_SYNTAX, 0, "(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, msg);
+}
+
+void getScannedLines(){
+  if (errorLineInfo == NULL) {
+    errorLineInfo = (ERRORLINEINFO*) malloc(sizeof(ERRORLINEINFO));
+  }
+  errorLineInfo->firstLine = yylloc.first_line;
+  errorLineInfo->firstColumn = yylloc.first_column;
+  errorLineInfo->lastLine = yylloc.last_line;
+  errorLineInfo->lastColumn = yylloc.last_column;
 }

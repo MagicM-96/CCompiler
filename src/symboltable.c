@@ -1,9 +1,8 @@
 #include "symboltable.h"
 
+#include "checker.h"
 #include "logger.h"
 #include "stack.h"
-#include "structs.h"
-#include "checker.h"
 #include <string.h>
 
 STACK* programstack;
@@ -12,9 +11,9 @@ STRUCTVAR* variables = NULL;
 SCOPESTACK* scopes = NULL;
 STRUCTPARAM* parameters = NULL;
 
-void addFunc(char* id, char* type, int numberOfParams)
+void addFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo)
 {
-	if (!funcExists(id)&&!varExists(id,1))
+	if (!funcExists(id) && !varExists(id, 1))
 	{
 		STRUCTFUNC* s;
 		s = (STRUCTFUNC*)malloc(sizeof(STRUCTFUNC));
@@ -34,11 +33,11 @@ void addFunc(char* id, char* type, int numberOfParams)
 			pop(&programstack, &templength);
 			pop(&programstack, &temptype);
 			pop(&programstack, &tempid);
-			if (!strcmp(temptype,"VOID"))
+			if (!strcmp(temptype, "VOID"))
 			{
-				errorLogger("Type-Error: Parameter \"",tempid,"\" can't be declared as VOID!\n");
+				errorLogger("Type-Error: Parameter \"", tempid, "\" can't be declared as VOID!\n", errorLineInfo);
 			}
-			else 
+			else
 			{
 				if (atoi(templength) > 1)
 				{
@@ -55,7 +54,6 @@ void addFunc(char* id, char* type, int numberOfParams)
 				p->next = tempstruct;
 				numberOfParams--;
 			}
-			
 		}
 		parameters = p;
 		s->funcparams = p;
@@ -64,23 +62,25 @@ void addFunc(char* id, char* type, int numberOfParams)
 	}
 	else
 	{
-		errorLogger("Name-Error: Identifier \"",id,"\" is already in use!\n");
+		errorLogger("Name-Error: Identifier \"", id, "\" is already in use!\n", errorLineInfo);
 	}
 }
-void identifierDeclaration(int length, char* type)
+void identifierDeclaration(int length, char* type, ERRORLINEINFO* errorLineInfo)
 {
 	if (!strcmp(type, "0"))
 	{
 		char* tempid;
 		char* temptype;
 		pop(&programstack, &tempid);
-		if(!strcmp(tempid,"functionsReturnParameter")){
-			errorLogger("Name-Error: Variable can't be called \"",tempid,"\" because this name is reserved for the compiler!\n");
+		if (!strcmp(tempid, "functionsReturnParameter"))
+		{
+			errorLogger("Name-Error: Variable can't be called \"", tempid,
+				"\" because this name is reserved for the compiler!\n", errorLineInfo);
 		}
 		peek(programstack, &temptype);
 		if (strcmp(temptype, "VOID"))
 		{
-			if (!varExists(tempid,0)&&!funcExists(tempid))
+			if (!varExists(tempid, 0) && !funcExists(tempid))
 			{
 				if (length == 1)
 				{
@@ -91,22 +91,22 @@ void identifierDeclaration(int length, char* type)
 					addVar(tempid, "INT-ARR", 0, length);
 					char* tempId;
 					char* tempI;
-					tempId = (char*)malloc(sizeof(tempid)+2*sizeof(char)+sizeof(int));
+					tempId = (char*)malloc(sizeof(tempid) + 2 * sizeof(char) + sizeof(int));
 					tempI = (char*)malloc(sizeof(int));
-					for(int i = 0;i<length;i++)
+					for (int i = 0; i < length; i++)
 					{
-						strcpy(tempId,tempid);
-						strcat(tempId,"[");
-						sprintf(tempI,"%d",i);
-						strcat(tempId,tempI);
-						strcat(tempId,"]");
-						addVar(tempId,"ARRAY-ELEMENT",0,1);
+						strcpy(tempId, tempid);
+						strcat(tempId, "[");
+						sprintf(tempI, "%d", i);
+						strcat(tempId, tempI);
+						strcat(tempId, "]");
+						addVar(tempId, "ARRAY-ELEMENT", 0, 1);
 					}
 				}
 			}
 			else
 			{
-				errorLogger("Name-Error: Identifier \"" , tempid, "\" already exists!");
+				errorLogger("Name-Error: Identifier \"", tempid, "\" already exists!", errorLineInfo);
 			}
 		}
 	}
@@ -116,17 +116,19 @@ void identifierDeclaration(int length, char* type)
 		{
 			char* id;
 			pop(&programstack, &id);
-			errorLogger("Type-Error: Can't declare variable \"",id,"\" as VOID!\n");
+			errorLogger("Type-Error: Can't declare variable \"", id, "\" as VOID!\n", errorLineInfo);
 		}
 		else
 		{
 			char* id;
 			pop(&programstack, &id);
-			if(!strcmp(id,"functionsReturnParameter")){
-				errorLogger("Name-Error: Variable can't be called \"",id,"\" because this name is reserved for the compiler!\n");
+			if (!strcmp(id, "functionsReturnParameter"))
+			{
+				errorLogger("Name-Error: Variable can't be called \"", id,
+					"\" because this name is reserved for the compiler!\n", errorLineInfo);
 			}
 			push(&programstack, type);
-			if (!varExists(id,0)&&!funcExists(id))
+			if (!varExists(id, 0) && !funcExists(id))
 			{
 				if (length == 1)
 				{
@@ -137,22 +139,22 @@ void identifierDeclaration(int length, char* type)
 					addVar(id, "INT-ARR", 0, length);
 					char* tempId;
 					char* tempI;
-					tempId = (char*)malloc(sizeof(id)+2*sizeof(char)+sizeof(int));
+					tempId = (char*)malloc(sizeof(id) + 2 * sizeof(char) + sizeof(int));
 					tempI = (char*)malloc(sizeof(int));
-					for(int i = 0;i<length;i++)
+					for (int i = 0; i < length; i++)
 					{
-						strcpy(tempId,id);
-						strcat(tempId,"[");
-						sprintf(tempI,"%d",i);
-						strcat(tempId,tempI);
-						strcat(tempId,"]");
-						addVar(tempId,"ARRAY-ELEMENT",0,1);
+						strcpy(tempId, id);
+						strcat(tempId, "[");
+						sprintf(tempI, "%d", i);
+						strcat(tempId, tempI);
+						strcat(tempId, "]");
+						addVar(tempId, "ARRAY-ELEMENT", 0, 1);
 					}
 				}
 			}
 			else
 			{
-				errorLogger("Name-Error: Identifier \"",id,"\" is already in use!\n");
+				errorLogger("Name-Error: Identifier \"", id, "\" is already in use!\n", errorLineInfo);
 			}
 		}
 	}
@@ -188,28 +190,29 @@ void typeReplace(char** type)
 	}
 }
 
-void defineFunc(char* id, char* type, int numberOfParams)
+void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo)
 {
 	if (funcExists(id))
-	{	
-		if(checkFuncType(id,type)){
-			if(funcIsDefined(id))
+	{
+		if (checkFuncType(id, type))
+		{
+			if (funcIsDefined(id))
 			{
-				errorLogger("Multiple function-Definition: Function \"",id,"\" is already defined!\n");
-			}	
-			checkFuncParams(id,numberOfParams);
+				errorLogger("Multiple function-Definition: Function \"", id, "\" is already defined!\n", errorLineInfo);
+			}
+			checkFuncParams(id, numberOfParams, errorLineInfo);
 			addVariablesToFunction(id);
 		}
 		else
 		{
-			errorLogger("Type-Error: Function \"",id,"\" is defined in different Types!");
-		}		
+			errorLogger("Type-Error: Function \"", id, "\" is defined in different Types!", errorLineInfo);
+		}
 	}
-	else if(!varExists(id,1))
+	else if (!varExists(id, 1))
 	{
-		addFunc(id, type, numberOfParams);
+		addFunc(id, type, numberOfParams, errorLineInfo);
 		STRUCTFUNC* tempFunc = functions;
-		while (strcmp(tempFunc->id,id))
+		while (strcmp(tempFunc->id, id))
 		{
 			tempFunc = tempFunc->hh.next;
 		}
@@ -218,9 +221,9 @@ void defineFunc(char* id, char* type, int numberOfParams)
 	}
 	else
 	{
-		errorLogger("Name-Error: Identifier \"",id,"\" is already in use!\n");
+		errorLogger("Name-Error: Identifier \"", id, "\" is already in use!\n", errorLineInfo);
 	}
-	checkReturnParam(id,type);
+	checkReturnParam(id, type, errorLineInfo);
 }
 
 void addVar(char* id, char* type, int value, int size)
@@ -303,7 +306,7 @@ void lookupVariableType(char* varId, char** ret)
 		(*ret) = temp->type;
 		return;
 	}
-	while(tempscope!=NULL)
+	while (tempscope != NULL)
 	{
 		for (temp = tempscope->scope; temp != NULL; temp = temp->hh.next)
 		{
@@ -319,7 +322,7 @@ void lookupVariableType(char* varId, char** ret)
 		}
 		tempscope = tempscope->next;
 	}
-	
+
 	for (tempParam = parameters; tempParam != NULL; tempParam = tempParam->next)
 	{
 		if (!strcmp(tempParam->name, varId))

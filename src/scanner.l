@@ -4,6 +4,14 @@
 
 %{
 	#include "parser.y.h"
+
+	int column = 0;
+	#define YY_USER_ACTION {\
+	yylloc.first_line = yylineno; \
+	yylloc.last_line = yylineno; \
+	yylloc.first_column = column; \
+	yylloc.last_column = column + yyleng-1; \
+	column += yyleng;}
 %}
 
 /* 
@@ -19,7 +27,7 @@
 %option noyywrap		
 
 %%
-
+\n {column = 0;}
 
 do { return DO; }
 while { return WHILE; }

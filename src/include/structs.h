@@ -35,3 +35,17 @@ typedef struct scopestack
 	STRUCTVAR* scope;
 	struct scopestack* next;
 } SCOPESTACK;
+
+typedef struct errorLineInfo
+{	
+	int firstLine;
+	int firstColumn;
+	int lastLine;
+	int lastColumn;
+} ERRORLINEINFO;
+
+typedef struct varTypesToCheck
+{
+	char* leftVarType;
+	char* rightVarType;
+} VARTYPESTOCHECK;

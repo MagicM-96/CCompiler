@@ -1,5 +1,3 @@
-// Author: Patrick
-
 #include "output.h"
 
 extern STRUCTVAR* variables;
@@ -10,7 +8,7 @@ STRUCTFUNC* tempFuncs;
 
 void printSymTable()
 {
-	printf("-----Symboltable---------------------------------------------------\n");
+	printf("\n\n-----Symboltable---------------------------------------------------\n");
 	// print variables-subtable
 	printf("Global variables:\n");
 	if (variables == NULL)

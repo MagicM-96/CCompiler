@@ -1,11 +1,12 @@
 #pragma once
+#include "structs.h"
 
-void addFunc(char* id, char* type, int numberOfParams);
+void addFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo);
 int yylex();	   // TODO is this necessary?
 
-void defineFunc(char* id, char* type, int numberOfParams);
+void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo);
 
-void identifierDeclaration(int length, char* type);
+void identifierDeclaration(int length, char* type, ERRORLINEINFO* errorLineInfo);
 void pushSomething();
 void typeReplace(char** type);
 void addVariablesToFunction(char* id);

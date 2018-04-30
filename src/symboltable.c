@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "stack.h"
 #include <string.h>
+#include "tempcode.h"
 
 STACK* programstack;
 STRUCTFUNC* functions = NULL;

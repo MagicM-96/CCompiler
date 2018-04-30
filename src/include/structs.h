@@ -44,8 +44,8 @@ typedef struct errorLineInfo
 	int lastColumn;
 } ERRORLINEINFO;
 
-typedef struct varTypesToCheck
+typedef struct vartype 
 {
-	char* leftVarType;
-	char* rightVarType;
-} VARTYPESTOCHECK;
+	char* type;
+	char* var;
+} TYPEVAR;

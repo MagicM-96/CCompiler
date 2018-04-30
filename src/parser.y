@@ -2,13 +2,14 @@
  * parser.y - Parser utility for the DHBW compiler
  */
  
-%{	
+%code requires{	
 #include "checker.h"
 #include "logger.h"
 #include "diag.h"
 #include "output.h"
 #include "symboltable.h"
 #include "stack.h"
+#include "tempcode.h"
 
 // Project-specific includes
 void yyerror (const char *msg);
@@ -17,12 +18,14 @@ void getScannedLines();
 extern STACK* programstack;
 extern STRUCTFUNC* functions;
 ERRORLINEINFO* errorLineInfo;
-//VARTYPESTOCHECK* varTypesToCheck;
+
 %}
 
 %union {
   int i;
   char *id;
+  TYPEVAR tv;
+  
 }
  
 // Verbose error messages
@@ -86,13 +89,13 @@ ERRORLINEINFO* errorLineInfo;
 %type <id>  type
 %type <i>   functionParameterList
 %type <id>  expression
-%type <id>  functionCall
+%type <tv>  functionCall
 %type <i>   functionCallParameters
 
 %%
 
 program
-     : programElementList { printSymTable();}
+     : programElementList { printSymTable();char temp[4]; addCode(OPADD,&temp,"A","B","C");}
      ;
 
 programElementList
@@ -200,7 +203,7 @@ expression
      | PLUS expression %prec UNARY_PLUS {$$=$2;}
      | ID BRACKET_OPEN primary BRACKET_CLOSE  {getScannedLines(); if(checkVarType($1,"INT-ARR",1)){$$="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n", errorLineInfo);}}
      | PARA_OPEN expression PARA_CLOSE  {$$=$2;}
-     | functionCall {$$=$1;}
+     | functionCall {$$=$1.type;}
      | primary  {$$=$1;}
      ;
 
@@ -210,8 +213,8 @@ primary
      ;
 
 functionCall
-      : ID PARA_OPEN PARA_CLOSE {checkFuncCallParams($1,0, errorLineInfo); char* temp; lookupFunctionType($1,&temp);$$=temp;}
-      | ID PARA_OPEN functionCallParameters PARA_CLOSE {checkFuncCallParams($1,$3, errorLineInfo); char* temp; lookupFunctionType($1,&temp);$$=temp;}
+      : ID PARA_OPEN PARA_CLOSE {checkFuncCallParams($1,0, errorLineInfo); char* temp; lookupFunctionType($1,&temp);$$.type=temp;}
+      | ID PARA_OPEN functionCallParameters PARA_CLOSE {checkFuncCallParams($1,$3, errorLineInfo); char* temp; lookupFunctionType($1,&temp);$$.type=temp;}
       ;
 
 functionCallParameters

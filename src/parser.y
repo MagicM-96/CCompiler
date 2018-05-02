@@ -19,7 +19,7 @@ extern STACK* programstack;
 extern STRUCTFUNC* functions;
 ERRORLINEINFO* errorLineInfo;
 
-%}
+}
 
 %union {
   int i;
@@ -84,11 +84,11 @@ ERRORLINEINFO* errorLineInfo;
 %left MUL DIV MOD
 %left LOGICAL_NOT UNARY_MINUS UNARY_PLUS
 
-%type <id>  primary
+%type <tv>  primary
 %type <i>   identifierDeclaration
-%type <id>  type
+%type <tv>  type
 %type <i>   functionParameterList
-%type <id>  expression
+%type <tv>  expression
 %type <tv>  functionCall
 %type <i>   functionCallParameters
 
@@ -111,13 +111,13 @@ programElement
      ;
 
 type
-     : INT {$$="INT";}
-     | VOID {$$="VOID";}
+     : INT {$$.type="INT";}
+     | VOID {$$.type="VOID";}
      ;
 
 variableDeclaration
      : variableDeclaration COMMA identifierDeclaration  {getScannedLines(); identifierDeclaration($3,"0", errorLineInfo);}
-     | type identifierDeclaration {getScannedLines(); identifierDeclaration($2,$1, errorLineInfo);}
+     | type identifierDeclaration {getScannedLines(); identifierDeclaration($2,$1.type, errorLineInfo);}
      ;
 
 identifierDeclaration
@@ -126,13 +126,13 @@ identifierDeclaration
      ;
 
 functionDefinition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1,0, errorLineInfo); startScope(); } stmtList BRACE_CLOSE {getScannedLines(); defineFunc($2,$1,0, errorLineInfo);endScope();}
-     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1,$4, errorLineInfo); startScope(); } stmtList BRACE_CLOSE{getScannedLines(); defineFunc($2,$1,$4, errorLineInfo);endScope();}
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,0, errorLineInfo); startScope(); } stmtList BRACE_CLOSE {getScannedLines(); defineFunc($2,$1.type,0, errorLineInfo);endScope();}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,$4, errorLineInfo); startScope(); } stmtList BRACE_CLOSE{getScannedLines(); defineFunc($2,$1.type,$4, errorLineInfo);endScope();}
      ;
 
 functionDeclaration
-     : type ID PARA_OPEN PARA_CLOSE {getScannedLines(); addFunc($2,$1,0, errorLineInfo);}
-     | type ID PARA_OPEN functionParameterList PARA_CLOSE {getScannedLines(); addFunc($2,$1,$4, errorLineInfo);}
+     : type ID PARA_OPEN PARA_CLOSE {getScannedLines(); addFunc($2,$1.type,0, errorLineInfo);}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE {getScannedLines(); addFunc($2,$1.type,$4, errorLineInfo);}
      ;
 
 functionParameterList
@@ -141,7 +141,7 @@ functionParameterList
      ;
 	
 functionParameter
-     : type identifierDeclaration {push(&programstack,$1);char temp[3];sprintf(temp,"%d",$2);push(&programstack,temp);}
+     : type identifierDeclaration {push(&programstack,$1.type);char temp[3];sprintf(temp,"%d",$2);push(&programstack,temp);}
      ;
 									
 stmtList
@@ -155,7 +155,7 @@ stmt
      | expression SEMICOLON
      | stmtConditional
      | stmtLoop
-     | RETURN expression SEMICOLON  {addVar("functionsReturnParameter",$2,0,1);}
+     | RETURN expression SEMICOLON  {addVar("functionsReturnParameter",$2.type,0,1);}
      | RETURN SEMICOLON {addVar("functionsReturnParameter","VOID",0,1);}
      | SEMICOLON /* empty statement */
      ;
@@ -165,51 +165,47 @@ stmtBlock
      ;
 	
 stmtConditional
-     : IF PARA_OPEN expression PARA_CLOSE stmt            
-     {getScannedLines();
-      if(!isInt($3)) {throwIfStatementError(errorLineInfo);};}
-     | IF PARA_OPEN expression PARA_CLOSE stmt ELSE stmt  
-     {getScannedLines();
-      if(!isInt($3)) {throwIfStatementError(errorLineInfo);};}
+     : IF PARA_OPEN expression PARA_CLOSE stmt {getScannedLines(); if(!isInt($3.type)) {throwIfStatementError(errorLineInfo);};}
+     | IF PARA_OPEN expression PARA_CLOSE stmt ELSE stmt {getScannedLines(); if(!isInt($3.type)) {throwIfStatementError(errorLineInfo);};}
      ;
 									
 stmtLoop
      : WHILE PARA_OPEN expression PARA_CLOSE stmt   
      {getScannedLines();
-      if(!isInt($3)) {throwWhileLoopError(errorLineInfo);};}
+      if(!isInt($3.type)) {throwWhileLoopError(errorLineInfo);};}
      | DO stmt WHILE PARA_OPEN expression PARA_CLOSE SEMICOLON
      {getScannedLines();
-      if(!isInt($5)) {throwWhileLoopError(errorLineInfo);};}
+      if(!isInt($5.type)) {throwWhileLoopError(errorLineInfo);};}
      ;
 									
 expression
-     : expression ASSIGN expression       {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwAssignmentError(errorLineInfo);};}
-     | expression LOGICAL_OR expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
-     | expression LOGICAL_AND expression  {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
-     | LOGICAL_NOT expression {getScannedLines(); if(isTypeCompatible($2, "INT")){$$="INT";} else {errorLogger("Logical Not", ": ", "Incompatible variable type!", errorLineInfo);};}
-     | expression EQ expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
-     | expression NE expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
-     | expression LS expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
-     | expression LSEQ expression {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
-     | expression GTEQ expression {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
-     | expression GT expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwLogCompError(errorLineInfo);};}
-     | expression PLUS expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwMatchOpError(errorLineInfo);};}
-     | expression MINUS expression  {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwMatchOpError(errorLineInfo);};}
-     | expression MUL expression    {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwMatchOpError(errorLineInfo);};}
-     | expression DIV expression    {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwMatchOpError(errorLineInfo);};}
-     | expression SHIFT_LEFT expression   {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwShiftOpError(errorLineInfo);};}
-     | expression SHIFT_RIGHT expression  {getScannedLines(); if(isTypeCompatible($1, $3)){$$="INT";} else {throwShiftOpError(errorLineInfo);};}
-     | MINUS expression %prec UNARY_MINUS {$$=$2;}
-     | PLUS expression %prec UNARY_PLUS {$$=$2;}
-     | ID BRACKET_OPEN primary BRACKET_CLOSE  {getScannedLines(); if(checkVarType($1,"INT-ARR",1)){$$="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n", errorLineInfo);}}
-     | PARA_OPEN expression PARA_CLOSE  {$$=$2;}
-     | functionCall {$$=$1.type;}
-     | primary  {$$=$1;}
+     : expression ASSIGN expression       {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwAssignmentError(errorLineInfo);};}
+     | expression LOGICAL_OR expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression LOGICAL_AND expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
+     | LOGICAL_NOT expression {getScannedLines(); if(isTypeCompatible($2.type, "INT")){$$.type="INT";} else {errorLogger("Logical Not", ": ", "Incompatible variable type!", errorLineInfo);};}
+     | expression EQ expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression NE expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression LS expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression LSEQ expression {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression GTEQ expression {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression GT expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression PLUS expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwMatchOpError(errorLineInfo);};}
+     | expression MINUS expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwMatchOpError(errorLineInfo);};}
+     | expression MUL expression    {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwMatchOpError(errorLineInfo);};}
+     | expression DIV expression    {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwMatchOpError(errorLineInfo);};}
+     | expression SHIFT_LEFT expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwShiftOpError(errorLineInfo);};}
+     | expression SHIFT_RIGHT expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwShiftOpError(errorLineInfo);};}
+     | MINUS expression %prec UNARY_MINUS {$$.type=$2.type;}
+     | PLUS expression %prec UNARY_PLUS {$$.type=$2.type;}
+     | ID BRACKET_OPEN primary BRACKET_CLOSE  {getScannedLines(); if(checkVarType($1,"INT-ARR",1)){$$.type="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n", errorLineInfo);}}
+     | PARA_OPEN expression PARA_CLOSE  {$$.type=$2.type;}
+     | functionCall {$$.type=$1.type;}
+     | primary  {$$.type=$1.type;}
      ;
 
 primary
-     : NUM {$$="INT";}
-     | ID {char* temp; lookupVariableType($1,&temp);$$=temp;createVar($1,NULL,&temp);}
+     : NUM {$$.type="INT";}
+     | ID {char* temp; lookupVariableType($1,&temp);$$.type=temp;createVar($1,NULL,&temp);}
      ;
 
 functionCall
@@ -218,8 +214,8 @@ functionCall
       ;
 
 functionCallParameters
-     : functionCallParameters COMMA expression  {push(&programstack, $3);$$=$1+1;}
-     | expression {push(&programstack,$1);$$=1;}
+     : functionCallParameters COMMA expression  {push(&programstack, $3.type);$$=$1+1;}
+     | expression {push(&programstack,$1.type);$$=1;}
      ;
 
 %%

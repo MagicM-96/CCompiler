@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "logger.h"
 
 
 typedef struct Vars{
@@ -41,7 +42,7 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             }
             else
             {
-                errorLogger("Type-Error: Expression ist not a variable!","","");
+                //errorLogger("Type-Error: Expression ist not a variable!","","");
             }
             break;
         case OPADD:

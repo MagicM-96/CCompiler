@@ -48,10 +48,75 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             sprintf(returnVal,"V%d",globTempVars);
             globTempVars++;
             break;
+		case OPMUL:
+			sprintf(temp,"V%d = %s * %s",globTempVars,op1,op2);
+            sprintf(returnVal,"V%d",globTempVars);
+            globTempVars++;
+			break;
+		case OPDIV:
+			sprintf(temp,"V%d = %s / %s",globTempVars,op1,op2);
+            sprintf(returnVal,"V%d",globTempVars);
+            globTempVars++;
+			break;
+		case OPMINUS:
+			//TODO Find out what to to here
+			break;
+		case OPIFEQ:
+			sprintf(temp,"V%d = %s == %s",globTempVars,op1,op2);
+            sprintf(returnVal,"V%d",globTempVars);
+			globTempVars++;
+			break;
+		case OPIFNE:
+			
+			break;
+		case OPIFGT:
+			sprintf(temp,"V%d = %s > %s",globTempVars,op1,op2);
+            sprintf(returnVal,"V%d",globTempVars);
+			globTempVars++;
+			break;
+		case OPIFGE:
+			sprintf(temp,"V%d = %s >= %s",globTempVars,op1,op2);
+            sprintf(returnVal,"V%d",globTempVars);
+			globTempVars++;
+			break;
+		case OPIFLT:
+			sprintf(temp,"V%d = %s < %s",globTempVars,op1,op2);
+            sprintf(returnVal,"V%d",globTempVars);
+			globTempVars++;
+			break;
+		case OPIFLE:
+			sprintf(temp,"V%d = %s <= %s",globTempVars,op1,op2);
+            sprintf(returnVal,"V%d",globTempVars);
+			globTempVars++;
+			break;
+		case OPGOTO:
+			break;
+		case OPRETURNR:
+			break;
+		case OPRETURN:
+			break;
+		case OPCALLR:
+			break;
+		case OPCALL:
+			break;
+		case OPARRAY_LD:
+			break;
+		case OPARRAY_ST:
+			break;		
+		case OPIFOR:
+			sprintf(temp,"V%d = %s || %s",globTempVars,op1,op2);
+			sprintf(returnVal,"V%d",globTempVars);
+			break;
+		case OPIFAND:
+			sprintf(temp,"V%d = %s && %s",globTempVars,op1,op2);
+			sprintf(returnVal,"V%d",globTempVars);
+			break;
         case CREATEVAR:
             sprintf(temp,"%s = %s",op1,op2);
             strcpy(returnVal,op1);
             break;
+        
+
         default:
             strcpy(temp,"Unknown OPCODE!\n");
             strcpy(returnVal,"-1");

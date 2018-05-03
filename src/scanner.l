@@ -54,8 +54,8 @@ return { return RETURN; }
 && { return LOGICAL_AND; }
 == { return EQ; }
 != { return NE; }
-\< { return GT; }
-\> { return LS; }
+\< { return LS; }
+\> { return GT; }
 [<][=] { return LSEQ; }
 [>][=] { return GTEQ; }
 [<][<] { return SHIFT_LEFT; }

@@ -11,12 +11,12 @@ typedef struct Vars{
     struct Vars* next;
 }TEMPVARS;
 
-int tempVars = 0;
+int globTempVars = 0;
 int endif = 0;
 int endelse = 0;
 int endwhile = 0;
 int funcs = 0;
-TEMPCODESTRING* tempCode, *firstTempCode;
+TEMPCODESTRING *tempCode, *firstTempCode;
 TEMPVARS *firstVar,*lastVar, *foundVar;
 
 
@@ -35,25 +35,18 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
     switch(opcode)
     {
         case OPASSIGN:
-            if(isVariable(op1,&returnVal))
-            {
-                sprintf(temp,"%s = %s;",foundVar->varName,op2);
-                tempVars++;
-            }
-            else
-            {
-                //errorLogger("Type-Error: Expression ist not a variable!","","");
-            }
+            sprintf(temp,"%s = %s;",foundVar->varName,op2);
+            strcpy(returnVal,op2);
             break;
         case OPADD:
-            sprintf(temp,"V%d = %s + %s",tempVars,op1,op2);
-            sprintf(returnVal,"V%d",tempVars);
-            tempVars++;
+            sprintf(temp,"V%d = %s + %s",globTempVars,op1,op2);
+            sprintf(returnVal,"V%d",globTempVars);
+            globTempVars++;
             break;
         case OPSUB:
-            sprintf(temp,"V%d = %s - %s",tempVars,op1,op2);
-            sprintf(returnVal,"V%d",tempVars);
-            tempVars++;
+            sprintf(temp,"V%d = %s - %s",globTempVars,op1,op2);
+            sprintf(returnVal,"V%d",globTempVars);
+            globTempVars++;
             break;
         case CREATEVAR:
             sprintf(temp,"%s = %s",op1,op2);
@@ -64,11 +57,12 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             strcpy(returnVal,"-1");
 
     }
-    (*ret1) = returnVal;
+    char* tempRet = (char*)malloc(sizeof(returnVal));
+    strcpy(tempRet,returnVal);
+    (*ret1) = tempRet;
     //sprintf(temp,"%d is %d with %s = %s + %s",opcode,OPADD,op1,op2,op3);
     addStr(temp);
     printStr();
-    printf("Returns: %s\n",returnVal);
 }
 
 void createVar(char* id, char* type,char** ret)
@@ -80,12 +74,22 @@ void createVar(char* id, char* type,char** ret)
     }
     lastVar->varName = (char*)malloc(sizeof(id));
     strcpy(lastVar->varName,id);
-    sprintf(lastVar->tempVar,"V%d",tempVars);
-    tempVars++;
+    sprintf(lastVar->tempVar,"V%d",globTempVars);
+    globTempVars++;
     addCode(CREATEVAR,ret,lastVar->tempVar,lastVar->varName,NULL);
     lastVar->next = (TEMPVARS*)malloc(sizeof(TEMPVARS));
     lastVar = lastVar->next;
     //logTempVars();
+}
+
+void loadNum(int val, char** ret)
+{
+    char* op1=(char*)malloc(sizeof(char)*4);
+    char* op2=(char*)malloc(sizeof(char)*4);
+    sprintf(op1,"%d",val);
+    sprintf(op2,"V%d",globTempVars);
+    globTempVars++;
+    addCode(CREATEVAR,ret,op2,op1,NULL);
 }
 
 void addStr(char* str)

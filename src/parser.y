@@ -95,7 +95,7 @@ ERRORLINEINFO* errorLineInfo;
 %%
 
 program
-     : programElementList { printSymTable();char temp[4]; addCode(OPADD,&temp,"A","B","C");}
+     : programElementList { printSymTable();char* temp=(char*)malloc(sizeof(char)*4);; addCode(OPADD,&temp,"A","B","C");}
      ;
 
 programElementList
@@ -179,7 +179,7 @@ stmtLoop
      ;
 									
 expression
-     : expression ASSIGN expression       {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwAssignmentError(errorLineInfo);};}
+     : expression ASSIGN expression       {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);if(isVariable($1.var,&temp)){ addCode(OPASSIGN,&temp,temp,$3.var,NULL);}else {throwAssignmentError(errorLineInfo);} } else {throwAssignmentError(errorLineInfo);};}
      | expression LOGICAL_OR expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
      | expression LOGICAL_AND expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
      | LOGICAL_NOT expression {getScannedLines(); if(isTypeCompatible($2.type, "INT")){$$.type="INT";} else {errorLogger("Logical Not", ": ", "Incompatible variable type!", errorLineInfo);};}
@@ -197,15 +197,15 @@ expression
      | expression SHIFT_RIGHT expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwShiftOpError(errorLineInfo);};}
      | MINUS expression %prec UNARY_MINUS {$$.type=$2.type;}
      | PLUS expression %prec UNARY_PLUS {$$.type=$2.type;}
-     | ID BRACKET_OPEN primary BRACKET_CLOSE  {getScannedLines(); if(checkVarType($1,"INT-ARR",1)){$$.type="INT";}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n", errorLineInfo);}}
+     | ID BRACKET_OPEN primary BRACKET_CLOSE  {getScannedLines(); if(checkVarType($1,"INT-ARR",1)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);createVar($1,NULL,&temp);$$.var = temp;}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n", errorLineInfo);}}
      | PARA_OPEN expression PARA_CLOSE  {$$.type=$2.type;}
      | functionCall {$$.type=$1.type;}
-     | primary  {$$.type=$1.type;}
+     | primary  {$$=$1;}
      ;
 
 primary
-     : NUM {$$.type="INT";}
-     | ID {char* temp; lookupVariableType($1,&temp);$$.type=temp;createVar($1,NULL,&temp);}
+     : NUM {$$.type="INT";char* ret=(char*)malloc(sizeof(char)*4);loadNum($1,&ret);$$.var = ret;}
+     | ID {char* temp; lookupVariableType($1,&temp);$$.type=temp;createVar($1,NULL,&temp);$$.var = temp;}
      ;
 
 functionCall

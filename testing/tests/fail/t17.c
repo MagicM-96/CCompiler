@@ -3,8 +3,8 @@ int func ( int var ) {
 }
 
 int main () {
-  int i;
-  func(i) = 42;
+  int i,j;
   3 = 5;
+  i = j = 2;
   return func(i);
 }

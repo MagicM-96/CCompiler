@@ -2,6 +2,7 @@
 // #include "structs.h"
 #include <stdio.h>
 extern int errors;
+extern TEMPCODESTRING* firstTempCode;
 
 void messageLogger(char* msg)
 {
@@ -53,4 +54,16 @@ void throwMatchOpError(ERRORLINEINFO* errorLineInfo)
 void throwShiftOpError(ERRORLINEINFO* errorLineInfo)
 {
 	errorLogger("Shift Operation", ": ", "Incompatible variable type!", errorLineInfo);
+}
+
+void printStr()
+{
+	if(firstTempCode!=NULL){
+		TEMPCODESTRING *temp = firstTempCode;
+		while(temp->line!=NULL)
+		{
+			printf("%s\n",temp->line);
+			temp = temp->next;
+		}
+	}
 }

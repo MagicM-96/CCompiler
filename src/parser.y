@@ -95,7 +95,7 @@ ERRORLINEINFO* errorLineInfo;
 %%
 
 program
-     : programElementList { printSymTable();char* temp=(char*)malloc(sizeof(char)*4);; addCode(OPADD,&temp,"A","B","C");}
+     : programElementList { printSymTable();char* temp=(char*)malloc(sizeof(char)*4);printStr();}
      ;
 
 programElementList

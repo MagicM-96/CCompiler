@@ -12,3 +12,4 @@ void throwAssignmentError(ERRORLINEINFO* errorLineInfo);
 void throwLogCompError(ERRORLINEINFO* errorLineInfo);
 void throwMatchOpError(ERRORLINEINFO* errorLineInfo);
 void throwShiftOpError(ERRORLINEINFO* errorLineInfo);
+void printStr();

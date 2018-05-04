@@ -3,13 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "logger.h"
+#include "structs.h"
 
-
-typedef struct Vars{
-    char* tempVar[4];
-    char* varName;
-    struct Vars* next;
-}TEMPVARS;
 
 int globTempVars = 0;
 int endif = 0;
@@ -127,7 +122,6 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
     (*ret1) = tempRet;
     //sprintf(temp,"%d is %d with %s = %s + %s",opcode,OPADD,op1,op2,op3);
     addStr(temp);
-    printStr();
 }
 
 void createVar(char* id, char* type,char** ret)
@@ -159,7 +153,7 @@ void loadNum(int val, char** ret)
 
 void addStr(char* str)
 {
-    if(tempCode==NULL)
+    if(firstTempCode==NULL)
     {
         tempCode = (TEMPCODESTRING*)malloc(sizeof(TEMPCODESTRING));
         firstTempCode = tempCode;
@@ -168,17 +162,6 @@ void addStr(char* str)
     tempCode->line = (char*)malloc(sizeof(str));
     strcpy(tempCode->line,str);
     tempCode = tempCode->next;
-}
-
-void printStr()
-{
-    TEMPCODESTRING *temp = firstTempCode;
-    while(temp->line!=NULL)
-    {
-        printf("%s\n",temp->line);
-        temp = temp->next;
-    }
-    tempCode = NULL;
 }
 
 int isVariable(char* var, char** ret)

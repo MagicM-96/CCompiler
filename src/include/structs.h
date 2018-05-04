@@ -49,3 +49,14 @@ typedef struct vartype
 	char* type;
 	char* var;
 } TYPEVAR;
+
+typedef struct tempCodeString {
+	char* line;
+	struct tempCodeString* next;
+} TEMPCODESTRING;
+
+typedef struct Vars{
+    char* tempVar[4];
+    char* varName;
+    struct Vars* next;
+}TEMPVARS;

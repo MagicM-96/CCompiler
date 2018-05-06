@@ -293,6 +293,20 @@ void lookupFunctionType(char* funcId, char** ret)
 		(*ret) = temp->type;
 }
 
+void lookupFunctionLabel(char* funcId, char** ret)
+{
+	STRUCTFUNC* temp;
+	for (temp = functions; temp != NULL; temp = temp->hh.next)
+	{
+		if (!strcmp(temp->id, funcId))
+		{
+			break;
+		}
+	}
+	if (temp != NULL)
+		(*ret) = temp->label;
+}
+
 void lookupVariableType(char* varId, char** ret)
 {
 	SCOPESTACK* tempscope;

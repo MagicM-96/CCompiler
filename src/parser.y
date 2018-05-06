@@ -205,7 +205,7 @@ expression
      | PLUS expression %prec UNARY_PLUS {$$=$2;}
      | ID BRACKET_OPEN primary BRACKET_CLOSE  {getScannedLines(); if(checkVarType($1,"INT-ARR",1)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);createArr($1,$3.var,NULL,&temp);$$.var = temp;}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n", errorLineInfo);}}
      | PARA_OPEN expression PARA_CLOSE  {$$=$2;}
-     | functionCall {$$=$1;}
+     | functionCall {char* temp = (char*)malloc(sizeof(char)*12);sprintf(temp,"STARTFUNC%s",$1.var);$$=$1;$$.var = temp;}
      | primary  {$$=$1;}
      ;
 
@@ -215,8 +215,8 @@ primary
      ;
 
 functionCall
-      : ID PARA_OPEN PARA_CLOSE {checkFuncCallParams($1,0, errorLineInfo); char* temp; lookupFunctionType($1,&temp);$$.type=temp;}
-      | ID PARA_OPEN functionCallParameters PARA_CLOSE {checkFuncCallParams($1,$3, errorLineInfo); char* temp; lookupFunctionType($1,&temp);$$.type=temp;}
+      : ID PARA_OPEN PARA_CLOSE {checkFuncCallParams($1,0, errorLineInfo); char* temp; lookupFunctionType($1,&temp);$$.type=temp;lookupFunctionLabel($1,&temp);/* sprintf(temp,"STARTFUNC%s",temp); */$$.var=temp;}
+      | ID PARA_OPEN functionCallParameters PARA_CLOSE {checkFuncCallParams($1,$3, errorLineInfo); char* temp; lookupFunctionType($1,&temp);$$.type=temp;lookupFunctionLabel($1,&temp);/* sprintf(temp,"STARTFUNC%s",temp); */$$.var=temp;}
       ;
 
 functionCallParameters

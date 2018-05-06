@@ -19,4 +19,5 @@ extern void yyerror(const char* msg);
 void pushSomething();
 
 void lookupFunctionType(char* funcId, char** ret);
+void lookupFunctionLabel(char* funcId, char** ret);
 void lookupVariableType(char* varId, char** ret);

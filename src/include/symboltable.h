@@ -4,12 +4,12 @@
 void addFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo);
 int yylex();	   // TODO is this necessary?
 
-void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo);
+void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo,char* label);
 
 void identifierDeclaration(int length, char* type, ERRORLINEINFO* errorLineInfo);
 void pushSomething();
 void typeReplace(char** type);
-void addVariablesToFunction(char* id);
+void addVariablesToFunction(char* id,char* label);
 void endScope();
 void startScope();
 void addVar(char* id, char* type, int value, int size);

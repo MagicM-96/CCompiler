@@ -191,7 +191,7 @@ void typeReplace(char** type)
 	}
 }
 
-void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo)
+void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo, char* label)
 {
 	if (funcExists(id))
 	{
@@ -202,7 +202,7 @@ void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLi
 				errorLogger("Multiple function-Definition: Function \"", id, "\" is already defined!\n", errorLineInfo);
 			}
 			checkFuncParams(id, numberOfParams, errorLineInfo);
-			addVariablesToFunction(id);
+			addVariablesToFunction(id,label);
 		}
 		else
 		{
@@ -219,6 +219,8 @@ void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLi
 		}
 		tempFunc->funcvars = variables;
 		tempFunc->isDefined = 1;
+		tempFunc->label = (char*)malloc(sizeof(label));
+		strcpy(tempFunc->label,label);
 	}
 	else
 	{
@@ -264,7 +266,7 @@ void endScope()
 	parameters = NULL;
 }
 
-void addVariablesToFunction(char* id)
+void addVariablesToFunction(char* id,char* label)
 {
 	STRUCTFUNC* temp = functions;
 	while (strcmp(temp->id, id))
@@ -273,6 +275,8 @@ void addVariablesToFunction(char* id)
 	}
 	temp->isDefined = 1;
 	temp->funcvars = variables;
+	temp->label = (char*)malloc(sizeof(label));
+	strcpy(temp->label,label);
 }
 
 void lookupFunctionType(char* funcId, char** ret)

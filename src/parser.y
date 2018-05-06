@@ -18,6 +18,7 @@ void getScannedLines();
 extern STACK* programstack;
 extern STRUCTFUNC* functions;
 ERRORLINEINFO* errorLineInfo;
+STACK* tempCodeStack;
 
 }
 
@@ -127,8 +128,8 @@ identifierDeclaration
      ;
 
 functionDefinition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,0, errorLineInfo); startScope(); } stmtList BRACE_CLOSE {getScannedLines(); defineFunc($2,$1.type,0, errorLineInfo);endScope();}
-     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,$4, errorLineInfo); startScope(); } stmtList BRACE_CLOSE{getScannedLines(); defineFunc($2,$1.type,$4, errorLineInfo);endScope();}
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,0, errorLineInfo); startScope(); char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,NULL,NULL,NULL);push(&tempCodeStack,temp);} stmtList BRACE_CLOSE {getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,0, errorLineInfo,temp);endScope();}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,$4, errorLineInfo); startScope();char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,NULL,NULL,NULL);push(&tempCodeStack,temp); } stmtList BRACE_CLOSE{getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,$4, errorLineInfo,temp);endScope();}
      ;
 
 functionDeclaration
@@ -156,7 +157,7 @@ stmt
      | expression SEMICOLON
      | stmtConditional
      | stmtLoop
-     | RETURN expression SEMICOLON  {addVar("functionsReturnParameter",$2.type,0,1);}
+     | RETURN expression SEMICOLON  {addVar("functionsReturnParameter",$2.type,0,1);addCode(OPRETURNR,NULL,$2.var,NULL,NULL);}
      | RETURN SEMICOLON {addVar("functionsReturnParameter","VOID",0,1);}
      | SEMICOLON /* empty statement */
      ;
@@ -175,12 +176,12 @@ startIf
      ;
 
 stmtLoop
-     : WHILE PARA_OPEN expression PARA_CLOSE stmt   
+     : WHILE PARA_OPEN {char* temp = (char*)malloc(sizeof(char)*4);getLoopNumber(&temp);push(&tempCodeStack,temp);addCode(CHECKWHILE,&temp,temp,NULL,NULL);} expression {char* temp; peek(tempCodeStack,&temp);addCode(CHECKIFWHILE,&temp,temp,$4.var,NULL);addCode(STARTWHILE,&temp,temp,NULL,NULL);} PARA_CLOSE stmt {char* temp;pop(&tempCodeStack,&temp);addCode(ENDWHILE,&temp,temp,NULL,NULL);
+     getScannedLines();
+      if(!isInt($4.type)) {throwWhileLoopError(errorLineInfo);};}
+     | DO {char* temp = (char*)malloc(sizeof(char)*4);getLoopNumber(&temp);push(&tempCodeStack,temp);addCode(STARTWHILE,&temp,temp,NULL,NULL);} stmt WHILE PARA_OPEN expression {char* temp; peek(tempCodeStack,&temp);addCode(CHECKWHILE,&temp,temp,NULL,NULL);addCode(CHECKIFWHILE,&temp,temp,$6.var,NULL);pop(&tempCodeStack,&temp);addCode(ENDWHILE,&temp,temp,NULL,NULL);} PARA_CLOSE SEMICOLON 
      {getScannedLines();
-      if(!isInt($3.type)) {throwWhileLoopError(errorLineInfo);};}
-     | DO stmt WHILE PARA_OPEN expression PARA_CLOSE SEMICOLON
-     {getScannedLines();
-      if(!isInt($5.type)) {throwWhileLoopError(errorLineInfo);};}
+      if(!isInt($6.type)) {throwWhileLoopError(errorLineInfo);};}
      ;
 
 expression

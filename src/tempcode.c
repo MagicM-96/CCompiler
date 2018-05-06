@@ -105,8 +105,10 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
 		case OPGOTO:
 			break;
 		case OPRETURNR:
+            sprintf(temp,"return %s;",op1);
 			break;
 		case OPRETURN:
+            strcpy(temp,"return;");
 			break;
 		case OPCALLR:
 			break;
@@ -119,10 +121,12 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
 		case OPOR:
 			sprintf(temp,"V%d = %s || %s",globTempVars,op1,op2);
 			sprintf(returnVal,"V%d",globTempVars);
+            globTempVars++;
 			break;
 		case OPAND:
 			sprintf(temp,"V%d = %s && %s",globTempVars,op1,op2);
 			sprintf(returnVal,"V%d",globTempVars);
+            globTempVars++;
 			break;
         case CREATEVAR:
             sprintf(temp,"%s = %s",op1,op2);
@@ -142,6 +146,27 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
         case AFTERELSE:
             sprintf(temp,"ENDELSE%s:",op1);
             break;
+        case STARTWHILE:
+            sprintf(temp,"BEGINWHILE%s:",op1);
+            strcpy(returnVal,op1);
+            break;
+        case CHECKWHILE:
+            sprintf(temp,"CHECKWHILE%s:",op1);
+            strcpy(returnVal,op1);
+            break;
+        case CHECKIFWHILE:
+            sprintf(temp,"if(%s) goto BEGINWHILE%s;\ngoto ENDWHILE%s;",op2,op1,op1);
+            strcpy(returnVal,op1);
+            break;
+        case ENDWHILE:
+            sprintf(temp,"goto CHECKWHILE%s;\nENDWHILE%s:",op1,op1);
+            strcpy(returnVal,op1);
+            break;
+        case STARTFUNC:
+            sprintf(temp,"STARTFUNC%d:",funcs);
+            sprintf(returnVal,"%d",funcs);
+            funcs++;
+            break;
         
         default:
             strcpy(temp,"Unknown OPCODE!\n");
@@ -150,7 +175,8 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
     }
     char* tempRet = (char*)malloc(sizeof(returnVal));
     strcpy(tempRet,returnVal);
-    (*ret1) = tempRet;
+    if(ret1!=NULL)
+        (*ret1) = tempRet;
     //sprintf(temp,"%d is %d with %s = %s + %s",opcode,OPADD,op1,op2,op3);
     addStr(temp);
 }
@@ -227,4 +253,12 @@ void logTempVars()
         printf("Variable: ID: %s, TEMP: %s\n",temp->varName,temp->tempVar);
         temp = temp->next;
     }
+}
+
+void getLoopNumber(char** ret)
+{
+    char* temp = (char*)malloc(sizeof(char)*4);
+    sprintf(temp,"%d",endwhile);
+    endwhile++;
+    (*ret) = temp;
 }

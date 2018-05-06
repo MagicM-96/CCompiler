@@ -29,7 +29,12 @@ enum {
 	BEGINIF,
 	ENDIF,
 	BEFOREELSE,
-	AFTERELSE
+	AFTERELSE,
+	STARTWHILE,
+	CHECKWHILE,
+	CHECKIFWHILE,
+	ENDWHILE,
+	STARTFUNC
 };
 
 void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3);
@@ -38,3 +43,4 @@ void createArr(char* id, char* num, char* type, char**ret);
 void loadNum(int val, char** ret);
 void addStr(char* str);
 int isVariable(char* var, char** ret);
+void getLoopNumber(char** temp);

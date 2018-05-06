@@ -56,7 +56,7 @@ typedef struct tempCodeString {
 } TEMPCODESTRING;
 
 typedef struct Vars{
-    char* tempVar[4];
+    char tempVar[4];
     char* varName;
     struct Vars* next;
 }TEMPVARS;

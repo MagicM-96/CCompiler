@@ -185,11 +185,11 @@ stmtLoop
 
 expression
      : expression ASSIGN expression       {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);if(isVariable($1.var,&temp)){ addCode(OPASSIGN,&temp,temp,$3.var,NULL); $$.var=temp;}else {throwAssignmentError(errorLineInfo);} } else {throwAssignmentError(errorLineInfo);};}
-     | expression LOGICAL_OR expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPIFOR,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwLogCompError(errorLineInfo);};}
-     | expression LOGICAL_AND expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPIFAND,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwLogCompError(errorLineInfo);};}
-     | LOGICAL_NOT expression {getScannedLines(); if(isTypeCompatible($2.type, "INT")){$$.type="INT";} else {errorLogger("Logical Not", ": ", "Incompatible variable type!", errorLineInfo);};}
-     | expression EQ expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPIFEQ,&temp,$1.var,$3.var,NULL); } else {throwLogCompError(errorLineInfo);};}
-     | expression NE expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwLogCompError(errorLineInfo);};}
+     | expression LOGICAL_OR expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPOR,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwLogCompError(errorLineInfo);};}
+     | expression LOGICAL_AND expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPAND,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwLogCompError(errorLineInfo);};}
+     | LOGICAL_NOT expression {getScannedLines(); if(isTypeCompatible($2.type, "INT")){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPNOT,&temp,$2.var,NULL,NULL);$$.var=temp;} else {errorLogger("Logical Not", ": ", "Incompatible variable type!", errorLineInfo);};}
+     | expression EQ expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPIFEQ,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwLogCompError(errorLineInfo);};}
+     | expression NE expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPIFNE,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwLogCompError(errorLineInfo);};}
      | expression LS expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPIFLT,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwLogCompError(errorLineInfo);};}
      | expression LSEQ expression {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPIFLE,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwLogCompError(errorLineInfo);};}
      | expression GTEQ expression {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPIFGE,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwLogCompError(errorLineInfo);};}
@@ -198,9 +198,9 @@ expression
      | expression MINUS expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPSUB,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwMatchOpError(errorLineInfo);};}
      | expression MUL expression    {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPMUL,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwMatchOpError(errorLineInfo);};}
      | expression DIV expression    {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPDIV,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwMatchOpError(errorLineInfo);};}
-     | expression SHIFT_LEFT expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwShiftOpError(errorLineInfo);};}
-     | expression SHIFT_RIGHT expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwShiftOpError(errorLineInfo);};}
-     | MINUS expression %prec UNARY_MINUS {$$=$2;}
+     | expression SHIFT_LEFT expression   {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPLSHIFT,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwShiftOpError(errorLineInfo);};}
+     | expression SHIFT_RIGHT expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);addCode(OPRSHIFT,&temp,$1.var,$3.var,NULL);$$.var=temp;} else {throwShiftOpError(errorLineInfo);};}
+     | MINUS expression %prec UNARY_MINUS {$$=$2; char* temp=(char*)malloc(sizeof(char)*4);addCode(OPMINUS,&temp,$2.var,NULL,NULL);$$.var=temp;}
      | PLUS expression %prec UNARY_PLUS {$$=$2;}
      | ID BRACKET_OPEN primary BRACKET_CLOSE  {getScannedLines(); if(checkVarType($1,"INT-ARR",1)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);createArr($1,$3.var,NULL,&temp);$$.var = temp;}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n", errorLineInfo);}}
      | PARA_OPEN expression PARA_CLOSE  {$$=$2;}

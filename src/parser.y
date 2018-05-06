@@ -84,6 +84,7 @@ ERRORLINEINFO* errorLineInfo;
 %left MUL DIV MOD
 %left LOGICAL_NOT UNARY_MINUS UNARY_PLUS
 
+%type <id>   startIf
 %type <tv>  primary
 %type <i>   identifierDeclaration
 %type <tv>  type
@@ -165,10 +166,14 @@ stmtBlock
      ;
 	
 stmtConditional
-     : IF PARA_OPEN expression PARA_CLOSE stmt {getScannedLines(); if(!isInt($3.type)) {throwIfStatementError(errorLineInfo);};}
-     | IF PARA_OPEN expression PARA_CLOSE stmt ELSE stmt {getScannedLines(); if(!isInt($3.type)) {throwIfStatementError(errorLineInfo);};}
+     : startIf stmt {char* temp=$1;addCode(ENDIF,&temp,temp,NULL,NULL);}
+     | startIf stmt ELSE {char* temp=$1;addCode(BEFOREELSE,&temp,temp,NULL,NULL);} stmt {char* temp=$1;addCode(AFTERELSE,&temp,temp,NULL,NULL);}
      ;
-									
+
+startIf
+     : IF PARA_OPEN expression PARA_CLOSE {char* temp = (char*)malloc(sizeof(char)*4);addCode(BEGINIF,&temp,$3.var,NULL,NULL);getScannedLines(); if(!isInt($3.type)) {throwIfStatementError(errorLineInfo);};$$=temp;}
+     ;
+
 stmtLoop
      : WHILE PARA_OPEN expression PARA_CLOSE stmt   
      {getScannedLines();
@@ -197,7 +202,7 @@ expression
      | expression SHIFT_RIGHT expression  {getScannedLines(); if(isTypeCompatible($1.type, $3.type)){$$.type="INT";} else {throwShiftOpError(errorLineInfo);};}
      | MINUS expression %prec UNARY_MINUS {$$=$2;}
      | PLUS expression %prec UNARY_PLUS {$$=$2;}
-     | ID BRACKET_OPEN primary BRACKET_CLOSE  {getScannedLines(); if(checkVarType($1,"INT-ARR",1)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);createVar($1,NULL,&temp);$$.var = temp;}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n", errorLineInfo);}}
+     | ID BRACKET_OPEN primary BRACKET_CLOSE  {getScannedLines(); if(checkVarType($1,"INT-ARR",1)){$$.type="INT";char* temp=(char*)malloc(sizeof(char)*4);createArr($1,$3.var,NULL,&temp);$$.var = temp;}else{errorLogger("Type-Error : Variable \"",$1,"\" is not an Array!\n", errorLineInfo);}}
      | PARA_OPEN expression PARA_CLOSE  {$$=$2;}
      | functionCall {$$=$1;}
      | primary  {$$=$1;}

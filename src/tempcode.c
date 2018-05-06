@@ -8,7 +8,6 @@
 
 int globTempVars = 0;
 int endif = 0;
-int endelse = 0;
 int endwhile = 0;
 int funcs = 0;
 TEMPCODESTRING *tempCode, *firstTempCode;
@@ -110,8 +109,21 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             sprintf(temp,"%s = %s",op1,op2);
             strcpy(returnVal,op1);
             break;
+        case BEGINIF:
+            sprintf(temp,"if(%s) goto STARTIF%d;\ngoto ENDIF%d;\nSTARTIF%d:",op1,endif,endif,endif);
+            sprintf(returnVal,"%d",endif);
+            endif++;
+            break;
+        case ENDIF:
+            sprintf(temp,"ENDIF%s:",op1);
+            break;
+        case BEFOREELSE:
+            sprintf(temp,"goto ENDELSE%s;\nENDIF%s:",op1,op1);
+            break;
+        case AFTERELSE:
+            sprintf(temp,"ENDELSE%s:",op1);
+            break;
         
-
         default:
             strcpy(temp,"Unknown OPCODE!\n");
             strcpy(returnVal,"-1");
@@ -141,6 +153,12 @@ void createVar(char* id, char* type,char** ret)
     //logTempVars();
 }
 
+void createArr(char* id, char* num, char* type, char** ret)
+{
+    sprintf(id,"%s[%s]",id,num);
+    createVar(id,type,ret);
+}
+
 void loadNum(int val, char** ret)
 {
     char* op1=(char*)malloc(sizeof(char)*4);
@@ -159,7 +177,7 @@ void addStr(char* str)
         firstTempCode = tempCode;
     }
     tempCode->next = (TEMPCODESTRING*)malloc(sizeof(TEMPCODESTRING));
-    tempCode->line = (char*)malloc(sizeof(str));
+    tempCode->line = (char*)malloc(sizeof(str)*100);
     strcpy(tempCode->line,str);
     tempCode = tempCode->next;
 }

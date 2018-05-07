@@ -63,12 +63,12 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
 			globTempVars++;
             break;
 		case OPLSHIFT:
-			sprintf(temp,"V%d << %s",globTempVars,op1);
+			sprintf(temp,"V%d = %s <<",globTempVars,op1);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;
 		case OPRSHIFT:
-			sprintf(temp,"V%d >> %s",globTempVars,op1);
+			sprintf(temp,"V%d = %s >>",globTempVars,op1);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;

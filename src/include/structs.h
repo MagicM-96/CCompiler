@@ -49,6 +49,7 @@ typedef struct vartype
 {
 	char* type;
 	char* var;
+	int val;
 } TYPEVAR;
 
 typedef struct tempCodeString {

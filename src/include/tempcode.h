@@ -34,7 +34,8 @@ enum {
 	CHECKWHILE,
 	CHECKIFWHILE,
 	ENDWHILE,
-	STARTFUNC
+	STARTFUNC,
+	FUNCPARAM
 };
 
 void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3);

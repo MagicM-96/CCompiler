@@ -111,8 +111,27 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             strcpy(temp,"return;");
 			break;
 		case OPCALLR:
+            if(op2==NULL)
+            {
+                sprintf(temp,"V%d=%s();",globTempVars,op1);
+            }
+            else
+            {
+                sprintf(temp,"V%d=%s(%s);",globTempVars,op1,op2);
+            }
+            sprintf(returnVal,"V%d",globTempVars);
+            globTempVars++;
 			break;
 		case OPCALL:
+            if(op2==NULL)
+            {
+                sprintf(temp,"%s();",op1);
+            }
+            else
+            {
+                sprintf(temp,"%s(%s);",op1,op2);
+            }
+            sprintf(returnVal,"");
 			break;
 		case OPARRAY_LD:
 			break;
@@ -166,6 +185,11 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             sprintf(temp,"STARTFUNC%d:",funcs);
             sprintf(returnVal,"%d",funcs);
             funcs++;
+            break;
+        case FUNCPARAM:
+            sprintf(temp,"V%d = %s;",globTempVars,op1);
+            sprintf(returnVal,"V%d",globTempVars);
+            globTempVars++;
             break;
         
         default:

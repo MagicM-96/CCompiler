@@ -128,8 +128,8 @@ identifierDeclaration
      ;
 
 functionDefinition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,0, errorLineInfo); startScope(); char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,NULL,NULL,NULL);push(&tempCodeStack,temp);} stmtList BRACE_CLOSE {getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,0, errorLineInfo,temp);endScope();}
-     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,$4, errorLineInfo); startScope();char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,NULL,NULL,NULL);push(&tempCodeStack,temp); } stmtList BRACE_CLOSE{getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,$4, errorLineInfo,temp);endScope();}
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,0, errorLineInfo); startScope(); char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,NULL,NULL,NULL);push(&tempCodeStack,temp);} stmtList BRACE_CLOSE {getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,0, errorLineInfo,temp);endScope();addCode(OPRETURN,NULL,NULL,NULL,NULL);}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,$4, errorLineInfo); startScope();char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,NULL,NULL,NULL);push(&tempCodeStack,temp); } stmtList BRACE_CLOSE{getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,$4, errorLineInfo,temp);endScope();addCode(OPRETURN,NULL,NULL,NULL,NULL);}
      ;
 
 functionDeclaration
@@ -158,7 +158,7 @@ stmt
      | stmtConditional
      | stmtLoop
      | RETURN expression SEMICOLON  {addVar("functionsReturnParameter",$2.type,0,1);addCode(OPRETURNR,NULL,$2.var,NULL,NULL);}
-     | RETURN SEMICOLON {addVar("functionsReturnParameter","VOID",0,1);}
+     | RETURN SEMICOLON {addVar("functionsReturnParameter","VOID",0,1);addCode(OPRETURN,NULL,NULL,NULL,NULL);}
      | SEMICOLON /* empty statement */
      ;
 

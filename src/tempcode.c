@@ -33,72 +33,72 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             strcpy(returnVal,op2);
             break;
         case OPADD:
-            sprintf(temp,"V%d = %s + %s",globTempVars,op1,op2);
+            sprintf(temp,"V%d = %s + %s;",globTempVars,op1,op2);
             sprintf(returnVal,"V%d",globTempVars);
             globTempVars++;
             break;
         case OPSUB:
-            sprintf(temp,"V%d = %s - %s",globTempVars,op1,op2);
+            sprintf(temp,"V%d = %s - %s;",globTempVars,op1,op2);
             sprintf(returnVal,"V%d",globTempVars);
             globTempVars++;
             break;
 		case OPMUL:
-			sprintf(temp,"V%d = %s * %s",globTempVars,op1,op2);
+			sprintf(temp,"V%d = %s * %s;",globTempVars,op1,op2);
             sprintf(returnVal,"V%d",globTempVars);
             globTempVars++;
 			break;
 		case OPDIV:
-			sprintf(temp,"V%d = %s / %s",globTempVars,op1,op2);
+			sprintf(temp,"V%d = %s / %s;",globTempVars,op1,op2);
             sprintf(returnVal,"V%d",globTempVars);
             globTempVars++;
 			break;
 		case OPMINUS:
-			sprintf(temp,"V%d = -%s",globTempVars,op1); //TODO maybe try to load 0 into a variable and do 0 - op1
+			sprintf(temp,"V%d = -%s;",globTempVars,op1); //TODO maybe try to load 0 into a variable and do 0 - op1
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;
         case OPNOT:
-            sprintf(temp,"V%d = !%s",globTempVars,op1);
+            sprintf(temp,"V%d = !%s;",globTempVars,op1);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
             break;
 		case OPLSHIFT:
-			sprintf(temp,"V%d = %s <<",globTempVars,op1);
+			sprintf(temp,"V%d = %s <<;",globTempVars,op1);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;
 		case OPRSHIFT:
-			sprintf(temp,"V%d = %s >>",globTempVars,op1);
+			sprintf(temp,"V%d = %s >>;",globTempVars,op1);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;
 		case OPIFEQ:
-			sprintf(temp,"V%d = %s == %s",globTempVars,op1,op2);
+			sprintf(temp,"V%d = %s == %s;",globTempVars,op1,op2);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;
 		case OPIFNE:
-			sprintf(temp,"V%d = %s != %s",globTempVars,op1,op2);
+			sprintf(temp,"V%d = %s != %s;",globTempVars,op1,op2);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;
 		case OPIFGT:
-			sprintf(temp,"V%d = %s > %s",globTempVars,op1,op2);
+			sprintf(temp,"V%d = %s > %s;",globTempVars,op1,op2);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;
 		case OPIFGE:
-			sprintf(temp,"V%d = %s >= %s",globTempVars,op1,op2);
+			sprintf(temp,"V%d = %s >= %s;",globTempVars,op1,op2);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;
 		case OPIFLT:
-			sprintf(temp,"V%d = %s < %s",globTempVars,op1,op2);
+			sprintf(temp,"V%d = %s < %s;",globTempVars,op1,op2);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;
 		case OPIFLE:
-			sprintf(temp,"V%d = %s <= %s",globTempVars,op1,op2);
+			sprintf(temp,"V%d = %s <= %s;",globTempVars,op1,op2);
             sprintf(returnVal,"V%d",globTempVars);
 			globTempVars++;
 			break;
@@ -138,17 +138,17 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
 		case OPARRAY_ST:
 			break;		
 		case OPOR:
-			sprintf(temp,"V%d = %s || %s",globTempVars,op1,op2);
+			sprintf(temp,"V%d = %s || %s;",globTempVars,op1,op2);
 			sprintf(returnVal,"V%d",globTempVars);
             globTempVars++;
 			break;
 		case OPAND:
-			sprintf(temp,"V%d = %s && %s",globTempVars,op1,op2);
+			sprintf(temp,"V%d = %s && %s;",globTempVars,op1,op2);
 			sprintf(returnVal,"V%d",globTempVars);
             globTempVars++;
 			break;
         case CREATEVAR:
-            sprintf(temp,"%s = %s",op1,op2);
+            sprintf(temp,"%s = %s;",op1,op2);
             strcpy(returnVal,op1);
             break;
         case BEGINIF:

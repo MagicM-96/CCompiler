@@ -131,7 +131,6 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             {
                 sprintf(temp,"%s(%s);",op1,op2);
             }
-            sprintf(returnVal,"");
 			break;
 		case OPARRAY_LD:
 			break;

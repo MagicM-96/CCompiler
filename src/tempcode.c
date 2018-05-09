@@ -182,7 +182,10 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             break;
         case STARTFUNC:
             if(op3==NULL)
+            {
+                op3 = (char*)malloc(sizeof(char));
                 strcpy(op3,"");
+            }
             sprintf(temp,"%s %s(%s){\nSTARTFUNC%d:",op1,op2,op3,funcs);
             sprintf(returnVal,"%d",funcs);
             funcs++;

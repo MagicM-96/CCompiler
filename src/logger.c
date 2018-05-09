@@ -92,6 +92,14 @@ void printSymTable()
 	printf("-------------------------------------------------------------------\n");
 }
 
+/**
+ * @brief Output for all Errors that could occure
+ * 
+ * @param msg0 Part one of the Message, can be any String in any length
+ * @param msg1 Part one of the Message, can be any String in any length
+ * @param msg2 Part one of the Message, can be any String in any length
+ * @param errorLineInfo The info on the lines and collumns where the error occured.
+ */
 void errorLogger(char* msg0, char* msg1, char* msg2, ERRORLINEINFO* errorLineInfo)
 {
 	errors++;

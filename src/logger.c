@@ -155,7 +155,7 @@ void throwShiftOpError(ERRORLINEINFO* errorLineInfo)
 }
 
 /**
- * \brief Outputs the entire Tempcode.
+ * \brief Prints the entire Tempcode.
  */
 void printStr()
 {

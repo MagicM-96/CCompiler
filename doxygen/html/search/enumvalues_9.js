@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['startfunc',['STARTFUNC',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba65cb457a65860c4b241de233eeb2f6dc',1,'tempcode.h']]],
-  ['startwhile',['STARTWHILE',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba4ccff0f74b09d2f547bf5d84463f63e5',1,'tempcode.h']]]
+  ['process_5fresources',['PROCESS_RESOURCES',['../diag_8h.html#a209071a58fa621aaffc2a69c1bfb38ddaf8fa91bedfb80cebff52ec4531415772',1,'diag.h']]]
 ];

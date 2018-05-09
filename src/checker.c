@@ -45,9 +45,8 @@ int isInt(char* varType)
  * \brief Check if the given variable already exists.
  * \param varId 	The id/name of the variable.
  * \param allScope	
- * \return
+ * \return int 1 if the variable exists and 0 if it doesn't
  * 
- * ToDo Merlin
  */
 int varExists(char* varId, int allScopes)
 {
@@ -86,9 +85,7 @@ int varExists(char* varId, int allScopes)
 /**
  * \brief Checks if the givn function already exists.
  * \param funcId The Name of the function.
- * \return
- * 
- * ToDo Merlin
+ * \return int 1 if the function exists and 0 if it doesn't
  */
 int funcExists(char* funcId)
 {
@@ -110,9 +107,7 @@ int funcExists(char* funcId)
 /**
  * \brief Checks if the given function is already defined.
  * \param funcId The name of the function.
- * \return
- * 
- * ToDo Merlin
+ * \return int 1 if function is already defined and 0 if it isn't
  */
 int funcIsDefined(char* funcId)
 {
@@ -132,8 +127,7 @@ int funcIsDefined(char* funcId)
 }
 
 /**
- * ToDo Merlin
- * \brief
+ * \brief checks the return parameter(s) if they have the correct Type and deletes the functionsReturnParameter from the variable scope
  * \param funcId		The name of the function.
  * \param type			The return type of the function.
  * \param errorLineInfo The info on the lines and collumns where the error occured.
@@ -163,8 +157,7 @@ void checkReturnParam(char* funcId, char* type, ERRORLINEINFO* errorLineInfo)
 }
 
 /**
- * ToDo Merlin
- * \brief
+ * \brief checks if the parameters of a function call have the correct order and type.
  * \param funcId			The name of the function.
  * \param numberOfParams	The parameter count of the function.
  * \param errorLineInfo		The info on the lines and collumns where the error occured.
@@ -217,8 +210,7 @@ void checkFuncCallParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorL
 }
 
 /**
- * ToDo Merlin
- * \brief
+ * \brief if a function is declared and gets defined this function checks the order and type of the parameters.
  * \param funcId			The name of the function.
  * \param numberOfParams	The parameter count of the function.
  * \param errorLineInfo		The info on the lines and collumns where the error occured.
@@ -287,20 +279,6 @@ int checkFuncType(char* funcId, char* type)
 	}
 	return 0;
 }
-
-/**
-*	Checks if the given variable has the requested type.
-*
-*	Parameters:
-*	- varId :		Name of the variable to be checked
-*	- type :		Type the variable should have
-*	- allScopes :	"1" = the variable has to be searched in every scope
-*					"0" = the variable has to be searched in the current scope only
-*	Return:
-*	1 :	Variable has the wanted type
-*	0 : else
-*
-*/
 
 /**
  * \brief Checks if the given variable has the requested type.

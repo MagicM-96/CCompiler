@@ -1,28 +1,5 @@
 var searchData=
 [
-  ['opadd',['OPADD',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba6296ff86162ed6c2b4ab90e7e1c7f466',1,'tempcode.h']]],
-  ['opand',['OPAND',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba29ee400147b70537e2a6b8c00e914d7d',1,'tempcode.h']]],
-  ['oparray_5fld',['OPARRAY_LD',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba8fa488c5293b8f978547dd27fa570855',1,'tempcode.h']]],
-  ['oparray_5fst',['OPARRAY_ST',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba087b4a457e5ede6ca9fe88c5753e89cd',1,'tempcode.h']]],
-  ['opassign',['OPASSIGN',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55bae4921a1ad11f48635273793f0a6d9dba',1,'tempcode.h']]],
-  ['opcall',['OPCALL',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba595e5f4952914b7c5a9ea41b8fcaf7f4',1,'tempcode.h']]],
-  ['opcallr',['OPCALLR',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55baa665248ff4b6006ce2943f6c77eb828e',1,'tempcode.h']]],
-  ['opdiv',['OPDIV',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba5c197da6aa73a12649d0c43f17cbaf92',1,'tempcode.h']]],
-  ['opgoto',['OPGOTO',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba26cbc1e589b8b26086da1bd98e49c97d',1,'tempcode.h']]],
-  ['opifeq',['OPIFEQ',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba74bb9dd1b5fd4f8645c3c6651b6e085a',1,'tempcode.h']]],
-  ['opifge',['OPIFGE',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba29c3b4f0c27ff3676dcdc8731d884488',1,'tempcode.h']]],
-  ['opifgt',['OPIFGT',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55bada4cf883d8818d7bed36a43ef9a3b322',1,'tempcode.h']]],
-  ['opifle',['OPIFLE',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba4af9ef132d717072911bacff56a9e0a8',1,'tempcode.h']]],
-  ['opiflt',['OPIFLT',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55bab9293de20dda3f916e448bd0cba90c6e',1,'tempcode.h']]],
-  ['opifne',['OPIFNE',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba7d76c2451b8a549491a4b37b5aecea6c',1,'tempcode.h']]],
-  ['oplshift',['OPLSHIFT',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55baa29dd37ea44121414c9e303d6dc8816b',1,'tempcode.h']]],
-  ['opminus',['OPMINUS',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55baa1f9a77057844749e0883cad86d1759f',1,'tempcode.h']]],
-  ['opmul',['OPMUL',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55baff5eb7f3984aa0f06fe092a4ec93836b',1,'tempcode.h']]],
-  ['opnot',['OPNOT',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba404a1daf32c78ab43725b7682c9433b9',1,'tempcode.h']]],
-  ['opor',['OPOR',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba5ae8d2f2f3ede51611615bc443f905d6',1,'tempcode.h']]],
-  ['opreturn',['OPRETURN',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55bae66fbb3143cf5dd4e28bc7789ccd43d3',1,'tempcode.h']]],
-  ['opreturnr',['OPRETURNR',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55baf490042750c8292572c97b02c1de4b6c',1,'tempcode.h']]],
-  ['oprshift',['OPRSHIFT',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55ba62e071d0dd6219dc66cb9ec9846f63bf',1,'tempcode.h']]],
-  ['opsub',['OPSUB',['../tempcode_8h.html#a06fc87d81c62e9abb8790b6e5713c55bafc4e75a20ae5d13cc6dd991a614764d4',1,'tempcode.h']]],
-  ['out_5fof_5fmemory',['OUT_OF_MEMORY',['../diag_8h.html#a209071a58fa621aaffc2a69c1bfb38ddac9a7e95f8dd5507c2dbd1fb466ec9a85',1,'diag.h']]]
+  ['num_5fcompiler_5ferrors',['NUM_COMPILER_ERRORS',['../diag_8h.html#a481b367b6ceeec5a6fb686e27ffd0c68a65cd12f7258a2641d309d9570e30f8d8',1,'diag.h']]],
+  ['num_5fos_5ferrors',['NUM_OS_ERRORS',['../diag_8h.html#a209071a58fa621aaffc2a69c1bfb38dda2878e98daefd36fe021b5ca0fb101ba4',1,'diag.h']]]
 ];

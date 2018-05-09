@@ -18,8 +18,8 @@ STRUCTPARAM* parameters = NULL;
  * 
  * @param id name of the function
  * @param type type of the function
- * @param numberOfParams 
- * @param errorLineInfo 
+ * @param numberOfParams ammount how many parameters the function has
+ * @param errorLineInfo The info on the lines and collumns where the error occured.
  */
 void addFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo)
 {
@@ -76,6 +76,14 @@ void addFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineI
 	}
 }
 
+/**
+ * @brief add a variable to the actual scope
+ * 
+ * @param id name of the variable
+ * @param type type of the variable
+ * @param value value of the variable (not in use)
+ * @param size length of the variable
+ */
 void addVar(char* id, char* type, int value, int size)
 {
 	STRUCTVAR* s;
@@ -93,6 +101,15 @@ void addVar(char* id, char* type, int value, int size)
 		addCode(DECVAR,NULL,type,id,temp);
 }
 
+/**
+ * @brief defines a function. If the function already is declared also parameters and type are checked.
+ * 
+ * @param id name of the function
+ * @param type type of the function
+ * @param numberOfParams ammount of the parameters for the function
+ * @param errorLineInfo The info on the lines and collumns where the error occured.
+ * @param label jump label in tempCode for the function
+ */
 void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo, char* label)
 {
 	if (funcExists(id))
@@ -131,6 +148,12 @@ void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLi
 	checkReturnParam(id, type, errorLineInfo);
 }
 
+/**
+ * @brief addes a variable scope to a function
+ * 
+ * @param id name of the function
+ * @param label adds the label of the function in tempCode
+ */
 void addVariablesToFunction(char* id, char* label)
 {
 	STRUCTFUNC* temp = functions;
@@ -144,6 +167,11 @@ void addVariablesToFunction(char* id, char* label)
 	strcpy(temp->label, label);
 }
 
+
+/**
+ * @brief starts a new variable-Scope e.g. for functions
+ * 
+ */
 void startScope()
 {
 	// push variables on scopestack
@@ -155,6 +183,10 @@ void startScope()
 	variables = NULL;
 }
 
+/**
+ * @brief ends the variable-scope of the actual segment
+ * 
+ */
 void endScope()
 {
 	if (scopes != NULL)
@@ -167,6 +199,13 @@ void endScope()
 	parameters = NULL;
 }
 
+/**
+ * @brief declares a variable
+ * 
+ * @param length length of the variable
+ * @param type type of the variable
+ * @param errorLineInfo The info on the lines and collumns where the error occured.
+ */
 void identifierDeclaration(int length, char* type, ERRORLINEINFO* errorLineInfo)
 {
 	if (!strcmp(type, "0"))
@@ -255,17 +294,12 @@ void identifierDeclaration(int length, char* type, ERRORLINEINFO* errorLineInfo)
 	}
 }
 
-void pushSomething()
-{
-	push(&programstack, "test1");
-	char* temp;
-
-	peek(programstack, &temp);
-	pop(&programstack, &temp);
-	printf("Stack is: %s\n", temp);
-	peek(programstack, &temp);
-}
-
+/**
+ * @brief searches for the function type
+ * 
+ * @param funcId name of the function
+ * @param ret has the type of the function as string
+ */
 void lookupFunctionType(char* funcId, char** ret)
 {
 	STRUCTFUNC* temp;
@@ -279,9 +313,15 @@ void lookupFunctionType(char* funcId, char** ret)
 	if (temp != NULL)
 	{
 		(*ret) = temp->type;
-}
+	}
 }
 
+/**
+ * @brief searches for the label of a function
+ * 
+ * @param funcId name of the function
+ * @param ret has the label of the function as string
+ */
 void lookupFunctionLabel(char* funcId, char** ret)
 {
 	STRUCTFUNC* temp;
@@ -298,6 +338,12 @@ void lookupFunctionLabel(char* funcId, char** ret)
 	}
 }
 
+/**
+ * @brief searches for the type of a variable
+ * 
+ * @param varId name of the variable
+ * @param ret has the type of the variable as string
+ */
 void lookupVariableType(char* varId, char** ret)
 {
 	SCOPESTACK* tempscope;

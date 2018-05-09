@@ -10,10 +10,9 @@ var searchData=
   ['print_5fir',['print_ir',['../structcc__options.html#a115f6d71b0496084dffe08478d2bb1da',1,'cc_options']]],
   ['print_5fusage',['print_usage',['../main_8c.html#a273c18a7d8e9537ce578502fa88ceb49',1,'main.c']]],
   ['printstr',['printStr',['../logger_8h.html#a4d7580f039bad881d55da1173176a347',1,'printStr():&#160;logger.c'],['../logger_8c.html#a4d7580f039bad881d55da1173176a347',1,'printStr():&#160;logger.c']]],
-  ['printsymtable',['printSymTable',['../output_8h.html#aa6c13157b355a4564427a0627ded4720',1,'printSymTable():&#160;output.c'],['../output_8c.html#aa6c13157b355a4564427a0627ded4720',1,'printSymTable():&#160;output.c']]],
+  ['printsymtable',['printSymTable',['../logger_8h.html#aa6c13157b355a4564427a0627ded4720',1,'printSymTable():&#160;logger.c'],['../logger_8c.html#aa6c13157b355a4564427a0627ded4720',1,'printSymTable():&#160;logger.c']]],
   ['process_5foptions',['process_options',['../main_8c.html#a33c27fd119cf71cd9028dd8c4f201098',1,'main.c']]],
   ['process_5fresources',['PROCESS_RESOURCES',['../diag_8h.html#a209071a58fa621aaffc2a69c1bfb38ddaf8fa91bedfb80cebff52ec4531415772',1,'diag.h']]],
   ['programstack',['programstack',['../checker_8c.html#ac05405bab15acc5c820eecb8d377cb53',1,'programstack():&#160;symboltable.c'],['../symboltable_8c.html#ac05405bab15acc5c820eecb8d377cb53',1,'programstack():&#160;symboltable.c']]],
-  ['push',['push',['../stack_8h.html#ad0630e6a27a48315a5fd8ba8a6799c27',1,'push(STACK **root, char *data):&#160;stack.c'],['../stack_8c.html#ad0630e6a27a48315a5fd8ba8a6799c27',1,'push(STACK **root, char *data):&#160;stack.c']]],
-  ['pushsomething',['pushSomething',['../symboltable_8h.html#a2134abf9d53c5f1afa4856aac3081105',1,'pushSomething():&#160;symboltable.c'],['../symboltable_8c.html#a2134abf9d53c5f1afa4856aac3081105',1,'pushSomething():&#160;symboltable.c']]]
+  ['push',['push',['../stack_8h.html#ad0630e6a27a48315a5fd8ba8a6799c27',1,'push(STACK **root, char *data):&#160;stack.c'],['../stack_8c.html#ad0630e6a27a48315a5fd8ba8a6799c27',1,'push(STACK **root, char *data):&#160;stack.c']]]
 ];

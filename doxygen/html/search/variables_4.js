@@ -7,6 +7,6 @@ var searchData=
   ['foundvar',['foundVar',['../tempcode_8c.html#aeb22edfedcbd54c56bd9f46609066c01',1,'tempcode.c']]],
   ['funcparams',['funcparams',['../structfuncstruct.html#a3e5b22a65e2ec2b1d0da7f00994a1137',1,'funcstruct']]],
   ['funcs',['funcs',['../tempcode_8c.html#ace81e8badb2996120241f4b98403fd08',1,'tempcode.c']]],
-  ['functions',['functions',['../checker_8c.html#ab84b0b755a85ba57c4ae36227f020870',1,'functions():&#160;symboltable.c'],['../output_8c.html#ab84b0b755a85ba57c4ae36227f020870',1,'functions():&#160;symboltable.c'],['../symboltable_8c.html#ab84b0b755a85ba57c4ae36227f020870',1,'functions():&#160;symboltable.c']]],
+  ['functions',['functions',['../checker_8c.html#ab84b0b755a85ba57c4ae36227f020870',1,'functions():&#160;symboltable.c'],['../logger_8c.html#ab84b0b755a85ba57c4ae36227f020870',1,'functions():&#160;symboltable.c'],['../symboltable_8c.html#ab84b0b755a85ba57c4ae36227f020870',1,'functions():&#160;symboltable.c']]],
   ['funcvars',['funcvars',['../structfuncstruct.html#a06b99b9ddf8d3150c867bbd5e4a14b01',1,'funcstruct']]]
 ];

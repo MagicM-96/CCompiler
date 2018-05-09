@@ -12,7 +12,6 @@ void endScope();
 
 void identifierDeclaration(int length, char* type, ERRORLINEINFO* errorLineInfo);
 void pushSomething();
-void typeReplace(char** type);
 
 void lookupFunctionType(char* funcId, char** ret);
 void lookupFunctionLabel(char* funcId, char** ret);

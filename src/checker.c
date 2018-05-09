@@ -27,7 +27,7 @@ int isTypeCompatible(char* leftVarType, char* rightVarType)
 
 /**
  * \brief Checks if varType is an Integer
- * \param varType TODO
+ * \param varType gets a string with a Variable Type (eg. Int, Void)
  * \return Indicates if varType is Int.
  *         		1 = varType is INT
  *         		0 = varType is something else

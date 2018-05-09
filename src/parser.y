@@ -90,6 +90,7 @@ STACK* tempCodeStack;
 %type <tv>  identifierDeclaration
 %type <tv>  type
 %type <tv>  functionParameterList
+%type <id>  functionParameter
 %type <tv>  expression
 %type <tv>  functionCall
 %type <tv>  functionCallParameters
@@ -123,13 +124,13 @@ variableDeclaration
      ;
 
 identifierDeclaration
-     : ID BRACKET_OPEN NUM BRACKET_CLOSE {push(&programstack,$1);$$.val=$3;}
-     | ID {push(&programstack,$1);$$.val=1;}
+     : ID BRACKET_OPEN NUM BRACKET_CLOSE {push(&programstack,$1);$$.val=$3;char* temp=(char*)malloc(sizeof(char)*10);sprintf(temp,"%s [%d]",$1,$3);$$.var = temp;}
+     | ID {push(&programstack,$1);$$.val=1;$$.var=$1;}
      ;
 
 functionDefinition
      : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,0, errorLineInfo); startScope(); char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,$1.type,$2,NULL);push(&tempCodeStack,temp);} stmtList BRACE_CLOSE {getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,0, errorLineInfo,temp);endScope();addCode(ENDFUNC,NULL,NULL,NULL,NULL);}
-     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,$4.val, errorLineInfo); startScope();char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,$1.type,$2,NULL);push(&tempCodeStack,temp); } stmtList BRACE_CLOSE{getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,$4.val, errorLineInfo,temp);endScope();addCode(ENDFUNC,NULL,NULL,NULL,NULL);}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,$4.val, errorLineInfo); startScope();char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,$1.type,$2,$4.var);push(&tempCodeStack,temp); } stmtList BRACE_CLOSE{getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,$4.val, errorLineInfo,temp);endScope();addCode(ENDFUNC,NULL,NULL,NULL,NULL);}
      ;
 
 functionDeclaration
@@ -138,12 +139,12 @@ functionDeclaration
      ;
 
 functionParameterList
-     : functionParameter {$$.val=1;}
-     | functionParameterList COMMA functionParameter {$$.val=$1.val+1;}
+     : functionParameter {$$.val=1;$$.var=$1;}
+     | functionParameterList COMMA functionParameter {$$.val=$1.val+1;char* temp=(char*)malloc(sizeof(char)*100);sprintf(temp,"%s, %s",$1.var,$3);$$.var=temp;}
      ;
 	
 functionParameter
-     : type identifierDeclaration {push(&programstack,$1.type);char temp[3];sprintf(temp,"%d",$2.val);push(&programstack,temp);}
+     : type identifierDeclaration {push(&programstack,$1.type);char* temp=(char*)malloc(sizeof(char)*20);sprintf(temp,"%d",$2.val);push(&programstack,temp);sprintf(temp,"int %s",$2.var);$$=temp;}
      ;
 									
 stmtList

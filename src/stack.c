@@ -1,6 +1,11 @@
 // C program for linked list implementation of stack
 #include "stack.h"
 
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 // A structure to represent a stack
 
 STACK* newNode(char* data)

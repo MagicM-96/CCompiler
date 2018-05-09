@@ -78,6 +78,10 @@ void addVar(char* id, char* type, int value, int size)
 	s->value = value;
 	s->size = size;
 	HASH_ADD_INT(variables, id, s);
+	char* temp = (char*)malloc(sizeof(char)*3);
+	sprintf(temp,"%d",size);
+	if(strcmp(type,"ARRAY-ELEMENT"))
+		addCode(DECVAR,NULL,type,id,temp);
 }
 
 void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo, char* label)

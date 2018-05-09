@@ -209,7 +209,10 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             globTempVars++;
             break;
         case DECVAR:
-            sprintf(temp,"%s %s;",op1,op2);
+            if(!strcmp(op1,"INT"))
+                sprintf(temp,"int %s;",op2);
+            else
+                sprintf(temp,"int %s[%s];",op2,op3);
             break;
         
         default:

@@ -3,8 +3,8 @@
 #include "checker.h"
 #include "logger.h"
 #include "stack.h"
-#include <string.h>
 #include "tempcode.h"
+#include <string.h>
 
 STACK* programstack;
 STRUCTFUNC* functions = NULL;
@@ -66,6 +66,94 @@ void addFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineI
 		errorLogger("Name-Error: Identifier \"", id, "\" is already in use!\n", errorLineInfo);
 	}
 }
+
+void addVar(char* id, char* type, int value, int size)
+{
+	STRUCTVAR* s;
+	s = (STRUCTVAR*)malloc(sizeof(STRUCTVAR));
+	s->id = (char*)malloc(sizeof(id));
+	s->type = (char*)malloc(sizeof(type));
+	strcpy(s->id, id);
+	strcpy(s->type, type);
+	s->value = value;
+	s->size = size;
+	HASH_ADD_INT(variables, id, s);
+}
+
+void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo, char* label)
+{
+	if (funcExists(id))
+	{
+		if (checkFuncType(id, type))
+		{
+			if (funcIsDefined(id))
+			{
+				errorLogger("Multiple function-Definition: Function \"", id, "\" is already defined!\n", errorLineInfo);
+			}
+			checkFuncParams(id, numberOfParams, errorLineInfo);
+			addVariablesToFunction(id, label);
+		}
+		else
+		{
+			errorLogger("Type-Error: Function \"", id, "\" is defined in different Types!", errorLineInfo);
+		}
+	}
+	else if (!varExists(id, 1))
+	{
+		addFunc(id, type, numberOfParams, errorLineInfo);
+		STRUCTFUNC* tempFunc = functions;
+		while (strcmp(tempFunc->id, id))
+		{
+			tempFunc = tempFunc->hh.next;
+		}
+		tempFunc->funcvars = variables;
+		tempFunc->isDefined = 1;
+		tempFunc->label = (char*)malloc(sizeof(label));
+		strcpy(tempFunc->label, label);
+	}
+	else
+	{
+		errorLogger("Name-Error: Identifier \"", id, "\" is already in use!\n", errorLineInfo);
+	}
+	checkReturnParam(id, type, errorLineInfo);
+}
+
+void addVariablesToFunction(char* id, char* label)
+{
+	STRUCTFUNC* temp = functions;
+	while (strcmp(temp->id, id))
+	{
+		temp = temp->hh.next;
+	}
+	temp->isDefined = 1;
+	temp->funcvars = variables;
+	temp->label = (char*)malloc(sizeof(label));
+	strcpy(temp->label, label);
+}
+
+void startScope()
+{
+	// push variables on scopestack
+	SCOPESTACK* temp;
+	temp = (SCOPESTACK*)malloc(sizeof(SCOPESTACK));
+	temp->scope = variables;
+	temp->next = scopes;
+	scopes = temp;
+	variables = NULL;
+}
+
+void endScope()
+{
+	if (scopes != NULL)
+	{
+		variables = scopes->scope;
+		SCOPESTACK* temp;
+		temp = scopes->next;
+		scopes = temp;
+	}
+	parameters = NULL;
+}
+
 void identifierDeclaration(int length, char* type, ERRORLINEINFO* errorLineInfo)
 {
 	if (!strcmp(type, "0"))
@@ -189,94 +277,6 @@ void typeReplace(char** type)
 	{
 		printf("\nType is INT-ARR!\n\n");
 	}
-}
-
-void defineFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo, char* label)
-{
-	if (funcExists(id))
-	{
-		if (checkFuncType(id, type))
-		{
-			if (funcIsDefined(id))
-			{
-				errorLogger("Multiple function-Definition: Function \"", id, "\" is already defined!\n", errorLineInfo);
-			}
-			checkFuncParams(id, numberOfParams, errorLineInfo);
-			addVariablesToFunction(id,label);
-		}
-		else
-		{
-			errorLogger("Type-Error: Function \"", id, "\" is defined in different Types!", errorLineInfo);
-		}
-	}
-	else if (!varExists(id, 1))
-	{
-		addFunc(id, type, numberOfParams, errorLineInfo);
-		STRUCTFUNC* tempFunc = functions;
-		while (strcmp(tempFunc->id, id))
-		{
-			tempFunc = tempFunc->hh.next;
-		}
-		tempFunc->funcvars = variables;
-		tempFunc->isDefined = 1;
-		tempFunc->label = (char*)malloc(sizeof(label));
-		strcpy(tempFunc->label,label);
-	}
-	else
-	{
-		errorLogger("Name-Error: Identifier \"", id, "\" is already in use!\n", errorLineInfo);
-	}
-	checkReturnParam(id, type, errorLineInfo);
-}
-
-void addVar(char* id, char* type, int value, int size)
-{
-	STRUCTVAR* s;
-	s = (STRUCTVAR*)malloc(sizeof(STRUCTVAR));
-	s->id = (char*)malloc(sizeof(id));
-	s->type = (char*)malloc(sizeof(type));
-	strcpy(s->id, id);
-	strcpy(s->type, type);
-	s->value = value;
-	s->size = size;
-	HASH_ADD_INT(variables, id, s);
-	// logVars();
-}
-
-void startScope()
-{
-	// push variables on scopestack
-	SCOPESTACK* temp;
-	temp = (SCOPESTACK*)malloc(sizeof(SCOPESTACK));
-	temp->scope = variables;
-	temp->next = scopes;
-	scopes = temp;
-	variables = NULL;
-}
-
-void endScope()
-{
-	if (scopes != NULL)
-	{
-		variables = scopes->scope;
-		SCOPESTACK* temp;
-		temp = scopes->next;
-		scopes = temp;
-	}
-	parameters = NULL;
-}
-
-void addVariablesToFunction(char* id,char* label)
-{
-	STRUCTFUNC* temp = functions;
-	while (strcmp(temp->id, id))
-	{
-		temp = temp->hh.next;
-	}
-	temp->isDefined = 1;
-	temp->funcvars = variables;
-	temp->label = (char*)malloc(sizeof(label));
-	strcpy(temp->label,label);
 }
 
 void lookupFunctionType(char* funcId, char** ret)

@@ -14,6 +14,7 @@
 // Project-specific includes
 void yyerror (const char *msg);
 void getScannedLines();
+int yylex();
 
 extern STACK* programstack;
 extern STRUCTFUNC* functions;

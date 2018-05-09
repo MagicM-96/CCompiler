@@ -253,6 +253,7 @@ void pushSomething()
 {
 	push(&programstack, "test1");
 	char* temp;
+	
 	peek(programstack, &temp);
 	pop(&programstack, &temp);
 	printf("Stack is: %s\n", temp);

@@ -12,6 +12,6 @@ void throwIfStatementError(ERRORLINEINFO* errorLineInfo);
 void throwWhileLoopError(ERRORLINEINFO* errorLineInfo);
 void throwAssignmentError(ERRORLINEINFO* errorLineInfo);
 void throwLogCompError(ERRORLINEINFO* errorLineInfo);
-void throwMatchOpError(ERRORLINEINFO* errorLineInfo);
+void throwMathOpError(ERRORLINEINFO* errorLineInfo);
 void throwShiftOpError(ERRORLINEINFO* errorLineInfo);
 void printStr();

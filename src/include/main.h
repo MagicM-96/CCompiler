@@ -1,9 +1,6 @@
 #ifndef _DHBWCC_MAIN_H
 #define _DHBWCC_MAIN_H
 
-#include "diag.h"
-#include "resource_manager.h"
-
 /**
  * \struct cc_options
  * \brief Compiler options for DHBWCC.

@@ -1,6 +1,6 @@
 #include "logger.h"
-// #include "structs.h"
 #include <stdio.h>
+
 extern int errors;
 extern TEMPCODESTRING* firstTempCode;
 
@@ -92,26 +92,12 @@ void printSymTable()
 	printf("-------------------------------------------------------------------\n");
 }
 
-void messageLogger(char* msg)
-{
-	// TODO @Benedikt please fix this
-	errors++;
-	printf("There is something not implemented yet, please ask your Developer to do so");
-	// printf("Following Message is sent:\n(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column,
-	// yylloc.last_line, yylloc.last_column, msg);
-}
-
 void errorLogger(char* msg0, char* msg1, char* msg2, ERRORLINEINFO* errorLineInfo)
-// This is a bad way to handle this, but the other ways inside c are even more crappy
 {
-	// TODO @Benedikt please fix this
 	errors++;
 	printf("\n|> ERROR: %s%s%s\n|> START: %d : %d --> END: %d : %d", msg0, msg1, msg2, errorLineInfo->firstLine,
 		errorLineInfo->firstColumn, errorLineInfo->lastLine, errorLineInfo->lastColumn);
-	// printf("Following Message is sent:\n(%d.%d-%d.%d): %s\n", yylloc.first_line, yylloc.first_column,
-	// yylloc.last_line, yylloc.last_column, msg);
 }
-
 
 // Functions for most of the Errors that could possibly be thrown.
 /**
@@ -168,14 +154,19 @@ void throwShiftOpError(ERRORLINEINFO* errorLineInfo)
 	errorLogger("Shift Operation", ": ", "Incompatible variable type!", errorLineInfo);
 }
 
+/**
+ * \brief Outputs the entire Tempcode.
+ */
 void printStr()
 {
-	if(firstTempCode!=NULL){
-		TEMPCODESTRING *temp = firstTempCode;
-		while(temp->line!=NULL)
-		{
-			printf("%s\n",temp->line);
-			temp = temp->next;
-		}
+	if (firstTempCode == NULL)
+	{
+		return;
+	}
+	TEMPCODESTRING* temp = firstTempCode;
+	while (temp->line != NULL)
+	{
+		printf("%s\n", temp->line);
+		temp = temp->next;
 	}
 }

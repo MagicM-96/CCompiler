@@ -5,6 +5,7 @@
 #include "stack.h"
 #include "tempcode.h"
 #include <string.h>
+#include <stdio.h>
 
 STACK* programstack;
 STRUCTFUNC* functions = NULL;

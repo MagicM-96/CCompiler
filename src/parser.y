@@ -6,7 +6,6 @@
 #include "checker.h"
 #include "logger.h"
 #include "diag.h"
-#include "output.h"
 #include "symboltable.h"
 #include "stack.h"
 #include "tempcode.h"

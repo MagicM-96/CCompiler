@@ -228,6 +228,13 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
     addStr(temp);
 }
 
+/**
+ * @brief Create a Variable with it's Temporary code name. This is needed for finding out, whether a temporary variable has a fix value or has a variable name
+ * 
+ * @param id of the variable
+ * @param type type (not in use=>NULL)
+ * @param ret name of the new temporary variable
+ */
 void createVar(char* id, char* type,char** ret)
 {
     if(firstVar==NULL)
@@ -242,15 +249,28 @@ void createVar(char* id, char* type,char** ret)
     addCode(CREATEVAR,ret,lastVar->tempVar,lastVar->varName,NULL);
     lastVar->next = (TEMPVARS*)malloc(sizeof(TEMPVARS));
     lastVar = lastVar->next;
-    //logTempVars();
 }
 
+/**
+ * @brief Create an Array, object, using createVar
+ * 
+ * @param id of the array
+ * @param num length of the array
+ * @param type of the array
+ * @param ret new temp name of the array
+ */
 void createArr(char* id, char* num, char* type, char** ret)
 {
     sprintf(id,"%s[%s]",id,num);
     createVar(id,type,ret);
 }
 
+/**
+ * @brief loads a number in a temporary variable
+ * 
+ * @param val value of the number to load 
+ * @param ret new temp name of the number
+ */
 void loadNum(int val, char** ret)
 {
     char* op1=(char*)malloc(sizeof(char)*4);
@@ -261,6 +281,11 @@ void loadNum(int val, char** ret)
     addCode(CREATEVAR,ret,op2,op1,NULL);
 }
 
+/**
+ * @brief addes the string to a new object of the linked list of temp Code
+ * 
+ * @param str Code line to add
+ */
 void addStr(char* str)
 {
     if(firstTempCode==NULL)
@@ -274,6 +299,13 @@ void addStr(char* str)
     tempCode = tempCode->next;
 }
 
+/**
+ * @brief checks if the temporary variable var points to a variable or a static number
+ * 
+ * @param var name of the temporary variable
+ * @param ret pointer to the return string
+ * @return int is 1 when temporary variable points to a variable
+ */
 int isVariable(char* var, char** ret)
 {
     TEMPVARS* temp;
@@ -291,17 +323,11 @@ int isVariable(char* var, char** ret)
     return 0;
 }
 
-void logTempVars()
-{
-    TEMPVARS* temp;
-    temp = firstVar;
-    while(temp != NULL && temp->tempVar != NULL)
-    {
-        printf("Variable: ID: %s, TEMP: %s\n",temp->varName,temp->tempVar);
-        temp = temp->next;
-    }
-}
-
+/**
+ * @brief creates a new number for a loop
+ * 
+ * @param ret at the end has the number of the new loop as string
+ */
 void getLoopNumber(char** ret)
 {
     char* temp = (char*)malloc(sizeof(char)*4);

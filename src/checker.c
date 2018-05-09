@@ -9,12 +9,12 @@ extern STRUCTPARAM* parameters;
 extern STACK* programstack;
 
 /**
- * \brief checks if both Parameters are type INT
- * \param leftvarType used for the left side of an expression
- * \param rightVarType used for the right side of an expression 
+ * \brief Checks if both Parameters are type INT.
+ * \param leftvarType Used for the left side of an expression.
+ * \param rightVarType Used for the right side of an expression. 
  * \return Indicates that both Parameters are Int.
- *         1 = leftVarType and rightVarType are INT
- *         0 = leftVarType and/or rightVarType are/is something else
+ *         	1 = leftVarType and rightVarType are INT
+ *         	0 = leftVarType and/or rightVarType are/is something else
  */
 int isTypeCompatible(char* leftVarType, char* rightVarType)
 {
@@ -29,8 +29,8 @@ int isTypeCompatible(char* leftVarType, char* rightVarType)
  * \brief Checks if varType is an Integer
  * \param varType TODO
  * \return Indicates if varType is Int.
- *         1 = varType is INT
- *         0 = varType is something else
+ *         		1 = varType is INT
+ *         		0 = varType is something else
  */
 int isInt(char* varType)
 {
@@ -41,7 +41,14 @@ int isInt(char* varType)
 	return 0;
 
 }
-
+/**
+ * \brief Check if the given variable already exists.
+ * \param varId 	The id/name of the variable.
+ * \param allScope	
+ * \return
+ * 
+ * ToDo Merlin
+ */
 int varExists(char* varId, int allScopes)
 {
 	SCOPESTACK* tempscope;
@@ -76,6 +83,13 @@ int varExists(char* varId, int allScopes)
 	return 0;
 }
 
+/**
+ * \brief Checks if the givn function already exists.
+ * \param funcId The Name of the function.
+ * \return
+ * 
+ * ToDo Merlin
+ */
 int funcExists(char* funcId)
 {
 	STRUCTFUNC* temp;
@@ -93,6 +107,13 @@ int funcExists(char* funcId)
 	return 0;
 }
 
+/**
+ * \brief Checks if the given function is already defined.
+ * \param funcId The name of the function.
+ * \return
+ * 
+ * ToDo Merlin
+ */
 int funcIsDefined(char* funcId)
 {
 	STRUCTFUNC* temp;
@@ -110,23 +131,34 @@ int funcIsDefined(char* funcId)
 	return 0;
 }
 
-void checkReturnParam(char* id, char* type, ERRORLINEINFO* errorLineInfo)
+/**
+ * ToDo Merlin
+ * \brief
+ * \param funcId		The name of the function.
+ * \param type			The return type of the function.
+ * \param errorLineInfo The info on the lines and collumns where the error occured.
+ */
+void checkReturnParam(char* funcId, char* type, ERRORLINEINFO* errorLineInfo)
 {
 	STRUCTVAR* tempvars;
 	tempvars = variables;
 	while (tempvars != NULL)
 	{
-		if (!strcmp(tempvars->id, "functionsReturnParameter"))
+		if (!strcmp(tempvars->id, "functionsReturnParameter") && strcmp(tempvars->type, type))
 		{
-			if (strcmp(tempvars->type, type))
-			{
-				errorLogger("Type-Error: Return-Type in Function \"", id, "\" has the wrong type!\n", errorLineInfo);
-			}
+			errorLogger("Type-Error: Return-Type in Function \"", funcId, "\" has the wrong type!\n", errorLineInfo);
 		}
 		tempvars = tempvars->hh.next;
 	}
 }
 
+/**
+ * ToDo Merlin
+ * \brief
+ * \param funcId			The name of the function.
+ * \param numberOfParams	The parameter count of the function.
+ * \param errorLineInfo		The info on the lines and collumns where the error occured.
+ */
 void checkFuncCallParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorLineInfo)
 {
 	STRUCTFUNC* temp;
@@ -144,25 +176,7 @@ void checkFuncCallParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorL
 		errorLogger("Unknown function error: Function \"", funcId, "\" doesn't exist!\n", errorLineInfo);
 		return;
 	}
-	if (numberOfParams == temp->paramcount)
-	{
-		while (numberOfParams > 0)
-		{
-			tempParam = temp->funcparams;
-			for (int i = 1; i < numberOfParams; i++)
-			{
-				tempParam = tempParam->next;
-			}
-			pop(&programstack, &tempParam2);
-			if (strcmp(tempParam2, tempParam->type))
-			{
-				errorLogger("Type-Error: Parameter \"", tempParam->name, "\" in Function Call has the wrong Type!\n",
-					errorLineInfo);
-			}
-			numberOfParams--;
-		}
-	}
-	else
+	if (numberOfParams != temp->paramcount)
 	{
 		errorLogger("Parameter-Error: Function \"", funcId, "\" is called with the wrong ammount of Parameters!\n",
 			errorLineInfo);
@@ -171,9 +185,34 @@ void checkFuncCallParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorL
 			pop(&programstack, &tempParam2);
 			numberOfParams--;
 		}
+		return;
 	}
+
+	while (numberOfParams > 0)
+	{
+		tempParam = temp->funcparams;
+		for (int i = 1; i < numberOfParams; i++)
+		{
+			tempParam = tempParam->next;
+		}
+		pop(&programstack, &tempParam2);
+		if (strcmp(tempParam2, tempParam->type))
+		{
+			errorLogger("Type-Error: Parameter \"", tempParam->name, "\" in Function Call has the wrong Type!\n",
+				errorLineInfo);
+		}
+		numberOfParams--;
+	}
+	
 }
 
+/**
+ * ToDo Merlin
+ * \brief
+ * \param funcId			The name of the function.
+ * \param numberOfParams	The parameter count of the function.
+ * \param errorLineInfo		The info on the lines and collumns where the error occured.
+ */
 int checkFuncParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorLineInfo)
 {
 	STRUCTFUNC* temp;
@@ -216,6 +255,12 @@ int checkFuncParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorLineIn
 	return 0;
 }
 
+
+/**
+ * \brief Checks if the given function has a valid return type (int or void).
+ * \param funcId	The name of the function.
+ * \param type		The return type of the function.
+ */
 int checkFuncType(char* funcId, char* type)
 {
 	STRUCTFUNC* temp;
@@ -233,19 +278,28 @@ int checkFuncType(char* funcId, char* type)
 	return 0;
 }
 
-/*
-	Checks if the given variable has the requested type.
-
-	Parameters:
-	- varId :		Name of the variable to be checked
-	- type :		Type the variable should have
-	- allScopes :	"1" = the variable has to be searched in every scope
-					"0" = the variable has to be searched in the current scope only
-	Return:
-	1 :	Variable has the wanted type
-	0 : else
-
+/**
+*	Checks if the given variable has the requested type.
+*
+*	Parameters:
+*	- varId :		Name of the variable to be checked
+*	- type :		Type the variable should have
+*	- allScopes :	"1" = the variable has to be searched in every scope
+*					"0" = the variable has to be searched in the current scope only
+*	Return:
+*	1 :	Variable has the wanted type
+*	0 : else
+*
 */
+
+/**
+ * \brief Checks if the given variable has the requested type.
+ * \param varId 	Name of the variable to be checked.
+ * \param type		Type the variable should have.
+ * \param allScopes	Indicates if the variable has to be searched for in every scope known to mankind.
+ * 						"1" = every Scope
+ * 						"0" = only the current Scope
+ */
 int checkVarType(char* varId, char* type, int allScopes)
 {
 	SCOPESTACK* tempscope;

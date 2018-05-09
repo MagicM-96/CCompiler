@@ -6,6 +6,9 @@
 #include <unistd.h>
 
 #include "main.h"
+#include "diag.h"
+#include "resource_manager.h"
+
 extern int yyparse();
 
 /* Constants */

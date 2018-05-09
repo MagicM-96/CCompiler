@@ -1,6 +1,4 @@
 #pragma once
-
-#include "string.h"
 #include "structs.h"
 
 int isTypeCompatible(char* leftVarType, char* rightVarType);

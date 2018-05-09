@@ -8,16 +8,21 @@ extern SCOPESTACK* scopes;
 extern STRUCTPARAM* parameters;
 extern STACK* programstack;
 
+/**
+ * \brief checks if both Parameters are type INT
+ * \param leftvarType used for the left side of an expression
+ * \param rightVarType used for the right side of an expression 
+ * \return Indicates that both Parameters are Int.
+ *         1 = leftVarType and rightVarType are INT
+ *         0 = leftVarType and/or rightVarType are/is something else
+ */
 int isTypeCompatible(char* leftVarType, char* rightVarType)
 {
 	if (isInt(leftVarType) && isInt(rightVarType))
 	{
 		return 1;
 	}
-	else
-	{
-		return 0;
-	}
+	return 0;
 }
 
 /**
@@ -33,10 +38,76 @@ int isInt(char* varType)
 	{
 		return 1;
 	}
-	else
+	return 0;
+
+}
+
+int varExists(char* varId, int allScopes)
+{
+	SCOPESTACK* tempscope;
+	STRUCTVAR* temp;
+	tempscope = scopes;
+	for (temp = variables; temp != NULL; temp = temp->hh.next)
 	{
-		return 0;
+		if (!strcmp(temp->id, varId))
+		{
+			break;
+		}
 	}
+	if (temp != NULL)
+		return 1;
+	if (!allScopes)
+		return 0;
+	while (tempscope != NULL)
+	{
+		for (temp = tempscope->scope; temp != NULL; temp = temp->hh.next)
+		{
+			if (!strcmp(temp->id, varId))
+			{
+				break;
+			}
+		}
+		if (temp != NULL)
+		{
+			return 1;
+		}
+		tempscope = tempscope->next;
+	}
+	return 0;
+}
+
+int funcExists(char* funcId)
+{
+	STRUCTFUNC* temp;
+	for (temp = functions; temp != NULL; temp = temp->hh.next)
+	{
+		if (!strcmp(temp->id, funcId))
+		{
+			break;
+		}
+	}
+	if (temp != NULL)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+int funcIsDefined(char* funcId)
+{
+	STRUCTFUNC* temp;
+	for (temp = functions; temp != NULL; temp = temp->hh.next)
+	{
+		if (!strcmp(temp->id, funcId))
+		{
+			break;
+		}
+	}
+	if (temp->isDefined == 1)
+	{
+		return 1;
+	}
+	return 0;
 }
 
 void checkReturnParam(char* id, char* type, ERRORLINEINFO* errorLineInfo)
@@ -85,14 +156,16 @@ void checkFuncCallParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorL
 			pop(&programstack, &tempParam2);
 			if (strcmp(tempParam2, tempParam->type))
 			{
-				errorLogger("Type-Error: Parameter \"", tempParam->name, "\" in Function Call has the wrong Type!\n", errorLineInfo);
+				errorLogger("Type-Error: Parameter \"", tempParam->name, "\" in Function Call has the wrong Type!\n",
+					errorLineInfo);
 			}
 			numberOfParams--;
 		}
 	}
 	else
 	{
-		errorLogger("Parameter-Error: Function \"", funcId, "\" is called with the wrong ammount of Parameters!\n", errorLineInfo);
+		errorLogger("Parameter-Error: Function \"", funcId, "\" is called with the wrong ammount of Parameters!\n",
+			errorLineInfo);
 		while (numberOfParams > 0)
 		{
 			pop(&programstack, &tempParam2);
@@ -113,7 +186,9 @@ int checkFuncParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorLineIn
 		}
 	}
 	if (temp == NULL)
+	{
 		return 0;
+	}
 
 	// Parameter checking from here
 	if (numberOfParams == temp->paramcount)
@@ -141,68 +216,6 @@ int checkFuncParams(char* funcId, int numberOfParams, ERRORLINEINFO* errorLineIn
 	return 0;
 }
 
-int varExists(char* varId, int allScopes)
-{
-	SCOPESTACK* tempscope;
-	STRUCTVAR* temp;
-	tempscope = scopes;
-	for (temp = variables; temp != NULL; temp = temp->hh.next)
-	{
-		if (!strcmp(temp->id, varId))
-		{
-			break;
-		}
-	}
-	if (temp != NULL)
-		return 1;
-	if (!allScopes)
-		return 0;
-	while (tempscope != NULL)
-	{
-		for (temp = tempscope->scope; temp != NULL; temp = temp->hh.next)
-		{
-			if (!strcmp(temp->id, varId))
-			{
-				break;
-			}
-		}
-		if (temp != NULL)
-			return 1;
-		tempscope = tempscope->next;
-	}
-	return 0;
-}
-
-int funcExists(char* funcId)
-{
-	STRUCTFUNC* temp;
-	for (temp = functions; temp != NULL; temp = temp->hh.next)
-	{
-		if (!strcmp(temp->id, funcId))
-		{
-			break;
-		}
-	}
-	if (temp != NULL)
-		return 1;
-	return 0;
-}
-
-int funcIsDefined(char* funcId)
-{
-	STRUCTFUNC* temp;
-	for (temp = functions; temp != NULL; temp = temp->hh.next)
-	{
-		if (!strcmp(temp->id, funcId))
-		{
-			break;
-		}
-	}
-	if (temp->isDefined == 1)
-		return 1;
-	return 0;
-}
-
 int checkFuncType(char* funcId, char* type)
 {
 	STRUCTFUNC* temp;
@@ -214,7 +227,9 @@ int checkFuncType(char* funcId, char* type)
 		}
 	}
 	if (!strcmp(temp->type, type))
+	{
 		return 1;
+	}
 	return 0;
 }
 

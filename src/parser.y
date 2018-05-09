@@ -129,8 +129,8 @@ identifierDeclaration
      ;
 
 functionDefinition
-     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,0, errorLineInfo); startScope(); char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,$1.type,$2,NULL);push(&tempCodeStack,temp);} stmtList BRACE_CLOSE {getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,0, errorLineInfo,temp);endScope();addCode(OPRETURN,NULL,NULL,NULL,NULL);}
-     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,$4.val, errorLineInfo); startScope();char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,$1.type,$2,NULL);push(&tempCodeStack,temp); } stmtList BRACE_CLOSE{getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,$4.val, errorLineInfo,temp);endScope();addCode(OPRETURN,NULL,NULL,NULL,NULL);}
+     : type ID PARA_OPEN PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,0, errorLineInfo); startScope(); char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,$1.type,$2,NULL);push(&tempCodeStack,temp);} stmtList BRACE_CLOSE {getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,0, errorLineInfo,temp);endScope();addCode(ENDFUNC,NULL,NULL,NULL,NULL);}
+     | type ID PARA_OPEN functionParameterList PARA_CLOSE BRACE_OPEN {getScannedLines(); if(!funcExists($2)) addFunc($2,$1.type,$4.val, errorLineInfo); startScope();char* temp = (char*)malloc(sizeof(char)*4); addCode(STARTFUNC,&temp,$1.type,$2,NULL);push(&tempCodeStack,temp); } stmtList BRACE_CLOSE{getScannedLines();char* temp=(char*)malloc(sizeof(char)*4);pop(&tempCodeStack,&temp); defineFunc($2,$1.type,$4.val, errorLineInfo,temp);endScope();addCode(ENDFUNC,NULL,NULL,NULL,NULL);}
      ;
 
 functionDeclaration

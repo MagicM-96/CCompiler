@@ -148,7 +148,17 @@ void checkReturnParam(char* funcId, char* type, ERRORLINEINFO* errorLineInfo)
 		{
 			errorLogger("Type-Error: Return-Type in Function \"", funcId, "\" has the wrong type!\n", errorLineInfo);
 		}
-		tempvars = tempvars->hh.next;
+		if(!strcmp(tempvars->id, "functionsReturnParameter"))
+		{
+			HASH_DEL(variables,tempvars);//doesn't work correctly when return Param is only variable in scope
+			STRUCTVAR* tmp = tempvars;
+			tempvars = tempvars->hh.next;
+			free(tmp);
+		}
+		else
+		{
+			tempvars = tempvars->hh.next;
+		}
 	}
 }
 

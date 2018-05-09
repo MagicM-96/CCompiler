@@ -13,6 +13,14 @@ STRUCTVAR* variables = NULL;
 SCOPESTACK* scopes = NULL;
 STRUCTPARAM* parameters = NULL;
 
+/**
+ * @brief adds a function to the symbol table
+ * 
+ * @param id name of the function
+ * @param type type of the function
+ * @param numberOfParams 
+ * @param errorLineInfo 
+ */
 void addFunc(char* id, char* type, int numberOfParams, ERRORLINEINFO* errorLineInfo)
 {
 	if (!funcExists(id) && !varExists(id, 1))

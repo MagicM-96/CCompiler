@@ -8,6 +8,12 @@
 
 // A structure to represent a stack
 
+/**
+ * @brief creates a new Stack element
+ * 
+ * @param data content of the new element
+ * @return STACK* returns a stack object
+ */
 STACK* newNode(char* data)
 {
 	STACK* stackNode = (STACK*)malloc(sizeof(STACK));
@@ -17,8 +23,20 @@ STACK* newNode(char* data)
 	return stackNode;
 }
 
+/**
+ * @brief checks if stack is empty
+ * 
+ * @param root stack to check
+ * @return int 1 if root is empty
+ */
 int isEmpty(STACK* root) { return !root; }
 
+/**
+ * @brief pushs new object to stack
+ * 
+ * @param root stack which is used
+ * @param data content of the new element
+ */
 void push(STACK** root, char* data)
 {
 	isEmpty(*root);
@@ -27,6 +45,12 @@ void push(STACK** root, char* data)
 	*root = stackNode;
 }
 
+/**
+ * @brief pop the top element of the stack
+ * 
+ * @param root stack which is used
+ * @param returnval has the value of the top element
+ */
 void pop(STACK** root, char** returnval)
 {
 	if (isEmpty(*root))
@@ -41,6 +65,12 @@ void pop(STACK** root, char** returnval)
 	(*returnval) = popped;
 }
 
+/**
+ * @brief returns the value of the top element of the stack
+ * 
+ * @param root stack to be used
+ * @param returnval has the value of the top element
+ */
 void peek(STACK* root, char** returnval)
 {
 	if (isEmpty(root))
@@ -49,19 +79,4 @@ void peek(STACK* root, char** returnval)
 		return;
 	}
 	(*returnval) = root->data;
-}
-
-int main2()
-{
-	STACK* root = NULL;
-	char* temp;
-	push(&root, "10");
-	push(&root, "20");
-	push(&root, "30");
-	pop(&root, &temp);
-	printf("%s popped from stack\n", temp);
-
-	// printf("Top element is %s\n", peek(root));
-
-	return 0;
 }

@@ -217,33 +217,33 @@ void identifierDeclaration(int length, char* type, ERRORLINEINFO* errorLineInfo)
 					"\" because this name is reserved for the compiler!\n", errorLineInfo);
 			}
 			push(&programstack, type);
-			if (!varExists(id, 0) && !funcExists(id))
+			
+			if (varExists(id, 0) || funcExists(id))
 			{
-				if (length == 1)
-				{
-					addVar(id, "INT", 0, length);
-				}
-				else
-				{
-					addVar(id, "INT-ARR", 0, length);
-					char* tempId;
-					char* tempI;
-					tempId = (char*)malloc(sizeof(id) + 2 * sizeof(char) + sizeof(int));
-					tempI = (char*)malloc(sizeof(int));
-					for (int i = 0; i < length; i++)
-					{
-						strcpy(tempId, id);
-						strcat(tempId, "[");
-						sprintf(tempI, "%d", i);
-						strcat(tempId, tempI);
-						strcat(tempId, "]");
-						addVar(tempId, "ARRAY-ELEMENT", 0, 1);
-					}
-				}
+				errorLogger("Name-Error: Identifier \"", id, "\" is already in use!\n", errorLineInfo);
+				return;
+			}
+
+			if (length == 1)
+			{
+				addVar(id, "INT", 0, length);
 			}
 			else
 			{
-				errorLogger("Name-Error: Identifier \"", id, "\" is already in use!\n", errorLineInfo);
+				addVar(id, "INT-ARR", 0, length);
+				char* tempId;
+				char* tempI;
+				tempId = (char*)malloc(sizeof(id) + 2 * sizeof(char) + sizeof(int));
+				tempI = (char*)malloc(sizeof(int));
+				for (int i = 0; i < length; i++)
+				{
+					strcpy(tempId, id);
+					strcat(tempId, "[");
+					sprintf(tempI, "%d", i);
+					strcat(tempId, tempI);
+					strcat(tempId, "]");
+					addVar(tempId, "ARRAY-ELEMENT", 0, 1);
+				}
 			}
 		}
 	}
@@ -253,7 +253,7 @@ void pushSomething()
 {
 	push(&programstack, "test1");
 	char* temp;
-	
+
 	peek(programstack, &temp);
 	pop(&programstack, &temp);
 	printf("Stack is: %s\n", temp);

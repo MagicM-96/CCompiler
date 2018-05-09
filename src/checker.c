@@ -8,6 +8,14 @@ extern SCOPESTACK* scopes;
 extern STRUCTPARAM* parameters;
 extern STACK* programstack;
 
+/**
+ * \brief checks if both Parameters are type INT
+ * \param leftvarType used for the left side of an expression
+ * \param rightVarType used for the right side of an expression 
+ * \return Indicates that both Parameters are Int.
+ *         1 = leftVarType and rightVarType are INT
+ *         0 = leftVarType and/or rightVarType are/is something else
+ */
 int isTypeCompatible(char* leftVarType, char* rightVarType)
 {
 	if (isInt(leftVarType) && isInt(rightVarType))

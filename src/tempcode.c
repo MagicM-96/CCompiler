@@ -105,10 +105,10 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
 		case OPGOTO:
 			break;
 		case OPRETURNR:
-            sprintf(temp,"return %s;",op1);
+            sprintf(temp,"return %s;\n}",op1);
 			break;
 		case OPRETURN:
-            strcpy(temp,"return;");
+            strcpy(temp,"return;\n}");
 			break;
 		case OPCALLR:
             if(op2==NULL)
@@ -181,7 +181,12 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             strcpy(returnVal,op1);
             break;
         case STARTFUNC:
-            sprintf(temp,"STARTFUNC%d:",funcs);
+            if(op3==NULL)
+            {
+                op3 = (char*)malloc(sizeof(char));
+                strcpy(op3,"");
+            }
+            sprintf(temp,"%s %s(%s){\nSTARTFUNC%d:",op1,op2,op3,funcs);
             sprintf(returnVal,"%d",funcs);
             funcs++;
             break;
@@ -189,6 +194,9 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             sprintf(temp,"V%d = %s;",globTempVars,op1);
             sprintf(returnVal,"V%d",globTempVars);
             globTempVars++;
+            break;
+        case DECVAR:
+            sprintf(temp,"%s %s;",op1,op2);
             break;
         
         default:

@@ -80,7 +80,7 @@ void addVar(char* id, char* type, int value, int size)
 	HASH_ADD_INT(variables, id, s);
 	char* temp = (char*)malloc(sizeof(char)*3);
 	sprintf(temp,"%d",size);
-	if(strcmp(type,"ARRAY-ELEMENT"))
+	if(strcmp(type,"ARRAY-ELEMENT")&&strcmp(id,"functionsReturnParameter"))
 		addCode(DECVAR,NULL,type,id,temp);
 }
 

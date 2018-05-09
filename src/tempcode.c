@@ -151,25 +151,25 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             strcpy(returnVal,op1);
             break;
         case BEGINIF:
-            sprintf(temp,"if(%s) goto STARTIF%d;\ngoto ENDIF%d;\nSTARTIF%d:",op1,endif,endif,endif);
+            sprintf(temp,"if(%s) goto STARTIF%d;\ngoto ENDIF%d;\nSTARTIF%d:;",op1,endif,endif,endif);
             sprintf(returnVal,"%d",endif);
             endif++;
             break;
         case ENDIF:
-            sprintf(temp,"ENDIF%s:",op1);
+            sprintf(temp,"ENDIF%s:;",op1);
             break;
         case BEFOREELSE:
-            sprintf(temp,"goto ENDELSE%s;\nENDIF%s:",op1,op1);
+            sprintf(temp,"goto ENDELSE%s;\nENDIF%s:;",op1,op1);
             break;
         case AFTERELSE:
-            sprintf(temp,"ENDELSE%s:",op1);
+            sprintf(temp,"ENDELSE%s:;",op1);
             break;
         case STARTWHILE:
-            sprintf(temp,"BEGINWHILE%s:",op1);
+            sprintf(temp,"BEGINWHILE%s:;",op1);
             strcpy(returnVal,op1);
             break;
         case CHECKWHILE:
-            sprintf(temp,"CHECKWHILE%s:",op1);
+            sprintf(temp,"CHECKWHILE%s:;",op1);
             strcpy(returnVal,op1);
             break;
         case CHECKIFWHILE:
@@ -177,7 +177,7 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
             strcpy(returnVal,op1);
             break;
         case ENDWHILE:
-            sprintf(temp,"goto CHECKWHILE%s;\nENDWHILE%s:",op1,op1);
+            sprintf(temp,"goto CHECKWHILE%s;\nENDWHILE%s:;",op1,op1);
             strcpy(returnVal,op1);
             break;
         case STARTFUNC:
@@ -196,7 +196,7 @@ void addCode(int opcode, char** ret1, char* op1, char* op2, char* op3){
                 op1=(char*)malloc(sizeof(char)*3);
                 strcpy(op1,"int");
             }
-            sprintf(temp,"%s %s(%s){\nSTARTFUNC%d:",op1,op2,op3,funcs);
+            sprintf(temp,"%s %s(%s){\nSTARTFUNC%d:;",op1,op2,op3,funcs);
             sprintf(returnVal,"%d",funcs);
             funcs++;
             break;

@@ -167,84 +167,78 @@ void identifierDeclaration(int length, char* type, ERRORLINEINFO* errorLineInfo)
 				"\" because this name is reserved for the compiler!\n", errorLineInfo);
 		}
 		peek(programstack, &temptype);
-		if (strcmp(temptype, "VOID"))
+		if (!strcmp(temptype, "VOID"))
 		{
-			if (!varExists(tempid, 0) && !funcExists(tempid))
-			{
-				if (length == 1)
-				{
-					addVar(tempid, "INT", 0, length);
-				}
-				else
-				{
-					addVar(tempid, "INT-ARR", 0, length);
-					char* tempId;
-					char* tempI;
-					tempId = (char*)malloc(sizeof(tempid) + 2 * sizeof(char) + sizeof(int));
-					tempI = (char*)malloc(sizeof(int));
-					for (int i = 0; i < length; i++)
-					{
-						strcpy(tempId, tempid);
-						strcat(tempId, "[");
-						sprintf(tempI, "%d", i);
-						strcat(tempId, tempI);
-						strcat(tempId, "]");
-						addVar(tempId, "ARRAY-ELEMENT", 0, 1);
-					}
-				}
-			}
-			else
-			{
-				errorLogger("Name-Error: Identifier \"", tempid, "\" already exists!", errorLineInfo);
-			}
+			return;
 		}
+		if (varExists(tempid, 0) || funcExists(tempid))
+		{
+			errorLogger("Name-Error: Identifier \"", tempid, "\" already exists!", errorLineInfo);
+			return;
+		}
+		if (length == 1)
+		{
+			addVar(tempid, "INT", 0, length);
+			return;
+		}
+		addVar(tempid, "INT-ARR", 0, length);
+		char* tempId;
+		char* tempI;
+		tempId = (char*)malloc(sizeof(tempid) + 2 * sizeof(char) + sizeof(int));
+		tempI = (char*)malloc(sizeof(int));
+		for (int i = 0; i < length; i++)
+		{
+			strcpy(tempId, tempid);
+			strcat(tempId, "[");
+			sprintf(tempI, "%d", i);
+			strcat(tempId, tempI);
+			strcat(tempId, "]");
+			addVar(tempId, "ARRAY-ELEMENT", 0, 1);
+		}
+		return;
 	}
-	else
+
+	if (!strcmp(type, "VOID"))
 	{
-		if (!strcmp(type, "VOID"))
-		{
-			char* id;
-			pop(&programstack, &id);
-			errorLogger("Type-Error: Can't declare variable \"", id, "\" as VOID!\n", errorLineInfo);
-		}
-		else
-		{
-			char* id;
-			pop(&programstack, &id);
-			if (!strcmp(id, "functionsReturnParameter"))
-			{
-				errorLogger("Name-Error: Variable can't be called \"", id,
-					"\" because this name is reserved for the compiler!\n", errorLineInfo);
-			}
-			push(&programstack, type);
+		char* id;
+		pop(&programstack, &id);
+		errorLogger("Type-Error: Can't declare variable \"", id, "\" as VOID!\n", errorLineInfo);
+		return;
+	}
+	char* id;
+	pop(&programstack, &id);
+	if (!strcmp(id, "functionsReturnParameter"))
+	{
+		errorLogger("Name-Error: Variable can't be called \"", id,
+			"\" because this name is reserved for the compiler!\n", errorLineInfo);
+	}
+	push(&programstack, type);
 
-			if (varExists(id, 0) || funcExists(id))
-			{
-				errorLogger("Name-Error: Identifier \"", id, "\" is already in use!\n", errorLineInfo);
-				return;
-			}
+	if (varExists(id, 0) || funcExists(id))
+	{
+		errorLogger("Name-Error: Identifier \"", id, "\" is already in use!\n", errorLineInfo);
+		return;
+	}
 
-			if (length == 1)
-			{
-				addVar(id, "INT", 0, length);
-				return;
-			}
+	if (length == 1)
+	{
+		addVar(id, "INT", 0, length);
+		return;
+	}
 
-			addVar(id, "INT-ARR", 0, length);
-			char* tempId;
-			char* tempI;
-			tempId = (char*)malloc(sizeof(id) + 2 * sizeof(char) + sizeof(int));
-			tempI = (char*)malloc(sizeof(int));
-			for (int i = 0; i < length; i++)
-			{
-				strcpy(tempId, id);
-				strcat(tempId, "[");
-				sprintf(tempI, "%d", i);
-				strcat(tempId, tempI);
-				strcat(tempId, "]");
-				addVar(tempId, "ARRAY-ELEMENT", 0, 1);
-			}
-		}
+	addVar(id, "INT-ARR", 0, length);
+	char* tempId;
+	char* tempI;
+	tempId = (char*)malloc(sizeof(id) + 2 * sizeof(char) + sizeof(int));
+	tempI = (char*)malloc(sizeof(int));
+	for (int i = 0; i < length; i++)
+	{
+		strcpy(tempId, id);
+		strcat(tempId, "[");
+		sprintf(tempI, "%d", i);
+		strcat(tempId, tempI);
+		strcat(tempId, "]");
+		addVar(tempId, "ARRAY-ELEMENT", 0, 1);
 	}
 }
 
@@ -259,26 +253,6 @@ void pushSomething()
 	peek(programstack, &temp);
 }
 
-void typeReplace(char** type)
-{		// Noch nicht implementiert, kommt vlt. noch
-	if (!strcmp((*type), "0"))
-	{
-		printf("\nType is undefined!\n\n");
-	}
-	else if (!strcmp((*type), "1"))
-	{
-		printf("\nType is INT!\n\n");
-	}
-	else if (!strcmp((*type), "2"))
-	{
-		printf("\nType is VOID!\n\n");
-	}
-	else if (!strcmp((*type), "3"))
-	{
-		printf("\nType is INT-ARR!\n\n");
-	}
-}
-
 void lookupFunctionType(char* funcId, char** ret)
 {
 	STRUCTFUNC* temp;
@@ -290,7 +264,9 @@ void lookupFunctionType(char* funcId, char** ret)
 		}
 	}
 	if (temp != NULL)
+	{
 		(*ret) = temp->type;
+}
 }
 
 void lookupFunctionLabel(char* funcId, char** ret)
@@ -304,7 +280,9 @@ void lookupFunctionLabel(char* funcId, char** ret)
 		}
 	}
 	if (temp != NULL)
+	{
 		(*ret) = temp->label;
+	}
 }
 
 void lookupVariableType(char* varId, char** ret)

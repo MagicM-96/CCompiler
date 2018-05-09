@@ -112,33 +112,57 @@ void errorLogger(char* msg0, char* msg1, char* msg2, ERRORLINEINFO* errorLineInf
 	// yylloc.last_line, yylloc.last_column, msg);
 }
 
-// Functions for most of the Errors that could possibly be thrown.
 
+// Functions for most of the Errors that could possibly be thrown.
+/**
+ * \brief Output for Type-Errors in if statements.
+ * \param errorLineInfo The info on the lines and collumns where the error occured.
+ */
 void throwIfStatementError(ERRORLINEINFO* errorLineInfo)
 {
 	errorLogger("If-Statement", ":", "Incompatible variable type!", errorLineInfo);
 }
 
+/**
+ * \brief Output for Type-Errors in while loops.
+ * \param errorLineInfo The info on the lines and collumns where the error occured.
+ */
 void throwWhileLoopError(ERRORLINEINFO* errorLineInfo)
 {
 	errorLogger("While-loop", ": ", "Incompatible variable type!", errorLineInfo);
 }
 
+/**
+ * \brief Output for Type-Errors in assignments.
+ * \param errorLineInfo The info on the lines and collumns where the error occured.
+ */
 void throwAssignmentError(ERRORLINEINFO* errorLineInfo)
 {
 	errorLogger("Assignment", ": ", "Incompatible variable type!", errorLineInfo);
 }
 
+/**
+ * \brief Output for Type-Errors in logical comparisons.
+ * \param errorLineInfo The info on the lines and collumns where the error occured.
+ */
 void throwLogCompError(ERRORLINEINFO* errorLineInfo)
 {
 	errorLogger("Logical comparison", ": ", "Incompatible variable type!", errorLineInfo);
 }
 
-void throwMatchOpError(ERRORLINEINFO* errorLineInfo)
+/**
+ * \brief Output for Type-Errors in math operations.
+ * \param errorLineInfo The info on the lines and collumns where the error occured.
+ */
+void throwMathOpError(ERRORLINEINFO* errorLineInfo)
 {
 	errorLogger("Math Operation", ": ", "Incompatible variable type!", errorLineInfo);
 }
 
+/**
+ * \brief Output for Type-Errors in shift operations.
+ * \param errorLineInfo The info on the lines and collumns where the error occured.
+ */
 void throwShiftOpError(ERRORLINEINFO* errorLineInfo)
 {
 	errorLogger("Shift Operation", ": ", "Incompatible variable type!", errorLineInfo);
